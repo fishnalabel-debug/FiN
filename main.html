@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>小手机</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --soft: #8e8e93;
+      --line: #f0f0f0;
+      --accent: #7c6ff7;
+      --accent2: #5b8dee;
+      --gold: #c9a96e;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg); background-size: cover; background-position: center;
+      width: 100vw; height: 100vh; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+
+    /* 页面滑动区 */
+    .pages-container {
+      flex: 1; overflow-x: auto; scroll-snap-type: x mandatory;
+      display: flex; scrollbar-width: none; padding-top: 12px;
+    }
+    .pages-container::-webkit-scrollbar { display: none; }
+
+    .page {
+      min-width: 100vw; scroll-snap-align: start;
+      padding: 0 18px 8px; display: flex; flex-direction: column; gap: 10px;
+      overflow-y: auto;
+    }
+
+    /* ====== 第一页 ====== */
+    .clock-widget {
+      padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 24px; display: flex; align-items: center;
+      justify-content: space-between; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .clock-time {
+      font-size: 38px; font-weight: 200; color: var(--ink);
+      letter-spacing: 2px; line-height: 1;
+    }
+    .clock-date-info { text-align: right; }
+    .date-day { font-size: 15px; color: var(--ink); font-weight: 500; }
+    .date-full { font-size: 12px; color: var(--soft); }
+
+    /* 情侣小组件 */
+    .couple-widget {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 24px; padding: 16px 18px; display: flex;
+      align-items: center; gap: 14px; cursor: pointer;
+      flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .couple-avatars { display: flex; align-items: center; flex-shrink: 0; }
+    .couple-avatar {
+      width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5);
+      border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .couple-avatar:last-child { margin-left: -14px; }
+    .couple-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .couple-info { flex: 1; min-width: 0; }
+    .couple-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .couple-subtitle { font-size: 11px; color: var(--soft); margin-top: 2px; }
+
+    /* 应用网格 */
+    .app-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 4px;
+    }
+    .app-item {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer; padding: 4px 0;
+    }
+    .app-item:active { opacity: 0.7; }
+    .app-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: var(--card); border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .app-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .app-icon .icon-fallback { font-size: 24px; }
+    .app-name {
+      font-size: 11px; color: var(--soft); text-align: center;
+      max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ====== 第二页 - 图片小组件 ====== */
+    .photo-widget {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 24px; overflow: hidden; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer;
+      position: relative; aspect-ratio: 4/3;
+    }
+    .photo-widget img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .photo-placeholder {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(135deg, #f8f6ff, #f4f8ff);
+      color: var(--soft); font-size: 13px;
+    }
+    .photo-placeholder .ph-icon { font-size: 40px; opacity: 0.6; }
+    .photo-label {
+      position: absolute; bottom: 12px; left: 16px;
+      background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+      border-radius: 12px; padding: 4px 12px; font-size: 11px;
+      color: var(--ink); font-weight: 500;
+    }
+
+    .second-page-grid {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .small-photo-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .small-photo {
+      aspect-ratio: 1/1; background: var(--card); border: 1px solid var(--line);
+      border-radius: 20px; overflow: hidden; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .small-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .small-photo .photo-placeholder { height: 100%; }
+
+    /* 页面指示器 */
+    .page-indicator {
+      display: flex; justify-content: center; gap: 6px; padding: 4px 0; flex-shrink: 0;
+    }
+    .page-dot {
+      width: 6px; height: 6px; border-radius: 3px; background: #d1d1d6; transition: all 0.3s;
+    }
+    .page-dot.active { width: 18px; background: var(--ink); }
+
+    /* ★ 底栏 - iOS风格 */
+    .bottom-dock {
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 8px 24px 16px; flex-shrink: 0;
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    .dock-item {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 24px; transition: all 0.15s;
+    }
+.dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    .dock-item:active { transform: scale(0.9); opacity: 0.7; }
+    .dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+
+    /* 情侣弹窗 */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; visibility: hidden; opacity: 0; transition: 0.25s;
+    }
+    .modal-overlay.active { visibility: visible; opacity: 1; }
+    .modal-card {
+      background: var(--card); border-radius: 28px; padding: 28px 22px 22px;
+      width: 340px; max-height: 80vh; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    .modal-header { text-align: center; }
+    .modal-eyebrow { font-size: 10px; letter-spacing: 0.14em; color: var(--gold); font-weight: 500; text-transform: uppercase; }
+    .modal-title { font-size: 20px; font-weight: 600; color: var(--ink); margin-top: 2px; }
+    .modal-sub { font-size: 12px; color: var(--soft); margin-top: 2px; }
+    .divider { height: 1px; background: var(--line); }
+    .select-label { font-size: 11px; letter-spacing: 0.08em; color: var(--soft); text-transform: uppercase; font-weight: 500; }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .role-card {
+      background: var(--card); border: 2px solid var(--line); border-radius: 18px;
+      padding: 16px 12px; display: flex; flex-direction: column; align-items: center;
+      gap: 10px; cursor: pointer; transition: all 0.2s;
+    }
+    .role-card.selected { border-color: var(--accent); background: #f8f6ff; }
+    .role-card.selected.role-b { border-color: var(--accent2); background: #f4f8ff; }
+    .role-avatar-circle {
+      width: 56px; height: 56px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 26px;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5); position: relative;
+    }
+    .role-card.role-b .role-avatar-circle { background: linear-gradient(135deg, #e3f0f8, #cce1f5); }
+    .check-mark {
+      position: absolute; bottom: -2px; right: -2px;
+      width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+      color: white; font-size: 10px; display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.5); transition: all 0.2s;
+    }
+    .role-card.selected .check-mark { opacity: 1; transform: scale(1); }
+    .role-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .modal-actions { display: flex; gap: 10px; }
+    .btn {
+      flex: 1; padding: 12px; border-radius: 14px; border: none;
+      font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-cancel { background: #f2f2f6; color: var(--soft); }
+    .btn-confirm { background: #1d1d1f; color: white; }
+    .btn-confirm:disabled { opacity: 0.3; pointer-events: none; }
+  </style>
+</head>
+<body id="mainBody">
+  <!-- 页面滑动区 -->
+  <div class="pages-container" id="pagesContainer">
+    <!-- ★ 第一页 -->
+    <div class="page">
+      <div class="clock-widget">
+        <div class="clock-time" id="bigTime">00:00</div>
+        <div class="clock-date-info">
+          <div class="date-day" id="dateDay">周一</div>
+          <div class="date-full" id="dateFull">1月1日</div>
+        </div>
+      </div>
+
+      <div class="couple-widget" id="coupleWidget">
+        <div class="couple-avatars" id="coupleAvatars">
+          <div class="couple-avatar">💑</div>
+          <div class="couple-avatar">❤️</div>
+        </div>
+        <div class="couple-info">
+          <div class="couple-title">情侣空间</div>
+          <div class="couple-subtitle" id="coupleSubtitle">点击设置情侣</div>
+        </div>
+      </div>
+
+      <div class="app-grid">
+        <div class="app-item" data-app="phone"><div class="app-icon"><img src="chat/chat.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>💬</span>';"></div><span class="app-name">聊天</span></div>
+        <div class="app-item" data-app="diary"><div class="app-icon"><img src="diary/diary.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>📔</span>';"></div><span class="app-name">日记</span></div>
+        <div class="app-item" data-app="music"><div class="app-icon"><img src="music/music.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>🎵</span>';"></div><span class="app-name">音乐</span></div>
+        <div class="app-item" data-app="novel"><div class="app-icon"><img src="novel/novel.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>📖</span>';"></div><span class="app-name">阅读</span></div>
+        <div class="app-item" data-app="icon"><div class="app-icon"><img src="icon/icon.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>🎨</span>';"></div><span class="app-name">桌面美化</span></div>
+        <div class="app-item" data-app="forum"><div class="app-icon"><img src="forum/forum.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>📋</span>';"></div><span class="app-name">论坛</span></div>
+        <div class="app-item" data-app="takeout"><div class="app-icon"><img src="takeout/takeout.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>🛵</span>';"></div><span class="app-name">外卖</span></div>
+        <div class="app-item" data-app="plan"><div class="app-icon"><img src="plan/plan.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'icon-fallback\\'>📋</span>';"></div><span class="app-name">计划</span></div>
+      </div>
+    </div>
+
+    <!-- ★ 第二页 - 图片展示 -->
+    <div class="page">
+      <div class="second-page-grid">
+        <div class="photo-widget" id="mainPhoto">
+          <div class="photo-placeholder"><div class="ph-icon">🖼️</div><span>点击上传图片</span></div>
+          <div class="photo-label">封面</div>
+        </div>
+        <div class="small-photo-row">
+          <div class="small-photo" id="photo1">
+            <div class="photo-placeholder"><div class="ph-icon">🌸</div></div>
+          </div>
+          <div class="small-photo" id="photo2">
+            <div class="photo-placeholder"><div class="ph-icon">🌟</div></div>
+          </div>
+        </div>
+        <div class="small-photo-row">
+          <div class="small-photo" id="photo3">
+            <div class="photo-placeholder"><div class="ph-icon">🌙</div></div>
+          </div>
+          <div class="small-photo" id="photo4">
+            <div class="photo-placeholder"><div class="ph-icon">☀️</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页面指示器 -->
+  <div class="page-indicator">
+    <div class="page-dot active" data-page="0"></div>
+    <div class="page-dot" data-page="1"></div>
+  </div>
+
+  <!-- ★ 底栏 -->
+  <div class="bottom-dock">
+    <div class="dock-item" data-app="momo" title="便签"><img src="momo/momo.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='📝';"></div>
+    <div class="dock-item" data-app="make" title="代餐"><img src="make/make.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='🍽️';"></div>
+    <div class="dock-item" data-app="album" title="相册"><img src="album/album.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='🖼️';"></div>
+    <div class="dock-item" data-app="calendar" title="日历"><img src="calendar/calendar.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='📅';"></div>
+  </div>
+
+  <!-- 情侣弹窗 -->
+  <div class="modal-overlay" id="coupleModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-eyebrow">Our Profile</div>
+        <div class="modal-title">选择你们两个人</div>
+        <div class="modal-sub">进入情侣空间</div>
+      </div>
+      <div class="divider"></div>
+      <div class="select-label">左位</div>
+      <div class="role-grid" id="person1Grid"></div>
+      <div class="select-label">右位</div>
+      <div class="role-grid" id="person2Grid"></div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="coupleCancelBtn">取消</button>
+        <button class="btn btn-confirm" id="coupleConfirmBtn" disabled>确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 隐藏的文件上传 -->
+  <input type="file" accept="image/*" id="photoUpload" style="display:none;">
+
+<script>
+(function() {
+  // 时钟
+  function updateClock() {
+    const now = new Date();
+    const bj = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+    const h = bj.getHours().toString().padStart(2,'0'), m = bj.getMinutes().toString().padStart(2,'0');
+    document.getElementById('bigTime').textContent = h+':'+m;
+    const days = ['周日','周一','周二','周三','周四','周五','周六'];
+    document.getElementById('dateDay').textContent = days[bj.getDay()];
+    document.getElementById('dateFull').textContent = (bj.getMonth()+1)+'月'+bj.getDate()+'日';
+  }
+  updateClock(); setInterval(updateClock, 10000);
+
+  // 页面指示器
+  const pagesContainer = document.getElementById('pagesContainer');
+  const dots = document.querySelectorAll('.page-dot');
+  pagesContainer.addEventListener('scroll', () => {
+    const page = Math.round(pagesContainer.scrollLeft / pagesContainer.clientWidth);
+    dots.forEach(d => d.classList.toggle('active', parseInt(d.getAttribute('data-page')) === page));
+  });
+
+  // 壁纸
+  const savedWallpaper = localStorage.getItem('wallpaper');
+document.body.style.backgroundImage = savedWallpaper ? `url(${savedWallpaper})` : `url('icon/壁纸.jpg')`;
+
+  // 应用跳转
+  const appRoutes = {
+    'phone': 'chat/chat/phone.html', 'diary': 'diary/diary.html', 'music': 'music/music.html',
+    'novel': 'novel/novel.html', 'icon': 'icon/icon.html', 'forum': 'forum/forum.html',
+    'takeout': 'takeout/takeout.html', 'plan': 'plan/plan.html',
+    'momo': 'momo.html', 'make': 'make.html', 'album': 'album.html', 'calendar': 'calendar.html'
+  };
+  document.querySelectorAll('.app-item, .dock-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const url = appRoutes[item.getAttribute('data-app')];
+      if (url) window.location.href = url;
+    });
+  });
+
+  // 情侣数据
+  function loadCouple() { try { return JSON.parse(localStorage.getItem('couple_data')) || null; } catch(e) { return null; } }
+  function loadChars() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
+  function loadUser() { try { return JSON.parse(localStorage.getItem('user_data')) || {}; } catch(e) { return {}; } }
+  function getAv(t,id) { if(t==='user') return loadUser().avatar||''; return (loadChars().find(c=>c.id==id)||{}).avatar||''; }
+  function getName(t,id) { if(t==='user') return loadUser().name||'我'; return (loadChars().find(c=>c.id==id)||{}).name||'角色'; }
+
+  function updateCoupleWidget() {
+    const d = loadCouple();
+    const av = document.getElementById('coupleAvatars');
+    const sub = document.getElementById('coupleSubtitle');
+    if (d?.person1 && d?.person2) {
+      const a1=getAv(d.person1.type,d.person1.id), a2=getAv(d.person2.type,d.person2.id);
+      av.innerHTML = `<div class="couple-avatar">${a1?`<img src="${a1}">`:'💑'}</div><div class="couple-avatar">${a2?`<img src="${a2}">`:'❤️'}</div>`;
+      sub.textContent = getName(d.person1.type,d.person1.id)+' ❤️ '+getName(d.person2.type,d.person2.id);
+    } else {
+      av.innerHTML = `<div class="couple-avatar">💑</div><div class="couple-avatar">❤️</div>`;
+      sub.textContent = '点击设置情侣';
+    }
+  }
+  updateCoupleWidget();
+
+  // 弹窗
+  const modal = document.getElementById('coupleModal');
+  const confirmBtn = document.getElementById('coupleConfirmBtn');
+  let sel1=null, sel2=null;
+  function buildList() {
+    const u=loadUser(), cs=loadChars();
+    return [{type:'user',id:'user',name:u.name||'我'}, ...cs.map(c=>({type:'char',id:c.id,name:c.name}))];
+  }
+  function renderGrid(cid, sel, isP2) {
+    const ct = document.getElementById(cid), list = buildList();
+    ct.innerHTML = '';
+    list.forEach((p,i) => {
+      const card = document.createElement('div');
+      card.className = 'role-card role-'+(i%2?'b':'a');
+      if (sel?.id===p.id && sel?.type===p.type) card.classList.add('selected');
+      card.innerHTML = `<div class="role-avatar-circle">${i%2?'☀️':'🌙'}<div class="check-mark">✓</div></div><div class="role-name">${p.name}</div>`;
+      card.addEventListener('click',()=>{
+        if(isP2) sel2=p; else sel1=p;
+        renderGrid('person1Grid',sel1,false); renderGrid('person2Grid',sel2,true);
+        confirmBtn.disabled = !(sel1&&sel2);
+      });
+      ct.appendChild(card);
+    });
+  }
+  document.getElementById('coupleWidget').addEventListener('click',()=>{
+    sel1=null;sel2=null;confirmBtn.disabled=true;
+    renderGrid('person1Grid',null,false); renderGrid('person2Grid',null,true);
+    modal.classList.add('active');
+  });
+  document.getElementById('coupleCancelBtn').addEventListener('click',()=>modal.classList.remove('active'));
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('active');});
+  confirmBtn.addEventListener('click',()=>{
+    if(!sel1||!sel2)return;
+    if(sel1.type===sel2.type&&sel1.id===sel2.id){alert('不能选同一个人');return;}
+    localStorage.setItem('couple_data',JSON.stringify({person1:sel1,person2:sel2}));
+    updateCoupleWidget(); modal.classList.remove('active');
+    window.location.href = 'spouse/spouse.html';
+  });
+
+  // ★ 第二页图片上传
+  const photoUpload = document.getElementById('photoUpload');
+  let currentPhotoTarget = null;
+
+  function openPhotoUpload(targetId) {
+    currentPhotoTarget = targetId;
+    photoUpload.click();
+  }
+
+  photoUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentPhotoTarget) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      const key = 'photo_' + currentPhotoTarget;
+      localStorage.setItem(key, dataUrl);
+      loadPhoto(currentPhotoTarget);
+    };
+    reader.readAsDataURL(file);
+    photoUpload.value = '';
+    currentPhotoTarget = null;
+  });
+
+  function loadPhoto(targetId) {
+    const el = document.getElementById(targetId);
+    const dataUrl = localStorage.getItem('photo_' + targetId);
+    if (dataUrl && el) {
+      el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+    }
+  }
+
+  // 绑定点击事件
+  ['mainPhoto','photo1','photo2','photo3','photo4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('click', () => openPhotoUpload(id));
+      loadPhoto(id);
+    }
+  });
+
+  window.addEventListener('storage', updateCoupleWidget);
+})();
+</script>
+</body>
+</html>
