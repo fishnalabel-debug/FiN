@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>互动 · 小手机</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'PingFang SC', serif;
+      background: #f5f5f7;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; margin: 0; padding: 0;
+    }
+
+    .app-container {
+      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+      background: #ffffff; display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+    }
+
+    .header {
+      display: flex; align-items: center; padding: 10px 14px;
+      background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
+    }
+    .back-btn {
+      background: none; border: none; font-size: 18px; cursor: pointer; color: #1d1d1f;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .header-title { font-size: 16px; font-weight: 620; color: #1d1d1f; flex: 1; text-align: center; }
+    .api-btn {
+      background: none; border: 1px solid #e5e5ea; border-radius: 16px;
+      padding: 4px 10px; font-size: 12px; cursor: pointer; color: #8e8e93;
+    }
+
+    .story-feed {
+      flex: 1; overflow-y: auto; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .story-block {
+      display: flex; flex-direction: column; gap: 4px;
+      max-width: 100%;
+    }
+    .story-block.ai { align-items: flex-start; }
+    .story-block.user { align-items: flex-end; }
+
+    .story-text {
+      padding: 14px 16px; border-radius: 18px; font-size: 14px;
+      line-height: 1.8; letter-spacing: 0.01em; color: #2c2c2e;
+    }
+    .ai .story-text { background: #f4f4f6; border-bottom-left-radius: 6px; }
+    .user .story-text { background: #1d1d1f; color: #ffffff; border-bottom-right-radius: 6px; }
+
+    .story-by {
+      font-size: 10px; color: #b0b0b8; padding: 0 6px;
+    }
+    .user .story-by { text-align: right; }
+
+    .input-area {
+      padding: 8px 14px 14px; background: #ffffff;
+      border-top: 1px solid #f0f0f0; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .input-row {
+      display: flex; gap: 8px; align-items: flex-end;
+    }
+    .input-field {
+      flex: 1; border: 1px solid #e5e5ea; border-radius: 18px;
+      padding: 10px 14px; font-size: 14px; outline: none;
+      max-height: 100px; resize: none; font-family: inherit;
+      line-height: 1.5; background: #f9f9fb;
+    }
+    .send-btn {
+      background: #1d1d1f; color: #fff; border: none;
+      border-radius: 50%; width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; flex-shrink: 0;
+    }
+    .ai-reply-btn {
+      align-self: flex-start; background: none; border: 1px solid #e5e5ea;
+      border-radius: 16px; padding: 6px 14px; font-size: 12px;
+      color: #8e8e93; cursor: pointer;
+    }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; visibility: hidden; opacity: 0; transition: 0.2s;
+    }
+    .modal-overlay.active { visibility: visible; opacity: 1; }
+    .modal-card {
+      background: #ffffff; border-radius: 24px; padding: 24px 20px;
+      width: 300px; display: flex; flex-direction: column; gap: 14px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .modal-card h3 { font-size: 16px; font-weight: 620; color: #1d1d1f; text-align: center; }
+    .modal-card input {
+      border: 1px solid #e5e5ea; border-radius: 14px; padding: 10px 12px;
+      font-size: 13px; outline: none; background: #f9f9fb;
+    }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn {
+      padding: 10px 18px; border-radius: 14px; border: none;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .btn-cancel { background: #f2f2f6; color: #1d1d1f; }
+    .btn-confirm { background: #1d1d1f; color: #fff; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <button class="back-btn" id="backBtn">←</button>
+    <div class="header-title" id="headerTitle">互动</div>
+    <button class="api-btn" id="apiBtn">API</button>
+  </div>
+
+  <div class="story-feed" id="storyFeed"></div>
+
+  <div class="input-area">
+    <button class="ai-reply-btn" id="aiReplyBtn">✨ AI 回复</button>
+    <div class="input-row">
+      <textarea class="input-field" id="userInput" placeholder="输入你的动作或对话..." rows="1"></textarea>
+      <button class="send-btn" id="sendBtn">↑</button>
+    </div>
+  </div>
+
+  <!-- API弹窗 -->
+  <div class="modal-overlay" id="apiModal">
+    <div class="modal-card">
+      <h3>API 设置</h3>
+      <input type="text" id="apiEndpoint" placeholder="API地址（留空则用全局）">
+      <input type="text" id="apiKey" placeholder="API Key（留空则用全局）">
+      <input type="text" id="apiModel" placeholder="模型名称（留空则用全局）">
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="apiCancel">取消</button>
+        <button class="btn btn-confirm" id="apiConfirm">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const novelId = params.get('id');
+
+  const STORAGE_KEY = 'novel_list';
+  function loadNovels() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch(e) { return []; } }
+  function saveNovels(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+  function loadUserData() { try { return JSON.parse(localStorage.getItem('user_data')||'{}'); } catch(e) { return {}; } }
+  function loadCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters')||'[]'); } catch(e) { return []; } }
+
+  const novels = loadNovels();
+  const novel = novels.find(n => n.id === novelId);
+  if (!novel) { window.location.href = 'novel.html'; }
+
+  const user = loadUserData();
+  const characters = loadCharacters();
+  const userName = user.name || '我';
+
+  // 标题
+  document.getElementById('headerTitle').textContent = novel.title || '互动';
+
+  // 消息历史
+  let storyMessages = novel.storyMessages || [];
+
+  const feed = document.getElementById('storyFeed');
+
+  function renderFeed() {
+    feed.innerHTML = '';
+    storyMessages.forEach(m => {
+      const block = document.createElement('div');
+      block.className = 'story-block ' + m.role;
+      block.innerHTML = `
+        <div class="story-text">${escapeHtml(m.content)}</div>
+        <div class="story-by">by ${escapeHtml(m.by)}</div>
+      `;
+      feed.appendChild(block);
+    });
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function addMessage(role, content, by) {
+    storyMessages.push({ role, content, by, time: Date.now() });
+    novel.storyMessages = storyMessages;
+    novel.updatedAt = Date.now();
+    saveNovels(novels);
+    renderFeed();
+  }
+
+  function escapeHtml(t) {
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // 获取 API 配置
+  function getApiConfig() {
+    return {
+      endpoint: novel.apiEndpoint || user.apiEndpoint || '',
+      key: novel.apiKey || user.apiKey || '',
+      model: novel.apiModel || user.model || 'gpt-3.5-turbo'
+    };
+  }
+
+  // AI 回复
+  async function triggerAI() {
+    const cfg = getApiConfig();
+    if (!cfg.endpoint || !cfg.key) {
+      alert('请先设置API');
+      return;
+    }
+
+    // 构建角色和世界书上下文
+    let contextInfo = '';
+    if (novel.selectedChars?.length) {
+      const chars = characters.filter(c => novel.selectedChars.includes(c.id));
+      contextInfo += chars.map(c => `【${c.name}】${c.aiPrompt||''}`).join('\n') + '\n';
+    }
+    if (novel.selectedWorldbooks?.length) {
+      const wbs = JSON.parse(localStorage.getItem('worldbooks')||'[]').filter(w => novel.selectedWorldbooks.includes(w.id));
+      contextInfo += wbs.map(w => `【世界书·${w.name}】${w.content}`).join('\n') + '\n';
+    }
+
+    const systemPrompt = `你是一个小说互动AI。根据以下设定和指令，以小说叙述者的身份继续故事。描写细腻，保持文风一致。\n\n${contextInfo}\n指令：${novel.instruction || '进行小说式互动'}`;
+
+    const history = storyMessages.slice(-20).map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.content
+    }));
+
+    let apiUrl = cfg.endpoint.trim().replace(/\/+$/, '');
+    if (!apiUrl.endsWith('/chat/completions')) apiUrl += '/chat/completions';
+
+    try {
+      const resp = await new Promise((res, rej) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', apiUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Authorization', `Bearer ${cfg.key}`);
+        xhr.timeout = 120000;
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) res(JSON.parse(xhr.responseText).choices[0].message.content);
+          else rej(new Error('HTTP ' + xhr.status));
+        };
+        xhr.onerror = () => rej(new Error('网络错误'));
+        xhr.send(JSON.stringify({
+          model: cfg.model,
+          messages: [{ role: 'system', content: systemPrompt }, ...history],
+          max_tokens: 1500
+        }));
+      });
+
+      // 角色名取第一个选中的角色，没有则用"AI"
+      const aiName = novel.selectedChars?.length
+        ? (characters.find(c => c.id === novel.selectedChars[0])?.name || 'AI')
+        : 'AI';
+      addMessage('ai', resp.trim(), aiName);
+    } catch(e) {
+      addMessage('ai', '❌ ' + e.message, '系统');
+    }
+  }
+
+  // 发送按钮
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const text = document.getElementById('userInput').value.trim();
+    if (!text) return;
+    addMessage('user', text, userName);
+    document.getElementById('userInput').value = '';
+  });
+
+  // 回车发送
+  document.getElementById('userInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.getElementById('sendBtn').click();
+    }
+  });
+
+  // AI 回复按钮
+  document.getElementById('aiReplyBtn').addEventListener('click', triggerAI);
+
+  // API 弹窗
+  const apiModal = document.getElementById('apiModal');
+  document.getElementById('apiBtn').addEventListener('click', () => {
+    document.getElementById('apiEndpoint').value = novel.apiEndpoint || '';
+    document.getElementById('apiKey').value = novel.apiKey || '';
+    document.getElementById('apiModel').value = novel.apiModel || '';
+    apiModal.classList.add('active');
+  });
+  document.getElementById('apiCancel').addEventListener('click', () => apiModal.classList.remove('active'));
+  document.getElementById('apiConfirm').addEventListener('click', () => {
+    novel.apiEndpoint = document.getElementById('apiEndpoint').value.trim();
+    novel.apiKey = document.getElementById('apiKey').value.trim();
+    novel.apiModel = document.getElementById('apiModel').value.trim();
+    saveNovels(novels);
+    apiModal.classList.remove('active');
+  });
+  apiModal.addEventListener('click', e => { if (e.target === apiModal) apiModal.classList.remove('active'); });
+
+  // 返回
+  document.getElementById('backBtn').addEventListener('click', () => window.location.href = 'novel.html');
+
+  renderFeed();
+})();
+</script>
+</body>
+</html>
