@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>通讯录 · 小手机</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; margin: 0; padding: 0;
+    }
+
+    .app-container {
+      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+      background: #ffffff; display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+    }
+
+    .header {
+      padding: 14px 20px 10px 20px; background: #ffffff;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+    }
+    .header-title { font-size: 20px; font-weight: 620; color: #1d1d1f; letter-spacing: -0.3px; }
+    .header-count { font-size: 13px; color: #8e8e93; font-weight: 400; }
+
+    .search-wrap {
+      padding: 10px 16px 6px; flex-shrink: 0;
+    }
+    .search-box {
+      background: #f2f2f6; border-radius: 16px; padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .search-box input {
+      background: transparent; border: none; outline: none;
+      font-size: 14px; width: 100%; color: #1c1c1e;
+    }
+    .search-box input::placeholder { color: #8e8e93; }
+
+    .content {
+      flex: 1; overflow-y: auto; padding: 8px 16px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+
+    /* 字母分组 */
+    .section-header {
+      font-size: 11px; font-weight: 600; color: #8e8e93;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 10px 8px 4px;
+    }
+
+    .friend-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 10px; border-radius: 16px;
+      cursor: pointer; transition: background 0.1s;
+    }
+    .friend-item:hover { background: #fafafa; }
+    .friend-item:active { background: #f5f5f5; }
+
+    .friend-avatar {
+      width: 48px; height: 48px; border-radius: 50%; overflow: hidden;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #ffffff;
+    }
+    .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+
+    .friend-info { flex: 1; min-width: 0; }
+    .friend-name { font-size: 15px; font-weight: 500; color: #1d1d1f; }
+    .friend-sig {
+      font-size: 12px; color: #8e8e93; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; margin-top: 2px;
+    }
+    .friend-arrow { font-size: 16px; color: #c7c7cc; }
+
+    .empty-hint {
+      text-align: center; color: #c7c7cc; font-size: 14px;
+      padding: 60px 20px;
+    }
+
+    .bottom-nav {
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 8px 12px 14px; background: #ffffff;
+      border-top: 1px solid #f0f0f0; flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      font-size: 12px; color: #8e8e93; cursor: pointer;
+      background: none; border: none; padding: 6px 12px;
+      border-radius: 16px; font-weight: 500;
+    }
+    .nav-item.active { color: #1d1d1f; font-weight: 600; }
+    .nav-item span { font-size: 18px; line-height: 1; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="header-title">通讯录</div>
+    <div class="header-count" id="headerCount">0位朋友</div>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="search" placeholder="搜索朋友" id="searchInput">
+    </div>
+  </div>
+
+  <div class="content" id="friendList"></div>
+
+  <div class="bottom-nav">
+    <button class="nav-item" data-page="chat"><span>💬</span>聊天</button>
+    <button class="nav-item active" data-page="name"><span>👥</span>通讯录</button>
+    <button class="nav-item" data-page="search"><span>🧭</span>发现</button>
+    <button class="nav-item" data-page="my"><span>👤</span>我</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  function loadCharacters() {
+    try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; }
+  }
+
+  const characters = loadCharacters();
+
+  // 渲染数量
+  document.getElementById('headerCount').textContent = characters.length + '位朋友';
+
+  const friendList = document.getElementById('friendList');
+
+  // 按拼音首字母分组（简化：取第一个字）
+  function getFirstLetter(name) {
+    if (!name) return '#';
+    const c = name.charAt(0);
+    // 简单判断中文/英文
+    if (/[a-zA-Z]/.test(c)) return c.toUpperCase();
+    if (/[\u4e00-\u9fa5]/.test(c)) return c;
+    return '#';
+  }
+
+  function renderFriends(filter = '') {
+    const filtered = filter
+      ? characters.filter(c => c.name.includes(filter) || (c.signature || '').includes(filter))
+      : characters;
+
+    if (filtered.length === 0) {
+      friendList.innerHTML = '<div class="empty-hint">暂无朋友</div>';
+      return;
+    }
+
+    // 分组
+    const groups = {};
+    filtered.forEach(c => {
+      const letter = getFirstLetter(c.name);
+      if (!groups[letter]) groups[letter] = [];
+      groups[letter].push(c);
+    });
+
+    const sortedKeys = Object.keys(groups).sort((a, b) => {
+      if (a === '#') return 1;
+      if (b === '#') return -1;
+      return a.localeCompare(b, 'zh');
+    });
+
+    let html = '';
+    sortedKeys.forEach(key => {
+      html += `<div class="section-header">${key}</div>`;
+      groups[key].forEach(c => {
+        const avHtml = c.avatar
+          ? `<img src="${c.avatar}" alt="">`
+          : `<div class="avatar-placeholder">${c.name.charAt(0)}</div>`;
+        html += `
+          <div class="friend-item" data-id="${c.id}">
+            <div class="friend-avatar">${avHtml}</div>
+            <div class="friend-info">
+              <div class="friend-name">${escapeHtml(c.name)}</div>
+              <div class="friend-sig">${escapeHtml(c.signature || '个性签名未设置')}</div>
+            </div>
+            <span class="friend-arrow">›</span>
+          </div>`;
+      });
+    });
+
+    friendList.innerHTML = html;
+
+    // ★ 点击跳转 card.html
+    friendList.querySelectorAll('.friend-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.getAttribute('data-id');
+        window.location.href = `card.html?id=${id}`;
+      });
+    });
+  }
+
+  function escapeHtml(t) {
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  renderFriends();
+
+  // 搜索
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    renderFriends(e.target.value.trim());
+  });
+
+  // 底栏
+  const pageRoutes = {
+    'chat': '../chat/phone.html',
+    'name': 'friends.html',
+    'search': '../search/search.html',
+    'my': '../my/my.html'
+  };
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const page = this.getAttribute('data-page');
+      if (page === 'name') return;
+      if (pageRoutes[page]) window.location.href = pageRoutes[page];
+    });
+  });
+})();
+</script>
+</body>
+</html>

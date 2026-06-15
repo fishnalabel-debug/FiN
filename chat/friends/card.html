@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>角色名片 · 小手机</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; margin: 0; padding: 0;
+    }
+
+    .app-container {
+      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+      background: #ffffff; display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+    }
+
+    .header {
+      display: flex; align-items: center; padding: 10px 14px;
+      background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
+    }
+    .back-btn {
+      background: none; border: none; font-size: 20px; cursor: pointer; color: #1d1d1f;
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .header-title { font-size: 17px; font-weight: 620; color: #1d1d1f; flex: 1; text-align: center; }
+
+    .content {
+      flex: 1; overflow-y: auto; padding: 20px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+    }
+
+    /* ── 名片 ── */
+    .card {
+      width: 100%; background: #ffffff; border-radius: 24px; overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08);
+    }
+    .card-stripe { width: 100%; height: 4px; }
+    .card-body { padding: 28px 24px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+    .card-avatar {
+      width: 88px; height: 88px; border-radius: 50%; overflow: hidden;
+      border: 3px solid #ffffff; box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .av-placeholder {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      font-size: 36px; background: linear-gradient(135deg, #e8e3f8, #d4cef5);
+    }
+
+    .card-eyebrow {
+      font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: #bbb; font-weight: 500;
+    }
+    .card-name {
+      font-family: 'Playfair Display', Georgia, serif; font-style: italic;
+      font-size: 24px; font-weight: 400; color: #111;
+    }
+    .card-handle { font-size: 11px; color: #bbb; }
+    .card-quote {
+      font-size: 13px; color: #888; line-height: 1.6; text-align: center;
+      font-weight: 300; max-width: 260px;
+    }
+    .card-divider { width: 40px; height: 1px; background: #e8e8e8; }
+
+    .card-meta {
+      display: flex; gap: 0; width: 100%; justify-content: center;
+    }
+    .meta-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px; padding: 0 16px;
+    }
+    .meta-item+.meta-item { border-left: 1px solid #eee; }
+    .meta-label { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: #ccc; }
+    .meta-value { font-size: 12px; font-weight: 500; color: #444; }
+
+    /* 按钮 */
+    .chat-btn {
+      width: 100%; padding: 14px; border-radius: 16px; border: none;
+      background: #1d1d1f; color: #ffffff; font-size: 15px;
+      font-weight: 500; cursor: pointer; transition: all 0.15s;
+      margin-top: 8px;
+    }
+    .chat-btn:hover { background: #2c2c2e; }
+    .chat-btn:active { transform: scale(0.98); }
+
+    /* 主题色 */
+    .theme-violet .card-stripe { background: linear-gradient(to right, #C4B8F0, #9F90E8); }
+    .theme-violet .card-avatar { background: linear-gradient(135deg, #EDE9FA, #D9D1F5); }
+
+    .theme-sage .card-stripe { background: linear-gradient(to right, #A8C8B8, #7FB09A); }
+    .theme-sage .card-avatar { background: linear-gradient(135deg, #E4F0EA, #CCDDD4); }
+
+    .theme-rose .card-stripe { background: linear-gradient(to right, #E8BFC0, #D49899); }
+    .theme-rose .card-avatar { background: linear-gradient(135deg, #FAE8E8, #F0D5D5); }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <button class="back-btn" id="backBtn">←</button>
+    <div class="header-title">角色名片</div>
+  </div>
+
+  <div class="content">
+    <div class="card" id="card">
+      <div class="card-stripe"></div>
+      <div class="card-body">
+        <div class="card-avatar" id="cardAvatar">
+          <div class="av-placeholder">🤖</div>
+          <img id="cardImg" src="" alt="" style="display:none;">
+        </div>
+        <div class="card-eyebrow">Character Profile</div>
+        <div class="card-name" id="cardName">角色名</div>
+        <div class="card-handle" id="cardHandle">@unnamed</div>
+        <div class="card-divider"></div>
+        <div class="card-quote" id="cardQuote">个性签名未设置</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <div class="meta-label">Model</div>
+            <div class="meta-value" id="metaModel">未设置</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Chats</div>
+            <div class="meta-value" id="metaChats">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="chat-btn" id="startChatBtn">开始聊天</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const charId = params.get('id');
+  if (!charId) { window.location.href = 'friends.html'; return; }
+
+  function getCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
+  const char = getCharacters().find(c => c.id == charId);
+  if (!char) { window.location.href = 'friends.html'; return; }
+
+  // 主题
+  const themes = ['theme-violet', 'theme-sage', 'theme-rose'];
+  document.getElementById('card').classList.add(themes[parseInt(charId.slice(-4),16) % 3]);
+
+  // 渲染
+  function render() {
+    document.getElementById('cardName').textContent = char.name || '未命名';
+    document.getElementById('cardHandle').textContent = '@' + (char.name || 'unnamed').replace(/\s/g,'_').toLowerCase();
+    document.getElementById('cardQuote').textContent = char.signature || '个性签名未设置';
+    document.getElementById('metaModel').textContent = char.model || '未设置';
+
+    const msgs = JSON.parse(localStorage.getItem(`chat_msg_${charId}`) || '[]');
+    document.getElementById('metaChats').textContent = msgs.filter(m => m.type !== 'system').length;
+
+    if (char.avatar) {
+      document.getElementById('cardImg').src = char.avatar;
+      document.getElementById('cardImg').style.display = 'block';
+      document.querySelector('#cardAvatar .av-placeholder').style.display = 'none';
+    }
+  }
+  render();
+
+  // 返回
+  document.getElementById('backBtn').addEventListener('click', () => {
+    window.location.href = 'friends.html';
+  });
+
+  // 开始聊天
+  document.getElementById('startChatBtn').addEventListener('click', () => {
+    window.location.href = `../chat/chat.html?id=${charId}`;
+  });
+})();
+</script>
+</body>
+</html>
