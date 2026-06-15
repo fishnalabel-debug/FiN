@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>世界书 · 小手机</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header {
+      padding: 10px 14px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #1d1d1f;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 620;
+      color: #1d1d1f;
+      flex: 1;
+      text-align: center;
+    }
+
+    .add-group-btn {
+      background: none;
+      border: 1.5px solid #e5e5ea;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #1d1d1f;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .add-group-btn:hover {
+      background: #f5f5f5;
+    }
+
+    .group-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px;
+      overflow-x: auto;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+
+    .group-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .group-tab {
+      padding: 7px 16px;
+      border-radius: 18px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      background: #f2f2f6;
+      color: #6c6c70;
+      border: none;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .group-tab.active {
+      background: #1d1d1f;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .group-tab:hover {
+      background: #e5e5ea;
+    }
+
+    .group-tab.active:hover {
+      background: #1d1d1f;
+    }
+
+    .new-worldbook-bar {
+      padding: 10px 14px;
+      flex-shrink: 0;
+    }
+
+    .new-worldbook-btn {
+      width: 100%;
+      padding: 12px;
+      border: 1px dashed #c7c7cc;
+      border-radius: 16px;
+      background: #fafafa;
+      color: #6c6c70;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .new-worldbook-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .worldbook-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 14px 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .worldbook-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .worldbook-item:hover {
+      background: #fafafa;
+    }
+
+    .worldbook-item:active {
+      background: #f5f5f5;
+    }
+
+    .worldbook-info {
+      flex: 1;
+    }
+
+    .worldbook-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1d1d1f;
+    }
+
+    .worldbook-meta {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .worldbook-badge {
+      background: #f2f2f6;
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #6c6c70;
+    }
+
+    .worldbook-badge.global {
+      background: #e8f5e9;
+      color: #34c759;
+    }
+
+    .worldbook-arrow {
+      font-size: 16px;
+      color: #c7c7cc;
+    }
+
+    .empty-hint {
+      text-align: center;
+      color: #c7c7cc;
+      font-size: 14px;
+      padding: 40px 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <button class="back-btn" id="backBtn">←</button>
+      <div class="header-title">世界书</div>
+      <button class="add-group-btn" id="addGroupBtn">🔘</button>
+    </div>
+
+    <div class="group-tabs" id="groupTabs"></div>
+
+    <div class="new-worldbook-bar">
+      <button class="new-worldbook-btn" id="newWorldbookBtn">+ 新建世界书</button>
+    </div>
+
+    <div class="worldbook-list" id="worldbookList"></div>
+  </div>
+
+  <script>
+    (function() {
+      const GROUPS_KEY = 'worldbook_groups';
+      const WORLDBOOKS_KEY = 'worldbooks';
+
+      let currentGroupId = null;
+
+      function loadGroups() {
+        try {
+          const stored = localStorage.getItem(GROUPS_KEY);
+          if (stored) {
+            return JSON.parse(stored);
+          }
+        } catch (e) {}
+        const defaultGroup = { id: 'default', name: '默认' };
+        saveGroups([defaultGroup]);
+        return [defaultGroup];
+      }
+
+      function saveGroups(groups) {
+        localStorage.setItem(GROUPS_KEY, JSON.stringify(groups));
+      }
+
+      function loadWorldbooks() {
+        try {
+          const stored = localStorage.getItem(WORLDBOOKS_KEY);
+          if (stored) {
+            return JSON.parse(stored);
+          }
+        } catch (e) {}
+        return [];
+      }
+
+      function saveWorldbooks(worldbooks) {
+        localStorage.setItem(WORLDBOOKS_KEY, JSON.stringify(worldbooks));
+      }
+
+      let groups = loadGroups();
+      let worldbooks = loadWorldbooks();
+
+      if (!currentGroupId) {
+        currentGroupId = groups[0]?.id || 'default';
+      }
+
+      const groupTabs = document.getElementById('groupTabs');
+      function renderGroupTabs() {
+        groupTabs.innerHTML = '';
+        groups.forEach(group => {
+          const tab = document.createElement('button');
+          tab.className = 'group-tab';
+          if (group.id === currentGroupId) {
+            tab.classList.add('active');
+          }
+          tab.textContent = group.name;
+          tab.addEventListener('click', () => {
+            currentGroupId = group.id;
+            renderGroupTabs();
+            renderWorldbookList();
+          });
+          groupTabs.appendChild(tab);
+        });
+      }
+
+      const worldbookList = document.getElementById('worldbookList');
+      function renderWorldbookList() {
+        const filtered = worldbooks.filter(wb => wb.groupId === currentGroupId);
+        
+        if (filtered.length === 0) {
+          worldbookList.innerHTML = '<div class="empty-hint">暂无世界书</div>';
+          return;
+        }
+
+        worldbookList.innerHTML = '';
+        filtered.forEach(wb => {
+          const item = document.createElement('div');
+          item.className = 'worldbook-item';
+          
+          // 角色名称
+          let charNames = '';
+          if (wb.isGlobal) {
+            charNames = '全局';
+          } else if (wb.characters && wb.characters.length > 0) {
+            const chars = JSON.parse(localStorage.getItem('chat_characters')) || [];
+            charNames = wb.characters.map(cid => {
+              const found = chars.find(c => c.id == cid);
+              return found ? found.name : '未知';
+            }).join('、');
+          } else {
+            charNames = '未指定';
+          }
+          
+          item.innerHTML = `
+            <div class="worldbook-info">
+              <div class="worldbook-name">${escapeHtml(wb.name)}</div>
+              <div class="worldbook-meta">
+                <span class="worldbook-badge ${wb.isGlobal ? 'global' : ''}">${wb.isGlobal ? '全局' : charNames}</span>
+                <span>强度 ${wb.intensity || 5}</span>
+                <span>${wb.time || ''}</span>
+              </div>
+            </div>
+            <span class="worldbook-arrow">›</span>
+          `;
+          
+          // ★ 点击跳转编辑
+          item.addEventListener('click', () => {
+            window.location.href = `new.html?groupId=${currentGroupId}&editId=${wb.id}`;
+          });
+          
+          worldbookList.appendChild(item);
+        });
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      document.getElementById('addGroupBtn').addEventListener('click', () => {
+        const name = prompt('输入新分组名称');
+        if (!name || !name.trim()) return;
+        const newGroup = {
+          id: Date.now().toString(),
+          name: name.trim()
+        };
+        groups.push(newGroup);
+        saveGroups(groups);
+        currentGroupId = newGroup.id;
+        renderGroupTabs();
+        renderWorldbookList();
+      });
+
+      document.getElementById('newWorldbookBtn').addEventListener('click', () => {
+        window.location.href = `new.html?groupId=${currentGroupId}`;
+      });
+
+      document.getElementById('backBtn').addEventListener('click', () => {
+        window.location.href = 'search.html';
+      });
+
+      renderGroupTabs();
+      renderWorldbookList();
+    })();
+  </script>
+</body>
+</html>
