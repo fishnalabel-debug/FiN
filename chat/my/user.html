@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>设定 · 小手机</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header {
+      padding: 10px 14px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #1d1d1f;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 620;
+      color: #1d1d1f;
+      flex: 1;
+      text-align: center;
+    }
+
+    .save-btn {
+      background: #1d1d1f;
+      color: #ffffff;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .save-btn:hover {
+      background: #2c2c2e;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section {
+      border: 1px solid #f0f0f0;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      background: #f9f9fb;
+      font-family: inherit;
+    }
+
+    textarea.input-field {
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.5;
+    }
+
+    .persona-section {
+      border: 1px solid #f0f0f0;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .persona-section .section-title {
+      flex-shrink: 0;
+    }
+
+    .persona-textarea {
+      flex: 1;
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      background: #f9f9fb;
+      resize: none;
+      font-family: inherit;
+      line-height: 1.6;
+      min-height: 180px;
+    }
+
+    .persona-hint {
+      font-size: 12px;
+      color: #8e8e93;
+      line-height: 1.5;
+      flex-shrink: 0;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row .input-field {
+      flex: 1;
+    }
+
+    .avatar-upload-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar-preview {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #f2f2f6;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8e8e93;
+      font-size: 22px;
+    }
+
+    .upload-hint {
+      font-size: 13px;
+      color: #8e8e93;
+      cursor: pointer;
+      background: #f2f2f6;
+      padding: 8px 14px;
+      border-radius: 14px;
+    }
+
+    .hidden-file-input {
+      display: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: #c7c7cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <button class="back-btn" id="backBtn">←</button>
+      <div class="header-title">设定</div>
+      <button class="save-btn" id="saveBtn">保存</button>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <div class="section-title">头像</div>
+        <div class="avatar-upload-row">
+          <div class="avatar-preview" id="avatarPreview">
+            <div class="avatar-placeholder" id="avatarPlaceholder">📷</div>
+            <img id="avatarImg" src="" alt="头像" style="display: none;">
+          </div>
+          <span class="upload-hint" id="uploadAvatarBtn">点击上传头像</span>
+          <input type="file" accept="image/*" id="avatarFileInput" class="hidden-file-input">
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">基本信息</div>
+        <input type="text" class="input-field" id="nameInput" placeholder="姓名">
+        <input type="text" class="input-field" id="idInput" placeholder="用户ID">
+        <input type="text" class="input-field" id="signatureInput" placeholder="个性签名">
+        <div class="row">
+          <input type="text" class="input-field" id="genderInput" placeholder="性别">
+          <input type="text" class="input-field" id="regionInput" placeholder="地区">
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">联系方式</div>
+        <input type="text" class="input-field" id="phoneInput" placeholder="手机号">
+        <input type="text" class="input-field" id="emailInput" placeholder="邮箱">
+      </div>
+
+      <!-- ★ 全局API设置 -->
+      <div class="section">
+        <div class="section-title">API 设置（全局默认）</div>
+        <div class="persona-hint" style="margin-bottom:4px;">所有角色默认使用此API。若角色在char.html中单独设置了API，则使用角色自己的。</div>
+        <input type="text" class="input-field" id="globalApiEndpoint" placeholder="API地址">
+        <input type="text" class="input-field" id="globalApiKey" placeholder="API Key">
+        <input type="text" class="input-field" id="globalModel" placeholder="模型名称（如 gpt-3.5-turbo）">
+      </div>
+
+      <div class="persona-section">
+        <div class="section-header">
+          <span class="section-title">角色设定</span>
+          <span class="char-count" id="charCount">0 字</span>
+        </div>
+        <textarea class="persona-textarea" id="personaInput" placeholder="在这里写下你的角色设定…&#10;&#10;例如：&#10;- 你的名字、年龄、性格&#10;- 你喜欢的事物和讨厌的东西&#10;- 你的说话风格和习惯用语&#10;- 你的背景故事和经历&#10;- 任何你希望AI了解关于你的事情&#10;&#10;所有AI角色都会读取这段设定来了解你。"></textarea>
+        <div class="persona-hint">💡 所有AI角色都会默认读取此设定来了解你。写得越详细，AI越能理解你。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      function loadUserData() {
+        try {
+          const stored = localStorage.getItem('user_data');
+          if (stored) {
+            return JSON.parse(stored);
+          }
+        } catch (e) {}
+        return {
+          id: 'user_' + Date.now().toString(36),
+          name: '',
+          avatar: '',
+          signature: '',
+          gender: '',
+          region: '',
+          phone: '',
+          email: '',
+          persona: ''
+        };
+      }
+
+      function saveUserData(data) {
+        localStorage.setItem('user_data', JSON.stringify(data));
+      }
+
+      let userData = loadUserData();
+      let currentAvatar = userData.avatar || '';
+
+      function fillForm() {
+        document.getElementById('nameInput').value = userData.name || '';
+        document.getElementById('idInput').value = userData.id || '';
+        document.getElementById('signatureInput').value = userData.signature || '';
+        document.getElementById('genderInput').value = userData.gender || '';
+        document.getElementById('regionInput').value = userData.region || '';
+        document.getElementById('phoneInput').value = userData.phone || '';
+        document.getElementById('emailInput').value = userData.email || '';
+        document.getElementById('personaInput').value = userData.persona || '';
+
+document.getElementById('globalApiEndpoint').value = userData.apiEndpoint || '';
+document.getElementById('globalApiKey').value = userData.apiKey || '';
+document.getElementById('globalModel').value = userData.model || '';
+        
+        updateCharCount();
+        renderAvatar();
+      }
+
+      function renderAvatar() {
+        if (userData.avatar) {
+          document.getElementById('avatarImg').src = userData.avatar;
+          document.getElementById('avatarImg').style.display = 'block';
+          document.getElementById('avatarPlaceholder').style.display = 'none';
+        } else {
+          document.getElementById('avatarImg').style.display = 'none';
+          document.getElementById('avatarPlaceholder').style.display = 'flex';
+        }
+      }
+
+      function updateCharCount() {
+        const count = document.getElementById('personaInput').value.length;
+        document.getElementById('charCount').textContent = count + ' 字';
+      }
+
+      fillForm();
+
+      document.getElementById('personaInput').addEventListener('input', updateCharCount);
+
+      const avatarFileInput = document.getElementById('avatarFileInput');
+      document.getElementById('uploadAvatarBtn').addEventListener('click', () => {
+        avatarFileInput.click();
+      });
+      document.getElementById('avatarPreview').addEventListener('click', () => {
+        avatarFileInput.click();
+      });
+
+      avatarFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          currentAvatar = ev.target.result;
+          userData.avatar = currentAvatar;
+          renderAvatar();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', () => {
+        userData.name = document.getElementById('nameInput').value.trim();
+        userData.id = document.getElementById('idInput').value.trim() || userData.id;
+        userData.signature = document.getElementById('signatureInput').value.trim();
+        userData.gender = document.getElementById('genderInput').value.trim();
+        userData.region = document.getElementById('regionInput').value.trim();
+        userData.phone = document.getElementById('phoneInput').value.trim();
+        userData.email = document.getElementById('emailInput').value.trim();
+        userData.persona = document.getElementById('personaInput').value.trim();
+        userData.avatar = currentAvatar;
+userData.apiEndpoint = document.getElementById('globalApiEndpoint').value.trim();
+userData.apiKey = document.getElementById('globalApiKey').value.trim();
+userData.model = document.getElementById('globalModel').value.trim();
+
+        saveUserData(userData);
+        window.dispatchEvent(new Event('storage'));
+        
+        alert('保存成功');
+      });
+
+      // ★ 返回路径更新为 my 文件夹
+      document.getElementById('backBtn').addEventListener('click', () => {
+        window.location.href = 'my.html';
+      });
+    })();
+  </script>
+</body>
+</html>
