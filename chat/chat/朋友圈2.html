@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>朋友圈 · 小手机</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'PingFang SC', sans-serif;
+      background: #DDDDE0;
+      display: flex; align-items: flex-start; justify-content: center;
+      min-height: 100vh; padding: 0; margin: 0;
+    }
+
+    .app-container {
+      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+      background: #F5F5F7; display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.08); overflow: hidden; position: relative;
+    }
+
+    .header {
+      display: flex; align-items: center; padding: 12px 16px;
+      background: #FFFFFF; border-bottom: 1px solid #EBEBEB; flex-shrink: 0; gap: 8px;
+    }
+    .back-btn {
+      background: none; border: none; font-size: 18px; cursor: pointer; color: #111;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .header-title { font-size: 17px; font-weight: 600; color: #111; flex: 1; text-align: center; }
+    .header-btn {
+      background: none; border: none; font-size: 18px; cursor: pointer; color: #111;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; flex-shrink: 0; transition: transform 0.3s;
+    }
+    .header-btn:active { transform: scale(0.9); }
+
+    /* Banner */
+    .banner {
+      background: #FFFFFF; flex-shrink: 0; position: relative;
+    }
+    .banner-img {
+      width: 100%; height: 140px; position: relative; overflow: hidden;
+      cursor: pointer;
+      background: linear-gradient(160deg, #d8d4ec 0%, #e8e4f4 40%, #f0edf8 70%, #e8f0f8 100%);
+    }
+    .banner-img img { width: 100%; height: 100%; object-fit: cover; }
+    .banner-img::before {
+      content: ''; position: absolute; width: 200px; height: 200px;
+      border-radius: 50%; border: 1px solid rgba(255,255,255,0.4);
+      top: -60px; right: -40px;
+    }
+    .banner-img::after {
+      content: ''; position: absolute; width: 120px; height: 120px;
+      border-radius: 50%; border: 1px solid rgba(255,255,255,0.25);
+      top: 10px; right: 50px;
+    }
+    .banner-upload-hint {
+      position: absolute; bottom: 8px; right: 12px;
+      background: rgba(0,0,0,0.3); color: #fff; font-size: 9px;
+      padding: 3px 8px; border-radius: 10px; pointer-events: none;
+    }
+
+    .banner-info {
+      padding: 16px 20px 14px; display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid #EBEBEB;
+    }
+    .banner-text { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+    .banner-name { font-size: 16px; font-weight: 600; color: #111; }
+    .banner-sig { font-size: 11px; color: #AAA; }
+
+    .banner-avatar {
+      width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #fff; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .banner-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .hidden-file-input { display: none; }
+
+    /* feed */
+    .feed {
+      flex: 1; overflow-y: auto; padding: 0; display: flex; flex-direction: column; gap: 2px;
+    }
+    .feed::-webkit-scrollbar { display: none; }
+
+    .date-divider {
+      display: flex; align-items: center; gap: 12px; padding: 16px 20px 8px;
+    }
+    .date-line { flex: 1; height: 1px; background: #EBEBEB; }
+    .date-label {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #CCC; font-weight: 500; white-space: nowrap;
+    }
+
+    .post {
+      background: #FFFFFF; padding: 16px 20px;
+      display: grid; grid-template-columns: 36px 1fr; gap: 0 12px;
+    }
+    .post-thread { display: flex; flex-direction: column; align-items: center; }
+    .post-ava {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+      background: linear-gradient(135deg, #f0edf8, #e8e3f5); color: #fff; overflow: hidden;
+    }
+    .post-ava img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+    .thread-line { width: 1px; flex: 1; background: #EBEBEB; margin-top: 6px; min-height: 16px; }
+    .post:last-of-type .thread-line { display: none; }
+
+    .post-body { display: flex; flex-direction: column; gap: 8px; padding-bottom: 4px; position: relative; }
+    .post-header { display: flex; align-items: center; justify-content: space-between; }
+    .post-header-left { display: flex; align-items: baseline; gap: 8px; }
+    .post-name { font-size: 13px; font-weight: 600; color: #111; }
+    .post-time { font-size: 10px; color: #CCC; }
+    .post-more { cursor: pointer; font-size: 14px; color: #CCC; padding: 2px 6px; }
+    .post-more:hover { color: #111; }
+    .post-text { font-size: 14px; color: #333; line-height: 1.7; font-weight: 350; }
+
+    .post-images { display: flex; flex-direction: column; gap: 3px; }
+    .img-row { display: flex; gap: 3px; }
+    .img-cell {
+      flex: 1; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+      background: #f2f2f6; display: flex; align-items: center; justify-content: center;
+      font-size: 28px; position: relative; max-height: 200px;
+    }
+    .img-cell img { width: 100%; height: 100%; object-fit: cover; }
+    .img-label {
+      position: absolute; bottom: 6px; left: 6px; right: 6px;
+      background: rgba(0,0,0,0.45); color: #fff; font-size: 9px;
+      padding: 3px 8px; border-radius: 8px; text-align: center;
+    }
+
+    .post-actions {
+      display: flex; align-items: center; gap: 16px;
+      padding-top: 8px; border-top: 1px solid #EBEBEB; margin-top: 2px;
+    }
+    .action-btn {
+      font-size: 11px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 4px;
+      background: none; border: none; padding: 2px 0;
+    }
+    .action-btn:hover { color: #111; }
+
+    .empty-hint { text-align: center; color: #CCC; font-size: 13px; padding: 60px 20px; }
+    .loading-hint { text-align: center; color: #888; font-size: 12px; padding: 24px; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <button class="back-btn" id="backBtn">←</button>
+    <div class="header-title" id="headerTitle">朋友圈</div>
+    <button class="header-btn" id="refreshBtn" title="刷新">🔄</button>
+  </div>
+
+  <div class="banner">
+    <div class="banner-img" id="bannerBg">
+      <div class="banner-upload-hint">轻触更换封面</div>
+      <img id="bannerImg" src="" alt="" style="display:none;">
+    </div>
+    <div class="banner-info">
+      <div class="banner-text">
+        <div class="banner-name" id="bannerName">朋友圈</div>
+        <div class="banner-sig" id="bannerSig">个性签名未设置</div>
+      </div>
+      <div class="banner-avatar" id="bannerAvatar">
+        <img id="bannerAvatarImg" src="" alt="" style="display:none;">
+      </div>
+    </div>
+  </div>
+  <input type="file" accept="image/*" id="bannerFileInput" class="hidden-file-input">
+
+  <div class="feed" id="momentsList"></div>
+</div>
+
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const charId = params.get('id');
+
+  function loadAllMoments() { try { return JSON.parse(localStorage.getItem('all_moments')||'[]'); } catch(e) { return []; } }
+  function saveAllMoments(d) { localStorage.setItem('all_moments', JSON.stringify(d)); }
+  function loadCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters')||'[]'); } catch(e) { return []; } }
+  function loadUserData() { try { return JSON.parse(localStorage.getItem('user_data')||'{}'); } catch(e) { return {}; } }
+
+  const characters = loadCharacters();
+  const user = loadUserData();
+  const container = document.getElementById('momentsList');
+  const isSingle = !!charId;
+  const char = isSingle ? characters.find(c => c.id == charId) : null;
+
+  // 返回
+  document.getElementById('backBtn').addEventListener('click', () => {
+    if (isSingle) window.location.href = `../chat/more.html?id=${charId}`;
+    else window.location.href = 'search.html';
+  });
+
+  function renderBanner() {
+    if (isSingle && char) {
+      document.getElementById('headerTitle').textContent = char.name + '的朋友圈';
+      document.getElementById('bannerName').textContent = char.name;
+      document.getElementById('bannerSig').textContent = char.signature || '个性签名未设置';
+      if (char.avatar) {
+        document.getElementById('bannerAvatarImg').src = char.avatar;
+        document.getElementById('bannerAvatarImg').style.display = 'block';
+      }
+      const bg = localStorage.getItem(`banner_bg_${charId}`);
+      if (bg) { document.getElementById('bannerImg').src = bg; document.getElementById('bannerImg').style.display = 'block'; }
+    } else {
+      document.getElementById('bannerName').textContent = user.name || '我的朋友圈';
+      document.getElementById('bannerSig').textContent = user.signature || '个性签名未设置';
+      if (user.avatar) {
+        document.getElementById('bannerAvatarImg').src = user.avatar;
+        document.getElementById('bannerAvatarImg').style.display = 'block';
+      }
+      const bg = localStorage.getItem('moments_banner_bg');
+      if (bg) { document.getElementById('bannerImg').src = bg; document.getElementById('bannerImg').style.display = 'block'; }
+    }
+  }
+  renderBanner();
+
+  document.getElementById('bannerBg').addEventListener('click', () => document.getElementById('bannerFileInput').click());
+  document.getElementById('bannerFileInput').addEventListener('change', (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      document.getElementById('bannerImg').src = ev.target.result;
+      document.getElementById('bannerImg').style.display = 'block';
+      if (isSingle) localStorage.setItem(`banner_bg_${charId}`, ev.target.result);
+      else localStorage.setItem('moments_banner_bg', ev.target.result);
+    };
+    r.readAsDataURL(f);
+  });
+
+  function getBJTime() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' })); }
+
+  function render() {
+    const all = loadAllMoments();
+    const filtered = isSingle ? all.filter(m => m.charId == charId || m.charId === 'user') : all;
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div class="empty-hint">暂无朋友圈</div>';
+      return;
+    }
+
+    filtered.sort((a, b) => b.timestamp - a.timestamp);
+    let lastDate = '', html = '';
+
+    filtered.forEach(m => {
+      const d = new Date(m.timestamp);
+      const dateStr = (d.getMonth()+1)+'月'+d.getDate()+'日';
+      if (dateStr !== lastDate) {
+        html += `<div class="date-divider"><div class="date-line"></div><div class="date-label">${dateStr}</div><div class="date-line"></div></div>`;
+        lastDate = dateStr;
+      }
+
+      let avHtml = '', displayName = '';
+      if (m.charId === 'user') {
+        avHtml = (m.userAvatar || user.avatar) ? `<img src="${m.userAvatar || user.avatar}" alt="">` : (m.userName || user.name || '我').charAt(0);
+        displayName = m.userName || user.name || '我';
+      } else {
+        const c = characters.find(x => x.id == m.charId) || {};
+        avHtml = c.avatar ? `<img src="${c.avatar}" alt="">` : (c.name||'?').charAt(0);
+        displayName = c.name || '未知';
+      }
+
+      let imgHtml = '';
+      if (m.images && m.images.length > 0) {
+        imgHtml = '<div class="post-images">';
+        imgHtml += `<div class="img-row">${m.images.slice(0,3).map(img => `<div class="img-cell"><img src="${img}" alt="">${m.aiGenerated?`<div class="img-label">AI生成</div>`:''}</div>`).join('')}</div>`;
+        imgHtml += '</div>';
+      }
+
+      html += `
+        <div class="post">
+          <div class="post-thread">
+            <div class="post-ava">${avHtml}</div>
+            <div class="thread-line"></div>
+          </div>
+          <div class="post-body">
+            <div class="post-header">
+              <div class="post-header-left">
+                <span class="post-name">${escapeHtml(displayName)}</span>
+                <span class="post-time">${formatTime(m.timestamp)}</span>
+              </div>
+              <span class="post-more" data-ts="${m.timestamp}">⋯</span>
+            </div>
+            ${m.text ? `<div class="post-text">${escapeHtml(m.text)}</div>` : ''}
+            ${imgHtml}
+            <div class="post-actions">
+              <button class="action-btn" data-ts="${m.timestamp}" data-act="like">❤️ ${m.likes||0}</button>
+              <button class="action-btn" data-ts="${m.timestamp}" data-act="comment">💬 ${m.comments||0}</button>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+
+    // 事件委托
+    container.querySelectorAll('.action-btn').forEach(btn => {
+      btn.onclick = () => {
+        const ts = parseInt(btn.getAttribute('data-ts'));
+        const act = btn.getAttribute('data-act');
+        const all = loadAllMoments();
+        const m = all.find(x => x.timestamp === ts);
+        if (!m) return;
+        if (act === 'like') { m.likes = (m.likes||0) + 1; saveAllMoments(all); render(); }
+        else if (act === 'comment') {
+          const txt = prompt('输入评论：');
+          if (!txt) return;
+          m.comments = (m.comments||0) + 1;
+          m.commentList = [...(m.commentList||[]), { user: user.name||'我', text: txt }];
+          saveAllMoments(all); render();
+        }
+      };
+    });
+
+    container.querySelectorAll('.post-more').forEach(el => {
+      el.onclick = (e) => {
+        e.stopPropagation();
+        const ts = parseInt(el.getAttribute('data-ts'));
+        const all = loadAllMoments();
+        const idx = all.findIndex(x => x.timestamp === ts);
+        if (idx === -1) return;
+        const act = prompt('操作：输入"编辑"修改内容，输入"删除"移除该条');
+        if (act === '删除') { all.splice(idx, 1); saveAllMoments(all); render(); }
+        else if (act === '编辑') {
+          const newText = prompt('编辑内容：', all[idx].text);
+          if (newText !== null) { all[idx].text = newText.trim(); saveAllMoments(all); render(); }
+        }
+      };
+    });
+  }
+
+  function formatTime(ts) {
+    const d = new Date(ts); const now = getBJTime();
+    const diff = now - d;
+    if (diff < 60000) return '刚刚';
+    if (diff < 3600000) return Math.floor(diff/60000)+'分钟前';
+    if (diff < 86400000) return Math.floor(diff/3600000)+'小时前';
+    return (d.getMonth()+1)+'月'+d.getDate()+'日';
+  }
+  function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // AI生成
+  async function generateMoments() {
+    const chars = isSingle ? [char].filter(Boolean) : characters;
+    if (chars.length === 0) { alert('没有可用的角色'); return; }
+    container.innerHTML = '<div class="loading-hint">AI正在发布动态...</div>';
+    const newMoments = [];
+    for (const c of chars) {
+      if (!c.apiEndpoint || !c.apiKey) continue;
+      const msgs = JSON.parse(localStorage.getItem(`chat_msg_${c.id}`)||'[]');
+      const recent = msgs.slice(-20).filter(m => m.type!=='system').map(m => (m.sender==='self'?'用户':c.name)+'：'+m.text).join('\n');
+      const prompt = `以"${c.name}"的身份发一条朋友圈。第一人称口语化，30-80字，和聊天经历相关。只输出朋友圈文字。\n聊天记录：\n${recent||'暂无'}`;
+      try {
+        let apiUrl = c.apiEndpoint.trim().replace(/\/+$/,'');
+        if(!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1')?'/chat/completions':'/chat/completions');
+        const resp = await new Promise((res,rej) => {
+          const xhr = new XMLHttpRequest(); xhr.open('POST',apiUrl,true);
+          xhr.setRequestHeader('Content-Type','application/json');
+          xhr.setRequestHeader('Authorization',`Bearer ${c.apiKey}`);
+          xhr.timeout=60000;
+          xhr.onload=()=>{ if(xhr.status>=200&&xhr.status<300) res(JSON.parse(xhr.responseText).choices[0].message.content); else rej(new Error('HTTP '+xhr.status)); };
+          xhr.onerror=()=>rej(new Error('网络错误'));
+          xhr.send(JSON.stringify({model:c.model||'gpt-3.5-turbo',messages:[{role:'user',content:prompt}],max_tokens:200}));
+        });
+        newMoments.push({charId:c.id,text:resp.trim(),images:[],timestamp:getBJTime().getTime(),likes:Math.floor(Math.random()*10),comments:Math.floor(Math.random()*5),aiGenerated:true});
+      } catch(e) { console.error(c.name+'失败:',e); }
+    }
+    saveAllMoments([...newMoments, ...loadAllMoments()].slice(0,50));
+    render();
+  }
+  document.getElementById('refreshBtn').addEventListener('click', generateMoments);
+
+  render();
+})();
+</script>
+</body>
+</html>
