@@ -11,16 +11,16 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-–bg: #f5f5f7;
-–card: #ffffff;
-–ink: #1d1d1f;
-–soft: #8e8e93;
-–line: rgba(0,0,0,0.06);
-–accent: #7c6ff7;
-–accent2: #5b8dee;
-–gold: #c9a96e;
-–safe-top: env(safe-area-inset-top, 44px);
-–safe-bottom: env(safe-area-inset-bottom, 20px);
+–-bg: #f5f5f7;
+–-card: #ffffff;
+–-ink: #1d1d1f;
+–-soft: #8e8e93;
+–-line: rgba(0,0,0,0.06);
+-–accent: #7c6ff7;
+-–accent2: #5b8dee;
+-–gold: #c9a96e;
+-–safe-top: env(safe-area-inset-top, 44px);
+-–safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 body {
@@ -693,7 +693,7 @@ gap: 10px;
 </div>
 
 <!-- ★ 第二页 - 音乐 → 8个图标 → 照片墙+4个图标 -->
-<div class="page" style="gap:10px;">
+<div class="page" style="gap:10px; height:100%; display:flex; flex-direction:column;">
 
   <!-- 音乐组件 -->
   <div class="music-widget-lg" style="flex-shrink:0;">
@@ -727,7 +727,7 @@ gap: 10px;
   </div>
 
   <!-- ★ 两行图标（共8个），点击上传自定义，颜色与左边4个一致 -->
-  <div class="p2-extra-icons">
+  <div class="p2-strips" style="flex:1; min-height:0;">
     <div class="app-grid">
       <div class="app-item p2-placeholder-app" data-slot="4"><div class="app-icon p2-slot-icon" id="slotIcon4"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
       <div class="app-item p2-placeholder-app" data-slot="5"><div class="app-icon p2-slot-icon" id="slotIcon5"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
