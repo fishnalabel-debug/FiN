@@ -1,15 +1,20 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 
   <!-- 让页面真正按设备宽度渲染，并允许铺到刘海/底部安全区 -->
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
   <!-- iPhone 添加到主屏幕后作为独立网页 App 打开 -->
+
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="FiN">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
 
   <title>聊天列表 · 简约圆角</title>
 
@@ -399,6 +404,7 @@
       display: none;
     }
   </style>
+
 </head>
 <body>
   <div class="app-container">
@@ -407,33 +413,34 @@
       <button class="add-btn" id="openCreateModalBtn" aria-label="新建角色">+</button>
     </div>
 
-    <div class="search-wrap">
-      <div class="search-box">
-        <span>🔍</span>
-        <input type="search" placeholder="搜索" id="searchInput">
-      </div>
-    </div>
+<div class="search-wrap">
+  <div class="search-box">
+    <span>🔍</span>
+    <input type="search" placeholder="搜索" id="searchInput">
+  </div>
+</div>
 
-    <div class="chat-list" id="chatListContainer"></div>
+<div class="chat-list" id="chatListContainer"></div>
 
-    <div class="bottom-nav">
-      <button class="nav-item active" data-page="chat">
-        <span>💬</span>
-        聊天
-      </button>
-      <button class="nav-item" data-page="name">
-        <span>👥</span>
-        通讯录
-      </button>
-      <button class="nav-item" data-page="search">
-        <span>🧭</span>
-        发现
-      </button>
-      <button class="nav-item" data-page="my">
-        <span>👤</span>
-        我
-      </button>
-    </div>
+<div class="bottom-nav">
+  <button class="nav-item active" data-page="chat">
+    <span>💬</span>
+    聊天
+  </button>
+  <button class="nav-item" data-page="name">
+    <span>👥</span>
+    通讯录
+  </button>
+  <button class="nav-item" data-page="search">
+    <span>🧭</span>
+    发现
+  </button>
+  <button class="nav-item" data-page="my">
+    <span>👤</span>
+    我
+  </button>
+</div>
+
   </div>
 
   <div class="modal-overlay" id="createModal">
@@ -677,5 +684,6 @@
       renderChatList();
     })();
   </script>
+
 </body>
 </html>
