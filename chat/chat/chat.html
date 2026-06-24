@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
-  <style>
+    <style>
     /* ── 设计语言：暖白简约，细腻层次 ── */
     :root {
       --bg-base:       #f7f7f8;     /* 页面底色：极轻灰 */
@@ -18,42 +18,69 @@
       --bg-bubble-out: #1a73e8;     /* 自己气泡：稍暖蓝，去掉纯苹果蓝 */
       --bg-input:      #f2f2f5;     /* 输入框背景 */
       --border:        #e8e8ec;     /* 常规分割线 */
-      --border-light:  #f0f0f3;     /* 轻分割线 */
-      --text-primary:  #18181b;
-      --text-secondary:#6b6b72;
-      --text-tertiary: #ababb3;
-      --accent:        #1a73e8;
-      --accent-danger: #e84040;
-      --radius-bubble: 22px;
-      --radius-panel:  28px;
-      --shadow-float:  0 8px 32px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.04);
-      --shadow-modal:  0 24px 56px rgba(0,0,0,0.16);
+      --border-light:  #f0f0f3;     /* 浅分割线 */
+      --text-main:     #1d1d1f;     /* 极深灰（趋于黑） */
+      --text-muted:    #8e8e93;     /* 纯正果系灰 */
+      
+      /* ✨ 核心修改 1：新增 iOS 顶部和底部安全区变量 */
+      --safe-top: env(safe-area-inset-top, 44px);
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
     }
 
-```
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg-base);
-  display: flex; align-items: center; justify-content: center;
-  min-height: 100vh; margin: 0; padding: 0;
-}
+    /* ✨ 核心修改 2：强行把 html 和 body 的高度限制在 100vh 视口内，不产生全局滚动条 */
+    html, body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
 
-.app-container {
-  width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
-  background: var(--bg-surface); display: flex; flex-direction: column;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.08);
-  overflow: hidden; position: relative;
-}
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-base);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-/* ── Header ── */
-.chat-header {
-  display: flex; align-items: center; padding: 12px 14px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-light); flex-shrink: 0; gap: 10px;
-}
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      /* ✨ 核心修改 3：去掉原本固定的最大高度（如 max-height: 850px 之类的限制），让它在手机上始终是 100vh */
+      height: 100vh; 
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      
+      /* ✨ 核心修改 4：利用 padding-top，优雅地把顶栏推到 iOS 状态栏下方 */
+      padding-top: calc(var(--safe-top) + 4px);
+    }
+
+    /* ── 头部 Title Bar ── */
+    .header {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    
+    /* 这里后面的 header 内部样式、气泡样式等都完全不需要改动，保持你原来的即可 */
+
 .back-btn {
   background: var(--bg-base); border: none; font-size: 18px; cursor: pointer;
   color: var(--text-primary); width: 34px; height: 34px;
@@ -245,29 +272,36 @@ body {
 .msg-action-btn.danger { color: var(--accent-danger); }
 
 /* ── Modals ── */
-.edit-modal-overlay, .image-modal-overlay {
+.edit-modal-overlay, .image-modal-overlay, .event-modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.3); backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
   z-index: 100; visibility: hidden; opacity: 0; transition: 0.2s;
 }
-.edit-modal-overlay.active, .image-modal-overlay.active { visibility: visible; opacity: 1; }
-.edit-modal, .image-modal {
+.edit-modal-overlay.active, .image-modal-overlay.active, .event-modal-overlay.active { visibility: visible; opacity: 1; }
+.edit-modal, .image-modal, .event-modal {
   background: var(--bg-surface); border-radius: var(--radius-panel);
   padding: 26px 22px; width: 320px; display: flex; flex-direction: column; gap: 16px;
   box-shadow: var(--shadow-modal);
 }
-.edit-modal h3, .image-modal h3 {
+.edit-modal h3, .image-modal h3, .event-modal h3 {
   font-size: 16.5px; font-weight: 600; color: var(--text-primary);
   text-align: center; letter-spacing: -0.01em;
 }
-.edit-modal textarea, .image-modal textarea {
+.event-modal p.hint { font-size: 12.5px; color: var(--text-tertiary); text-align: center; margin-top: -8px; }
+.event-modal label { font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
+.event-modal select {
+  border: 1.5px solid var(--border); border-radius: 14px; padding: 10px 12px;
+  font-size: 14px; outline: none; font-family: inherit; color: var(--text-primary);
+  background: var(--bg-base);
+}
+.edit-modal textarea, .image-modal textarea, .event-modal textarea {
   border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px;
   font-size: 14px; outline: none; resize: vertical; min-height: 80px;
   font-family: inherit; line-height: 1.55; color: var(--text-primary);
   background: var(--bg-base); transition: border-color 0.15s;
 }
-.edit-modal textarea:focus, .image-modal textarea:focus {
+.edit-modal textarea:focus, .image-modal textarea:focus, .event-modal textarea:focus {
   border-color: var(--accent);
 }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
@@ -433,6 +467,21 @@ body {
       </div>
     </div>
   </div>
+
+  <div class="event-modal-overlay" id="eventModalOverlay">
+    <div class="event-modal">
+      <h3>设为关系事件</h3>
+      <p class="hint">记下这个情节后，与所选角色有关系的其他角色也会知道这件事</p>
+      <label for="eventOwnerSelect">这件事算谁的</label>
+      <select id="eventOwnerSelect"></select>
+      <label for="eventTextarea">事件概括（可编辑）</label>
+      <textarea id="eventTextarea"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="eventCancelBtn">取消</button>
+        <button class="btn btn-send" id="eventConfirmBtn">记下</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -557,7 +606,7 @@ body {
 
       const actionBar = document.createElement('div');
       actionBar.className = 'msg-action-bar';
-      const btns = msg.sender === 'self' ? ['编辑','重回','引用','删除'] : ['编辑','删除','重回','引用'];
+      const btns = msg.sender === 'self' ? ['编辑','重回','引用','删除'] : ['编辑','删除','重回','引用','事件'];
       btns.forEach(action => {
         const btn = document.createElement('button');
         btn.className = 'msg-action-btn' + (action === '删除' ? ' danger' : '');
@@ -605,6 +654,8 @@ body {
       quoteMessage = msg;
       quoteText.textContent = msg.text.length > 30 ? msg.text.substring(0,30)+'…' : msg.text;
       quoteBar.style.display = 'flex'; messageInput.focus();
+    } else if (action === '事件') {
+      openEventModal(msg);
     }
   }
 
@@ -626,6 +677,65 @@ body {
     const t = editTextarea.value.trim(); if(t && editIndex!==null) { messages[editIndex].text=t; messages[editIndex].edited=true; saveMessages(messages); renderMessages(); }
     closeEditModal();
   };
+
+  // ★ 关系事件：把某条AI消息里的情节记到某个角色的 recentEvents 上
+  const MAX_RECENT_EVENTS = 20;
+
+  function getRelatedCharacters() {
+    // 返回与当前角色有关系的角色列表（即 char.relations 指向的角色），以及当前角色自己
+    const chars = getCharacters();
+    const me = chars.find(c => c.id == charId);
+    if (!me) return [];
+    const rels = Array.isArray(me.relations) ? me.relations : [];
+    const list = [{ id: me.id, name: me.name, label: '我（' + (me.name||'') + '）' }];
+    rels.forEach(r => {
+      const t = chars.find(c => c.id == r.targetId);
+      if (t) list.push({ id: t.id, name: t.name, label: `${t.name}（${r.label}）` });
+    });
+    return list;
+  }
+
+  function addRecentEvent(targetCharId, eventText) {
+    const chars = getCharacters();
+    const idx = chars.findIndex(c => c.id == targetCharId);
+    if (idx === -1) return false;
+    if (!Array.isArray(chars[idx].recentEvents)) chars[idx].recentEvents = [];
+    chars[idx].recentEvents.push({ text: eventText, time: Date.now() });
+    if (chars[idx].recentEvents.length > MAX_RECENT_EVENTS) {
+      chars[idx].recentEvents = chars[idx].recentEvents.slice(-MAX_RECENT_EVENTS);
+    }
+    saveCharacters(chars);
+    return true;
+  }
+
+  const eventModalOverlay = document.getElementById('eventModalOverlay');
+  const eventTextarea = document.getElementById('eventTextarea');
+  const eventOwnerSelect = document.getElementById('eventOwnerSelect');
+
+  function openEventModal(msg) {
+    const related = getRelatedCharacters();
+    if (related.length <= 1) {
+      alert('该角色还没有建立任何关系，无法记录关系事件。可以先去「更多 → 关系」里添加关系。');
+      return;
+    }
+    eventTextarea.value = msg.text;
+    eventOwnerSelect.innerHTML = related.map(r => `<option value="${r.id}">${escapeHtml(r.label)}</option>`).join('');
+    eventModalOverlay.classList.add('active');
+    eventTextarea.focus();
+  }
+  function closeEventModal() { eventModalOverlay.classList.remove('active'); }
+  document.getElementById('eventCancelBtn').onclick = closeEventModal;
+  eventModalOverlay.onclick = e => { if (e.target === eventModalOverlay) closeEventModal(); };
+  document.getElementById('eventConfirmBtn').onclick = () => {
+    const t = eventTextarea.value.trim();
+    if (!t) { closeEventModal(); return; }
+    const ownerId = eventOwnerSelect.value;
+    addRecentEvent(ownerId, t);
+    closeEventModal();
+    const ownerChar = getCharacters().find(c => c.id == ownerId);
+    addSystemMessage(`已记入${ownerChar ? ownerChar.name : '该角色'}的关系记忆`);
+  };
+
 
   function addMessage(text, sender='self', type='text', extra={}) {
     if (!text.trim()) return;
@@ -660,6 +770,25 @@ body {
     return relevant;
   }
 
+  function buildRelationContext(char) {
+    if (!char || !Array.isArray(char.relations) || char.relations.length === 0) return '';
+    const chars = getCharacters();
+    const lines = [];
+    char.relations.forEach(rel => {
+      const target = chars.find(c => c.id == rel.targetId);
+      if (!target) return;
+      let line = `你和「${target.name}」的关系是：${rel.label}。`;
+      const events = Array.isArray(target.recentEvents) ? target.recentEvents.slice(-20) : [];
+      if (events.length > 0) {
+        const eventTexts = events.map(e => '- ' + e.text).join('\n');
+        line += `\n以下是「${target.name}」最近发生的事，你已经知道这些（如果对话中被问到相关内容，请按你的人设自然回应，不必逐字复述）：\n${eventTexts}`;
+      }
+      lines.push(line);
+    });
+    if (lines.length === 0) return '';
+    return '【你的关系网络与共享记忆】\n' + lines.join('\n\n');
+  }
+
   function buildSystemPrompt(userMessage) {
     const char = getCurrentCharacter();
     const user = loadUserData();
@@ -670,6 +799,11 @@ parts.push('【图片发送】如果你认为发一张图片效果好（如描�
 parts.push('【语音条】如果你想发语音，用格式：[voice:秒数]语音内容[laugh][cry]。语气标签播放不显示。');
 
     if (char?.aiPrompt) parts.push('【你的角色设定】' + char.aiPrompt);
+
+    // ★ 关系与共享记忆：让AI知道自己和谁有关系，以及对方身上记录的关系事件
+    const relationBlock = buildRelationContext(char);
+    if (relationBlock) parts.push(relationBlock);
+
     const userInfo = [];
     if (user.name) userInfo.push('姓名：' + user.name);
     if (user.gender) userInfo.push('性别：' + user.gender);
