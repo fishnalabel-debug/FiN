@@ -516,20 +516,61 @@
   document.getElementById('backButton').addEventListener('click', () => window.location.href = 'phone.html');
   document.getElementById('moreButton').addEventListener('click', () => window.location.href = `more.html?id=${charId}`);
 
-  function loadMessages() { try { return JSON.parse(localStorage.getItem(`chat_msg_${charId}`)) || []; } catch(e) { return []; } }
-  function saveMessages(msgs) { localStorage.setItem(`chat_msg_${charId}`, JSON.stringify(msgs)); }
-  let messages = loadMessages();
+  // ★ IndexedDB
+  const DB_NAME = 'FiN_DB';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'chat_messages';
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        }
+      };
+      request.onsuccess = (e) => resolve(e.target.result);
+      request.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  async function loadMessages() {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.get(`chat_msg_${charId}`);
+        request.onsuccess = () => {
+          resolve(request.result?.messages || []);
+        };
+        request.onerror = () => reject(request.error);
+        tx.oncomplete = () => db.close();
+      });
+    } catch(e) {
+      return [];
+    }
+  }
+
+  async function saveMessages(msgs) {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put({ id: `chat_msg_${charId}`, messages: msgs });
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch(e) {}
+  }
+
+  let messages = [];
   let quoteMessage = null;
 
   function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function getTimeStr() { const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
-
-  // ★ 标记原始索引用于搜索定位
-  function getOriginalIndexMap() {
-    const map = {};
-    messages.forEach((m, i) => { map[i] = i; });
-    return map;
-  }
 
   function renderMessages() {
     messageList.innerHTML = '';
@@ -623,7 +664,6 @@
     });
     messageList.scrollTop = messageList.scrollHeight;
 
-    // ★ 搜索定位
     if (scrollToIndex !== null) {
       localStorage.removeItem(`chat_scroll_to_${charId}`);
       setTimeout(() => {
@@ -729,13 +769,14 @@
     addSystemMessage(`已记入${ownerChar ? ownerChar.name : '该角色'}的关系记忆`);
   };
 
-  function addMessage(text, sender='self', type='text', extra={}) {
+  async function addMessage(text, sender='self', type='text', extra={}) {
     if (!text.trim()) return;
     messages.push({ text:text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra });
-    saveMessages(messages); renderMessages();
+    await saveMessages(messages);
+    renderMessages();
     updateLastMessage(type==='image'?'[图片]':text);
   }
-  function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); saveMessages(messages); renderMessages(); }
+  async function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); await saveMessages(messages); renderMessages(); }
   function updateLastMessage(text) {
     const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId);
     if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); }
@@ -891,7 +932,7 @@
       const parsed = parseAIResponse(reply);
       for (let i = 0; i < parsed.length; i++) {
         await new Promise(r => setTimeout(r, 300));
-        addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
+        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
       }
     } catch (err) {
       addMessage('❌ ' + err.message, 'other');
@@ -900,17 +941,17 @@
     }
   }
 
-  function sendMessage() {
+  async function sendMessage() {
     const text = messageInput.value; if (!text.trim()) return;
-    if (quoteMessage) { addMessage(text,'self','text',{quote:quoteMessage.text}); quoteMessage=null; quoteBar.style.display='none'; }
-    else { addMessage(text,'self'); }
+    if (quoteMessage) { await addMessage(text,'self','text',{quote:quoteMessage.text}); quoteMessage=null; quoteBar.style.display='none'; }
+    else { await addMessage(text,'self'); }
     messageInput.value = '';
   }
 
   messageInput.addEventListener('keypress', e => { if(e.key==='Enter'){ e.preventDefault(); sendMessage(); } });
 
-  document.getElementById('loveBtn').onclick = () => {
-    if (messages.length===0 || messages.every(m=>m.sender==='other')) addMessage('你好','self');
+  document.getElementById('loveBtn').onclick = async () => {
+    if (messages.length===0 || messages.every(m=>m.sender==='other')) await addMessage('你好','self');
     triggerAIReply();
   };
 
@@ -965,7 +1006,12 @@
   });
 
   window.addEventListener('storage', () => updateAllDisplay());
-  renderMessages();
+
+  // 初始化加载
+  (async function init() {
+    messages = await loadMessages();
+    renderMessages();
+  })();
 })();
 </script>
 
