@@ -1,35 +1,39 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
   <link rel="apple-touch-icon" href="FiN.jpg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>FiN</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>小手机</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #ffffff;
-      width: 100vw; height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      animation: fadeOut 0.4s ease 1.8s forwards;
-    }
+```
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff;
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeOut 0.4s ease 1.8s forwards;
+}
 
-    .logo {
-      font-size: 28px; font-weight: 300; color: #1d1d1f;
-      letter-spacing: 6px; animation: fadeIn 0.6s ease;
-    }
+.logo {
+  font-size: 28px; font-weight: 300; color: #1d1d1f;
+  letter-spacing: 6px; animation: fadeIn 0.6s ease;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeOut {
-      to { opacity: 0; }
-    }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+```
+
   </style>
 </head>
 <body>
