@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>发现 · 小手机</title>
@@ -17,21 +15,34 @@
     }
 
     .app-container {
-      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
-      background: #ffffff; display: flex; flex-direction: column;
-      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+      width: 100%; max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      background: #ffffff;
+      display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+      overflow: hidden; position: relative;
     }
 
     .header {
-      padding: 14px 20px 10px 20px; background: #ffffff;
+      padding: 14px 20px 10px 20px;
+      background: #ffffff;
       display: flex; align-items: center; justify-content: center;
-      border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      /* iOS 状态栏适配 */
+      padding-top: max(14px, env(safe-area-inset-top));
+      min-height: max(44px, calc(44px + env(safe-area-inset-top)));
     }
     .header-title { font-size: 20px; font-weight: 620; color: #1d1d1f; letter-spacing: -0.3px; }
 
     .content {
-      flex: 1; overflow-y: auto; padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
       display: flex; flex-direction: column; gap: 10px;
+      /* 底部安全区 */
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
 
     .feature-card {
@@ -46,8 +57,12 @@
 
     .bottom-nav {
       display: flex; align-items: center; justify-content: space-around;
-      padding: 8px 12px 14px 12px; background: #ffffff;
-      border-top: 1px solid #f0f0f0; flex-shrink: 0;
+      padding: 8px 12px 14px 12px;
+      background: #ffffff;
+      border-top: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      /* 底部安全区 */
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
     }
     .nav-item {
       display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -80,7 +95,7 @@
       </div>
     </div>
 
-    <!-- ★ 底栏：5个，去掉 ../ -->
+    <!-- ★ 底栏：5个 -->
     <div class="bottom-nav">
       <button class="nav-item" data-page="chat">
         <span>💬</span>聊天
@@ -99,13 +114,12 @@
 
   <script>
     (function() {
-      // ★ 路径修正：search.html在根目录，其他也在根目录
       const pageRoutes = {
-    'chat': '../chat/phone.html',
-    'name': '../friends/friends.html',
-    'search': 'search.html',
-    'my': '../my/my.html'
-};
+        'chat': '../chat/phone.html',
+        'name': '../friends/friends.html',
+        'search': 'search.html',
+        'my': '../my/my.html'
+      };
 
       document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
         item.addEventListener('click', function() {
@@ -119,17 +133,17 @@
       });
 
       document.getElementById('momentsCard').addEventListener('click', () => {
-    window.location.href = '朋友圈.html';
-});
+        window.location.href = '朋友圈.html';
+      });
 
-document.getElementById('worldbookCard').addEventListener('click', () => {
-    window.location.href = 'world.html';
-});
+      document.getElementById('worldbookCard').addEventListener('click', () => {
+        window.location.href = 'world.html';
+      });
 
-document.getElementById('meetCard').addEventListener('click', () => {
-    window.location.href = 'meet.html';
-});
-})();
+      document.getElementById('meetCard').addEventListener('click', () => {
+        window.location.href = 'meet.html';
+      });
+    })();
   </script>
 </body>
 </html>
