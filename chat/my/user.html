@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>设定 · 小手机</title>
@@ -46,6 +44,9 @@
       border-bottom: 1px solid #f0f0f0;
       flex-shrink: 0;
       gap: 10px;
+      /* iOS 状态栏适配 */
+      padding-top: max(10px, env(safe-area-inset-top));
+      min-height: max(44px, calc(44px + env(safe-area-inset-top)));
     }
 
     .back-btn {
@@ -99,6 +100,8 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      /* 底部安全区 */
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
 
     .section {
@@ -333,9 +336,9 @@
         document.getElementById('emailInput').value = userData.email || '';
         document.getElementById('personaInput').value = userData.persona || '';
 
-document.getElementById('globalApiEndpoint').value = userData.apiEndpoint || '';
-document.getElementById('globalApiKey').value = userData.apiKey || '';
-document.getElementById('globalModel').value = userData.model || '';
+        document.getElementById('globalApiEndpoint').value = userData.apiEndpoint || '';
+        document.getElementById('globalApiKey').value = userData.apiKey || '';
+        document.getElementById('globalModel').value = userData.model || '';
         
         updateCharCount();
         renderAvatar();
@@ -391,9 +394,9 @@ document.getElementById('globalModel').value = userData.model || '';
         userData.email = document.getElementById('emailInput').value.trim();
         userData.persona = document.getElementById('personaInput').value.trim();
         userData.avatar = currentAvatar;
-userData.apiEndpoint = document.getElementById('globalApiEndpoint').value.trim();
-userData.apiKey = document.getElementById('globalApiKey').value.trim();
-userData.model = document.getElementById('globalModel').value.trim();
+        userData.apiEndpoint = document.getElementById('globalApiEndpoint').value.trim();
+        userData.apiKey = document.getElementById('globalApiKey').value.trim();
+        userData.model = document.getElementById('globalModel').value.trim();
 
         saveUserData(userData);
         window.dispatchEvent(new Event('storage'));
