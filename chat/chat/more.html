@@ -529,9 +529,9 @@
           }
         });
         if (imported.length === 0) { alert('未能解析到聊天记录'); return; }
-        if (imported.length > 500) { imported.splice(500); alert('最多导入500条，已截断'); }
+        // IndexedDB 容量足够，不限条数
         const existing = await loadMessages();
-        const merged = mode === 'replace' ? imported : [...existing, ...imported].slice(-500);
+        const merged = mode === 'replace' ? imported : [...existing, ...imported];
         await saveMessages(merged);
         importModal.classList.remove('active');
         renderNamecard();
