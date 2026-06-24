@@ -371,12 +371,71 @@
   const themes = ['theme-violet', 'theme-sage', 'theme-rose'];
   document.getElementById('namecard').className = 'namecard ' + themes[parseInt(charId.slice(-4), 16) % 3];
 
-  function renderNamecard() {
+  // ★ IndexedDB 辅助函数
+  const DB_NAME = 'FiN_DB';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'chat_messages';
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        }
+      };
+      request.onsuccess = (e) => resolve(e.target.result);
+      request.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  async function loadMessages() {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.get(`chat_msg_${charId}`);
+        request.onsuccess = () => resolve(request.result?.messages || []);
+        request.onerror = () => reject(request.error);
+        tx.oncomplete = () => db.close();
+      });
+    } catch(e) { return []; }
+  }
+
+  async function saveMessages(msgs) {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put({ id: `chat_msg_${charId}`, messages: msgs });
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch(e) {}
+  }
+
+  async function deleteMessages() {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.delete(`chat_msg_${charId}`);
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch(e) {}
+  }
+
+  async function renderNamecard() {
     document.getElementById('namecardName').textContent = char.name || '未命名';
     document.getElementById('namecardHandle').textContent = '@' + (char.name || 'unnamed').replace(/\s/g, '_').toLowerCase();
     document.getElementById('namecardQuote').textContent = char.signature || '个性签名未设置';
     document.getElementById('metaModel').textContent = char.model || '未设置';
-    const msgs = JSON.parse(localStorage.getItem(`chat_msg_${charId}`) || '[]');
+    const msgs = await loadMessages();
     document.getElementById('metaChats').textContent = msgs.filter(m => m.type !== 'system').length;
     if (char.avatar) {
       document.getElementById('namecardImg').src = char.avatar;
@@ -406,6 +465,7 @@
     window.location.href = `表情包.html?id=${charId}`;
   });
 
+  // ★ 搜索（改用IndexedDB）
   const searchModal = document.getElementById('searchModal');
   const searchInput = document.getElementById('searchInput');
   const searchResults = document.getElementById('searchResults');
@@ -420,10 +480,10 @@
   document.getElementById('searchCancel').addEventListener('click', () => searchModal.classList.remove('active'));
   searchModal.addEventListener('click', (e) => { if (e.target === searchModal) searchModal.classList.remove('active'); });
 
-  searchInput.addEventListener('input', () => {
+  searchInput.addEventListener('input', async () => {
     const keyword = searchInput.value.trim();
     if (!keyword) { searchResults.innerHTML = '<p style="text-align:center;color:#c7c7cc;">输入关键词开始搜索</p>'; return; }
-    const msgs = JSON.parse(localStorage.getItem(`chat_msg_${charId}`) || '[]');
+    const msgs = await loadMessages();
     const results = msgs.map((m, i) => ({ ...m, index: i })).filter(m => m.type !== 'system' && m.text.toLowerCase().includes(keyword.toLowerCase()));
     if (results.length === 0) { searchResults.innerHTML = '<p style="text-align:center;color:#c7c7cc;">未找到相关记录</p>'; return; }
     searchResults.innerHTML = results.map(r => {
@@ -441,64 +501,42 @@
     });
   });
 
-  // ★ 导入聊天记录
+  // ★ 导入（改用IndexedDB）
   const importModal = document.getElementById('importModal');
   const importFileInput = document.getElementById('importFileInput');
 
-  document.getElementById('importMsgItem').addEventListener('click', () => {
-    importModal.classList.add('active');
-  });
-
+  document.getElementById('importMsgItem').addEventListener('click', () => importModal.classList.add('active'));
   document.getElementById('importCancel').addEventListener('click', () => importModal.classList.remove('active'));
   importModal.addEventListener('click', (e) => { if (e.target === importModal) importModal.classList.remove('active'); });
-
   document.getElementById('importSelectFile').addEventListener('click', () => importFileInput.click());
 
-  importFileInput.addEventListener('change', (e) => {
+  importFileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const mode = document.querySelector('input[name="importMode"]:checked').value;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       try {
         const parser = new DOMParser();
         const doc = parser.parseFromString(ev.target.result, 'text/html');
         const rows = doc.querySelectorAll('.yd-export-row');
         const imported = [];
-
         rows.forEach(row => {
           const sender = row.classList.contains('yd-export-row--user') ? 'self' : 'other';
           const bubble = row.querySelector('.yd-export-bubble');
           if (bubble && bubble.textContent.trim()) {
-            imported.push({
-              text: bubble.textContent.trim(),
-              sender: sender,
-              type: 'text',
-              timestamp: Date.now() - (rows.length - imported.length) * 1000,
-              time: ''
-            });
+            imported.push({ text: bubble.textContent.trim(), sender, type:'text', timestamp:Date.now() - (rows.length - imported.length)*1000, time:'' });
           }
         });
-
-        if (imported.length === 0) {
-          alert('未能解析到聊天记录，请确认文件格式正确。');
-          return;
-        }
-
-        const existing = JSON.parse(localStorage.getItem(`chat_msg_${charId}`) || '[]');
-        let merged;
-        if (mode === 'replace') {
-          merged = imported;
-        } else {
-          merged = [...existing, ...imported];
-        }
-        localStorage.setItem(`chat_msg_${charId}`, JSON.stringify(merged));
+        if (imported.length === 0) { alert('未能解析到聊天记录'); return; }
+        if (imported.length > 500) { imported.splice(500); alert('最多导入500条，已截断'); }
+        const existing = await loadMessages();
+        const merged = mode === 'replace' ? imported : [...existing, ...imported].slice(-500);
+        await saveMessages(merged);
         importModal.classList.remove('active');
         renderNamecard();
         alert(`成功导入 ${imported.length} 条消息！`);
-      } catch (err) {
-        alert('解析失败：' + err.message);
-      }
+      } catch(err) { alert('解析失败：'+err.message); }
     };
     reader.readAsText(file);
     importFileInput.value = '';
@@ -531,13 +569,15 @@
     reader.readAsDataURL(file);
   });
 
+  // ★ 删除聊天记录（改用IndexedDB）
   const confirmModal = document.getElementById('confirmModal');
   document.getElementById('clearItem').addEventListener('click', () => confirmModal.classList.add('active'));
   document.getElementById('confirmCancel').addEventListener('click', () => confirmModal.classList.remove('active'));
   confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmModal.classList.remove('active'); });
-  document.getElementById('confirmDelete').addEventListener('click', () => {
-    localStorage.removeItem(`chat_msg_${charId}`);
+  document.getElementById('confirmDelete').addEventListener('click', async () => {
+    await deleteMessages();
     confirmModal.classList.remove('active');
+    renderNamecard();
     alert('聊天记录已清空');
   });
 
@@ -545,10 +585,10 @@
   document.getElementById('deleteCharItem').addEventListener('click', () => deleteCharModal.classList.add('active'));
   document.getElementById('deleteCharCancel').addEventListener('click', () => deleteCharModal.classList.remove('active'));
   deleteCharModal.addEventListener('click', (e) => { if (e.target === deleteCharModal) deleteCharModal.classList.remove('active'); });
-  document.getElementById('deleteCharConfirm').addEventListener('click', () => {
+  document.getElementById('deleteCharConfirm').addEventListener('click', async () => {
     const chars = getCharacters();
     saveCharacters(chars.filter(c => c.id != charId));
-    localStorage.removeItem(`chat_msg_${charId}`);
+    await deleteMessages();
     localStorage.removeItem(`chat_bg_${charId}`);
     deleteCharModal.classList.remove('active');
     alert('角色已被成功删除');
