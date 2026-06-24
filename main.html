@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
   <link rel="apple-touch-icon" href="FiN.jpg">
@@ -11,16 +12,16 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-–-bg: #f5f5f7;
-–-card: #ffffff;
-–-ink: #1d1d1f;
-–-soft: #8e8e93;
-–-line: rgba(0,0,0,0.06);
--–accent: #7c6ff7;
--–accent2: #5b8dee;
--–gold: #c9a96e;
--–safe-top: env(safe-area-inset-top, 44px);
--–safe-bottom: env(safe-area-inset-bottom, 20px);
+–bg: #f5f5f7;
+–card: #ffffff;
+–ink: #1d1d1f;
+–soft: #8e8e93;
+–line: rgba(0,0,0,0.06);
+–accent: #7c6ff7;
+–accent2: #5b8dee;
+–gold: #c9a96e;
+–safe-top: env(safe-area-inset-top, 44px);
+–safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 body {
@@ -258,7 +259,7 @@ background: rgba(0,0,0,0.5);
 display: flex;
 justify-content: space-around;
 align-items: center;
-padding: 10px 20px max(env(safe-area-inset-bottom), 20px);
+padding: 10px 20px calc(var(–safe-bottom) + 6px);
 flex-shrink: 0;
 background: rgba(255,255,255,0.65);
 backdrop-filter: blur(30px) saturate(180%);
@@ -596,12 +597,12 @@ box-shadow: none !important;
 
 /* 右侧竖条区（正方形内4根圆条） */
 .p2-strips {
-    flex:1;
-    aspect-ratio:1/1;
-    display:flex;
-    gap:7px;
-    align-self:center;
-    align-items:stretch;
+flex:1;
+aspect-ratio:1/1;
+display:flex;
+gap:7px;
+align-self:center;
+align-items:stretch;
 }
 .p2-strip {
 flex: 1;
@@ -628,7 +629,7 @@ gap: 6px; height: 100%;
 }
 .p2-strip-ph span { font-size: 18px; opacity: .45; }
 .p2-strip.empty::after {
-content: '+';
+content: ‘+’;
 position: absolute; bottom: 8px;
 width: 20px; height: 20px;
 background: rgba(0,0,0,0.045);
@@ -652,9 +653,11 @@ gap: 10px;
   <div class="status-bar-space"></div>
 
   <!-- 页面滑动区 -->
+
   <div class="pages-container" id="pagesContainer">
 
 <!-- ★ 第一页 -->
+
 <div class="page">
   <div class="clock-widget">
     <div class="clock-left">
@@ -693,9 +696,11 @@ gap: 10px;
 </div>
 
 <!-- ★ 第二页 - 音乐 → 8个图标 → 照片墙+4个图标 -->
-<div class="page" style="gap:10px; height:100%; display:flex; flex-direction:column;">
+
+<div class="page" style="gap:10px;">
 
   <!-- 音乐组件 -->
+
   <div class="music-widget-lg" style="flex-shrink:0;">
     <div class="music-top">
       <div class="album-art-lg" id="musicArt">🎵</div>
@@ -727,6 +732,7 @@ gap: 10px;
   </div>
 
   <!-- ★ 两行图标（共8个），点击上传自定义，颜色与左边4个一致 -->
+
   <div class="p2-extra-icons">
     <div class="app-grid">
       <div class="app-item p2-placeholder-app" data-slot="4"><div class="app-icon p2-slot-icon" id="slotIcon4"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
@@ -743,6 +749,7 @@ gap: 10px;
   </div>
 
   <!-- 下半区：左2列app占位 + 右2列竖条照片 -->
+
   <div class="p2-bottom" style="flex:1;min-height:0;align-items:center;">
     <div class="p2-apps">
       <div class="app-item p2-placeholder-app" data-slot="0">
@@ -763,24 +770,29 @@ gap: 10px;
       </div>
     </div>
 
-    <div class="p2-strips">
-      <div class="p2-strip empty" id="photo1"><div class="p2-strip-ph"><span>🌸</span></div></div>
-      <div class="p2-strip empty" id="photo2"><div class="p2-strip-ph"><span>☕</span></div></div>
-      <div class="p2-strip empty" id="photo3"><div class="p2-strip-ph"><span>🌙</span></div></div>
-      <div class="p2-strip empty" id="photo4"><div class="p2-strip-ph"><span>🌿</span></div></div>
-    </div>
+```
+<div class="p2-strips">
+  <div class="p2-strip empty" id="photo1"><div class="p2-strip-ph"><span>🌸</span></div></div>
+  <div class="p2-strip empty" id="photo2"><div class="p2-strip-ph"><span>☕</span></div></div>
+  <div class="p2-strip empty" id="photo3"><div class="p2-strip-ph"><span>🌙</span></div></div>
+  <div class="p2-strip empty" id="photo4"><div class="p2-strip-ph"><span>🌿</span></div></div>
+</div>
+```
+
   </div>
 </div>
 
   </div>
 
   <!-- 页面指示器 -->
+
   <div class="page-indicator">
     <div class="page-dot active" data-page="0"></div>
     <div class="page-dot" data-page="1"></div>
   </div>
 
   <!-- 底栏 -->
+
   <div class="bottom-dock">
     <div class="dock-inner">
       <div class="dock-item" data-app="momo" title="便签"><img src="momo/momo.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='📝';"></div>
@@ -791,12 +803,13 @@ gap: 10px;
   </div>
 
   <!-- 情侣弹窗 -->
+
   <div class="modal-overlay" id="coupleModal">
     <div class="modal-card">
       <div class="modal-handle"></div>
       <div class="modal-header">
         <div class="modal-eyebrow">Our Profile</div>
-        <div class="modal-title">选择你们两个人</div>
+        <div class="modal-title">选择两个人</div>
         <div class="modal-sub">进入情侣空间</div>
       </div>
       <div class="divider"></div>
@@ -812,6 +825,7 @@ gap: 10px;
   </div>
 
   <!-- 隐藏的文件上传 -->
+
   <input type="file" accept="image/*" id="photoUpload" style="display:none;">
 
 <script>
