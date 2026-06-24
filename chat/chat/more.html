@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>更多 · 小手机</title>
@@ -17,14 +15,24 @@
     }
 
     .app-container {
-      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
-      background: #ffffff; display: flex; flex-direction: column;
-      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+      width: 100%; max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      background: #ffffff;
+      display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+      overflow: hidden; position: relative;
     }
 
     .header {
-      display: flex; align-items: center; padding: 10px 14px;
-      background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
+      display: flex; align-items: center;
+      padding: 10px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0; gap: 10px;
+      /* iOS 状态栏适配 */
+      padding-top: max(10px, env(safe-area-inset-top));
+      min-height: max(44px, calc(44px + env(safe-area-inset-top)));
     }
     .back-btn {
       background: none; border: none; font-size: 20px; cursor: pointer; color: #1d1d1f;
@@ -36,9 +44,10 @@
     .content {
       flex: 1; overflow-y: auto; padding: 14px 16px;
       display: flex; flex-direction: column; gap: 12px;
+      /* 底部安全区：让内容不被底部手势条遮挡 */
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
     }
 
-    /* ══════════════════════ 角色名片卡 ══════════════════════ */
     .namecard {
       background: #ffffff; border-radius: 20px; overflow: hidden;
       cursor: pointer; transition: all 0.2s;
@@ -49,19 +58,16 @@
     .namecard-inner { display: flex; align-items: stretch; }
     .namecard-stripe { width: 4px; flex-shrink: 0; border-radius: 20px 0 0 20px; }
 
-    /* 主题色 */
     .theme-violet .namecard-stripe { background: linear-gradient(to bottom, #C4B8F0, #9F90E8); }
     .theme-violet .namecard-avatar {
       background: linear-gradient(135deg, #EDE9FA, #D9D1F5);
       box-shadow: 0 0 0 1px rgba(159,144,232,0.15), 0 4px 14px rgba(159,144,232,0.2);
     }
-
     .theme-sage .namecard-stripe { background: linear-gradient(to bottom, #A8C8B8, #7FB09A); }
     .theme-sage .namecard-avatar {
       background: linear-gradient(135deg, #E4F0EA, #CCDDD4);
       box-shadow: 0 0 0 1px rgba(127,176,154,0.15), 0 4px 14px rgba(127,176,154,0.2);
     }
-
     .theme-rose .namecard-stripe { background: linear-gradient(to bottom, #E8BFC0, #D49899); }
     .theme-rose .namecard-avatar {
       background: linear-gradient(135deg, #FAE8E8, #F0D5D5);
@@ -93,12 +99,10 @@
       justify-content: center; font-size: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);
       z-index: 2;
     }
-
     .namecard-divider {
       width: 1px; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.06) 20%, rgba(0,0,0,0.06) 80%, transparent);
       margin: 20px 0; flex-shrink: 0;
     }
-
     .namecard-right {
       flex: 1; padding: 20px 18px 16px 10px; display: flex;
       flex-direction: column; justify-content: space-between; min-width: 0;
@@ -124,7 +128,6 @@
     .meta-label { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: #ccc; }
     .meta-value { font-size: 10px; font-weight: 500; color: #444; white-space: nowrap; }
 
-    /* 功能列表 */
     .menu-section {
       background: #ffffff; border: 1px solid #f0f0f0; border-radius: 20px;
       overflow: hidden;
@@ -165,6 +168,9 @@
       background: #ffffff; border-radius: 24px; padding: 24px 20px;
       width: 300px; display: flex; flex-direction: column; gap: 16px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      max-height: 70vh; overflow-y: auto;
+      /* 安全区：弹窗不被底部手势条遮挡 */
+      margin-bottom: env(safe-area-inset-bottom);
     }
     .modal-card h3 { font-size: 17px; font-weight: 620; color: #1d1d1f; text-align: center; }
     .modal-card p { font-size: 14px; color: #6c6c70; text-align: center; }
@@ -175,6 +181,23 @@
     }
     .btn-cancel { background: #f2f2f6; color: #1d1d1f; }
     .btn-danger { background: #ff3b30; color: white; }
+
+    .search-results {
+      display: flex; flex-direction: column; gap: 8px;
+      max-height: 300px; overflow-y: auto;
+    }
+    .search-item {
+      padding: 10px 12px; background: #f9f9fb; border-radius: 12px;
+      cursor: pointer; font-size: 13px; line-height: 1.4;
+    }
+    .search-item:hover { background: #f0f0f4; }
+    .search-sender {
+      font-weight: 600; font-size: 11px; color: #8e8e93; margin-bottom: 2px;
+    }
+    .search-input {
+      border: 1px solid #e5e5ea; border-radius: 14px; padding: 10px 12px;
+      font-size: 14px; outline: none; width: 100%; background: #f9f9fb;
+    }
   </style>
 </head>
 <body>
@@ -185,7 +208,6 @@
   </div>
 
   <div class="content">
-    <!-- ★ 角色名片卡 -->
     <div class="namecard theme-violet" id="namecard">
       <div class="namecard-inner">
         <div class="namecard-stripe" id="namecardStripe"></div>
@@ -218,10 +240,24 @@
       </div>
     </div>
 
-    <!-- 功能列表 -->
     <div class="menu-section">
       <div class="menu-item" id="momentsItem">
         <span class="menu-label">朋友圈</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="divider"></div>
+      <div class="menu-item" id="relationshipItem">
+        <span class="menu-label">关系</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="divider"></div>
+      <div class="menu-item" id="stickerItem">
+        <span class="menu-label">表情包管理</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="divider"></div>
+      <div class="menu-item" id="searchMsgItem">
+        <span class="menu-label">搜索聊天记录</span>
         <span class="menu-arrow">›</span>
       </div>
     </div>
@@ -251,10 +287,14 @@
         <span class="menu-label" style="color:#ff3b30;">删除聊天记录</span>
         <span class="menu-arrow">›</span>
       </div>
+      <div class="divider"></div>
+      <div class="menu-item" id="deleteCharItem">
+        <span class="menu-label" style="color:#ff3b30; font-weight: 600;">删除该角色</span>
+        <span class="menu-arrow">›</span>
+      </div>
     </div>
   </div>
 
-  <!-- 删除确认弹窗 -->
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-card">
       <h3>确认删除？</h3>
@@ -262,6 +302,30 @@
       <div class="modal-actions">
         <button class="btn btn-cancel" id="confirmCancel">取消</button>
         <button class="btn btn-danger" id="confirmDelete">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="deleteCharModal">
+    <div class="modal-card">
+      <h3 style="color:#ff3b30;">确认删除该角色？</h3>
+      <p>删除后，该角色的资料、聊天记录以及背景等设置都将被永久移除。</p>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="deleteCharCancel">取消</button>
+        <button class="btn btn-danger" id="deleteCharConfirm">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="searchModal">
+    <div class="modal-card">
+      <h3>搜索聊天记录</h3>
+      <input type="text" class="search-input" id="searchInput" placeholder="输入关键词...">
+      <div class="search-results" id="searchResults">
+        <p style="text-align:center;color:#c7c7cc;">输入关键词开始搜索</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="searchCancel">关闭</button>
       </div>
     </div>
   </div>
@@ -280,22 +344,16 @@
   const char = getChar();
   if (!char) { window.location.href = 'phone.html'; return; }
 
-  // ★ 根据charId选主题色
   const themes = ['theme-violet', 'theme-sage', 'theme-rose'];
-  const themeClass = themes[parseInt(charId.slice(-4), 16) % 3];
-  document.getElementById('namecard').className = 'namecard ' + themeClass;
+  document.getElementById('namecard').className = 'namecard ' + themes[parseInt(charId.slice(-4), 16) % 3];
 
-  // 渲染名片
   function renderNamecard() {
     document.getElementById('namecardName').textContent = char.name || '未命名';
     document.getElementById('namecardHandle').textContent = '@' + (char.name || 'unnamed').replace(/\s/g, '_').toLowerCase();
     document.getElementById('namecardQuote').textContent = char.signature || '个性签名未设置';
     document.getElementById('metaModel').textContent = char.model || '未设置';
-    
-    // 统计聊天条数
     const msgs = JSON.parse(localStorage.getItem(`chat_msg_${charId}`) || '[]');
     document.getElementById('metaChats').textContent = msgs.filter(m => m.type !== 'system').length;
-
     if (char.avatar) {
       document.getElementById('namecardImg').src = char.avatar;
       document.getElementById('namecardImg').style.display = 'block';
@@ -304,22 +362,87 @@
   }
   renderNamecard();
 
-  // 名片点击 → char.html
   document.getElementById('namecard').addEventListener('click', () => {
     window.location.href = `char.html?id=${charId}`;
   });
 
-  // 返回
   document.getElementById('backBtn').addEventListener('click', () => {
     window.location.href = `chat.html?id=${charId}`;
   });
 
-  // 朋友圈
   document.getElementById('momentsItem').addEventListener('click', () => {
-    window.location.href = `朋友圈2.html?id=${charId}`;
+    window.location.href = `../../search/朋友圈.html?id=${charId}`;
   });
 
-  // 消息免打扰
+  document.getElementById('relationshipItem').addEventListener('click', () => {
+    window.location.href = `关系.html?id=${charId}`;
+  });
+
+  document.getElementById('stickerItem').addEventListener('click', () => {
+    window.location.href = `表情包.html?id=${charId}`;
+  });
+
+  // ★ 搜索聊天记录
+  const searchModal = document.getElementById('searchModal');
+  const searchInput = document.getElementById('searchInput');
+  const searchResults = document.getElementById('searchResults');
+
+  document.getElementById('searchMsgItem').addEventListener('click', () => {
+    searchInput.value = '';
+    searchResults.innerHTML = '<p style="text-align:center;color:#c7c7cc;">输入关键词开始搜索</p>';
+    searchModal.classList.add('active');
+    setTimeout(() => searchInput.focus(), 200);
+  });
+
+  document.getElementById('searchCancel').addEventListener('click', () => {
+    searchModal.classList.remove('active');
+  });
+  searchModal.addEventListener('click', (e) => {
+    if (e.target === searchModal) searchModal.classList.remove('active');
+  });
+
+  searchInput.addEventListener('input', () => {
+    const keyword = searchInput.value.trim();
+    if (!keyword) {
+      searchResults.innerHTML = '<p style="text-align:center;color:#c7c7cc;">输入关键词开始搜索</p>';
+      return;
+    }
+
+    const msgs = JSON.parse(localStorage.getItem(`chat_msg_${charId}`) || '[]');
+    const results = msgs
+      .map((m, i) => ({ ...m, index: i }))
+      .filter(m => m.type !== 'system' && m.text.toLowerCase().includes(keyword.toLowerCase()));
+
+    if (results.length === 0) {
+      searchResults.innerHTML = '<p style="text-align:center;color:#c7c7cc;">未找到相关记录</p>';
+      return;
+    }
+
+    searchResults.innerHTML = results.map(r => {
+      const sender = r.sender === 'self' ? (JSON.parse(localStorage.getItem('user_data')||'{}').name || '我') : (char.name || '角色');
+      const preview = r.text.length > 80 ? r.text.substring(0, 80) + '…' : r.text;
+      const highlighted = preview.replace(
+        new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+        match => `<span style="background:#FFD60A;padding:0 2px;border-radius:3px;">${match}</span>`
+      );
+      return `
+        <div class="search-item" data-index="${r.index}">
+          <div class="search-sender">${sender}</div>
+          <div>${highlighted}</div>
+        </div>
+      `;
+    }).join('');
+
+    searchResults.querySelectorAll('.search-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const index = parseInt(item.getAttribute('data-index'));
+        localStorage.setItem(`chat_scroll_to_${charId}`, index);
+        searchModal.classList.remove('active');
+        window.location.href = `chat.html?id=${charId}`;
+      });
+    });
+  });
+
   const muteSwitch = document.getElementById('muteSwitch');
   if (char.mute) muteSwitch.classList.add('active');
   muteSwitch.addEventListener('click', () => {
@@ -332,7 +455,6 @@
     }
   });
 
-  // 置顶聊天
   const pinSwitch = document.getElementById('pinSwitch');
   if (char.pinned) pinSwitch.classList.add('active');
   pinSwitch.addEventListener('click', () => {
@@ -345,7 +467,6 @@
     }
   });
 
-  // 聊天背景
   document.getElementById('bgItem').addEventListener('click', () => {
     document.getElementById('bgFileInput').click();
   });
@@ -360,7 +481,6 @@
     reader.readAsDataURL(file);
   });
 
-  // 删除聊天记录
   const confirmModal = document.getElementById('confirmModal');
   document.getElementById('clearItem').addEventListener('click', () => {
     confirmModal.classList.add('active');
@@ -375,6 +495,27 @@
     localStorage.removeItem(`chat_msg_${charId}`);
     confirmModal.classList.remove('active');
     alert('聊天记录已清空');
+  });
+
+  const deleteCharModal = document.getElementById('deleteCharModal');
+  document.getElementById('deleteCharItem').addEventListener('click', () => {
+    deleteCharModal.classList.add('active');
+  });
+  document.getElementById('deleteCharCancel').addEventListener('click', () => {
+    deleteCharModal.classList.remove('active');
+  });
+  deleteCharModal.addEventListener('click', (e) => {
+    if (e.target === deleteCharModal) deleteCharModal.classList.remove('active');
+  });
+  document.getElementById('deleteCharConfirm').addEventListener('click', () => {
+    const chars = getCharacters();
+    const filteredChars = chars.filter(c => c.id != charId);
+    saveCharacters(filteredChars);
+    localStorage.removeItem(`chat_msg_${charId}`);
+    localStorage.removeItem(`chat_bg_${charId}`);
+    deleteCharModal.classList.remove('active');
+    alert('角色已被成功删除');
+    window.location.href = 'phone.html';
   });
 })();
 </script>
