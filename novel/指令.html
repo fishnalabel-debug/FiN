@@ -1,77 +1,85 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>指令 · 小手机</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: 'Inter', 'PingFang SC', sans-serif;
-      background: #f5f5f7;
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; margin: 0; padding: 0;
-    }
+body {
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  background: #f5f5f7;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; margin: 0; padding: 0;
+}
 
-    .app-container {
-      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
-      background: #ffffff; display: flex; flex-direction: column;
-      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
-    }
+.app-container {
+  width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+  background: #ffffff; display: flex; flex-direction: column;
+  box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+}
 
-    .header {
-      display: flex; align-items: center; padding: 10px 14px;
-      background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
-    }
-    .back-btn {
-      background: none; border: none; font-size: 18px; cursor: pointer; color: #1d1d1f;
-      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; flex-shrink: 0;
-    }
-    .header-title { font-size: 17px; font-weight: 620; color: #1d1d1f; flex: 1; text-align: center; }
-    .save-btn {
-      background: #1d1d1f; color: #fff; border: none; border-radius: 18px;
-      padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0;
-    }
+.header {
+  display: flex; align-items: center; padding: 10px 14px;
+  background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
+}
+.back-btn {
+  background: none; border: none; font-size: 18px; cursor: pointer; color: #1d1d1f;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; flex-shrink: 0;
+}
+.header-title { font-size: 17px; font-weight: 620; color: #1d1d1f; flex: 1; text-align: center; }
+.save-btn {
+  background: #1d1d1f; color: #fff; border: none; border-radius: 18px;
+  padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0;
+}
 
-    .content {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 14px;
-    }
+.content {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
 
-    .section {
-      border: 1px solid #f0f0f0; border-radius: 18px; padding: 14px 16px;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .section-title {
-      font-size: 11px; font-weight: 600; color: #8e8e93; text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .input-field {
-      border: 1px solid #e5e5ea; border-radius: 12px; padding: 10px 12px;
-      font-size: 14px; outline: none; width: 100%; background: #f9f9fb;
-      font-family: inherit;
-    }
-    textarea.input-field {
-      resize: vertical; min-height: 140px; line-height: 1.6;
-    }
+.section {
+  border: 1px solid #f0f0f0; border-radius: 18px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.section-title {
+  font-size: 11px; font-weight: 600; color: #8e8e93; text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.input-field {
+  border: 1px solid #e5e5ea; border-radius: 12px; padding: 10px 12px;
+  font-size: 14px; outline: none; width: 100%; background: #f9f9fb;
+  font-family: inherit;
+}
+textarea.input-field {
+  resize: vertical; min-height: 140px; line-height: 1.6;
+}
 
-    /* 选择标签 */
-    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip {
-      padding: 7px 14px; border-radius: 14px; font-size: 13px; cursor: pointer;
-      background: #f2f2f6; color: #6c6c70; border: 1px solid transparent;
-      transition: all 0.15s; font-weight: 500; user-select: none;
-    }
-    .chip:hover { background: #e5e5ea; }
-    .chip.selected { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+/* meta 字段（心情 / 天气 / 地点） */
+.meta-fields { display: flex; flex-direction: column; gap: 8px; }
+.meta-field-row { display: flex; align-items: center; gap: 10px; }
+.meta-field-label {
+  font-size: 12px; color: #8e8e93; width: 36px; flex-shrink: 0; font-weight: 500;
+}
+.meta-field-row .input-field { padding: 8px 11px; font-size: 13px; }
 
-    .hint-text {
-      font-size: 12px; color: #8e8e93; line-height: 1.5;
-    }
+/* 选择标签 */
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 7px 14px; border-radius: 14px; font-size: 13px; cursor: pointer;
+  background: #f2f2f6; color: #6c6c70; border: 1px solid transparent;
+  transition: all 0.15s; font-weight: 500; user-select: none;
+}
+.chip:hover { background: #e5e5ea; }
+.chip.selected { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+
+.hint-text {
+  font-size: 12px; color: #8e8e93; line-height: 1.5;
+}
+
   </style>
 </head>
 <body>
@@ -90,26 +98,51 @@
       <input type="text" class="input-field" id="titleInput" placeholder="输入故事标题...">
     </div>
 
-    <!-- 选择角色 -->
-    <div class="section">
-      <div class="section-title">选择角色</div>
-      <div class="hint-text">AI将读取所选角色的设定</div>
-      <div class="chip-row" id="charChips"></div>
+<!-- 场景信息（互动页顶部展示） -->
+<div class="section">
+  <div class="section-title">场景信息</div>
+  <div class="hint-text">显示在互动页顶部，可随时修改</div>
+  <div class="meta-fields">
+    <div class="meta-field-row">
+      <span class="meta-field-label">标签</span>
+      <input type="text" class="input-field" id="metaDateLabel" placeholder="如 Personal Journal · 设定标签">
     </div>
+    <div class="meta-field-row">
+      <span class="meta-field-label">心情</span>
+      <input type="text" class="input-field" id="metaMood" placeholder="如 平静 / 期待 / 说不出">
+    </div>
+    <div class="meta-field-row">
+      <span class="meta-field-label">天气</span>
+      <input type="text" class="input-field" id="metaWeather" placeholder="如 晴朗微风 / 雨夜">
+    </div>
+    <div class="meta-field-row">
+      <span class="meta-field-label">地点</span>
+      <input type="text" class="input-field" id="metaLocation" placeholder="如 公司天台 / 老家客厅">
+    </div>
+  </div>
+</div>
 
-    <!-- 选择世界书 -->
-    <div class="section">
-      <div class="section-title">选择世界书</div>
-      <div class="hint-text">AI将读取所选世界书的背景设定</div>
-      <div class="chip-row" id="worldbookChips"></div>
-    </div>
+<!-- 选择角色 -->
+<div class="section">
+  <div class="section-title">选择角色</div>
+  <div class="hint-text">AI将读取所选角色的设定</div>
+  <div class="chip-row" id="charChips"></div>
+</div>
 
-    <!-- 指令 -->
-    <div class="section">
-      <div class="section-title">指令</div>
-      <div class="hint-text">给AI的输出指令（小说式互动）。角色和世界书设定会自动注入，这里只需写场景/风格/开头等。</div>
-      <textarea class="input-field" id="instructionInput" placeholder="例如：&#10;&#10;这是一个现代校园背景的故事。你将以小说叙述者的身份，用细腻的文笔描述场景和人物心理。&#10;&#10;开头：开学第一天，我在教室门口撞上了一个陌生人..."></textarea>
-    </div>
+<!-- 选择世界书 -->
+<div class="section">
+  <div class="section-title">选择世界书</div>
+  <div class="hint-text">AI将读取所选世界书的背景设定</div>
+  <div class="chip-row" id="worldbookChips"></div>
+</div>
+
+<!-- 指令 -->
+<div class="section">
+  <div class="section-title">指令</div>
+  <div class="hint-text">给AI的输出指令（小说式互动，角色第三人称，用户第二人称"你"）。角色和世界书设定会自动注入，这里只需写场景/风格/开头等。</div>
+  <textarea class="input-field" id="instructionInput" placeholder="例如：&#10;&#10;这是一个现代校园背景的故事。你将以小说叙述者的身份，用细腻的文笔描述场景和人物心理，角色用第三人称，用户用第二人称“你”指代。&#10;&#10;开头：开学第一天，你在教室门口撞上了一个陌生人..."></textarea>
+</div>
+
   </div>
 </div>
 
@@ -127,7 +160,7 @@
 
   const novels = loadNovels();
   const novel = novels.find(n => n.id === novelId);
-  if (!novel) { window.location.href = 'novel.html'; }
+  if (!novel) { window.location.href = 'novel.html'; return; }
 
   const characters = loadCharacters();
   const worldbooks = loadWorldbooks();
@@ -135,6 +168,12 @@
   // 填充已有数据
   document.getElementById('titleInput').value = novel.title || '';
   document.getElementById('instructionInput').value = novel.instruction || '';
+
+  const meta = novel.storyMeta || {};
+  document.getElementById('metaDateLabel').value = meta.dateLabel || '';
+  document.getElementById('metaMood').value = meta.mood || '';
+  document.getElementById('metaWeather').value = meta.weather || '';
+  document.getElementById('metaLocation').value = meta.location || '';
 
   let selectedChars = novel.selectedChars || [];
   let selectedWorldbooks = novel.selectedWorldbooks || [];
@@ -190,6 +229,12 @@
     novel.instruction = document.getElementById('instructionInput').value.trim();
     novel.selectedChars = selectedChars;
     novel.selectedWorldbooks = selectedWorldbooks;
+    novel.storyMeta = {
+      dateLabel: document.getElementById('metaDateLabel').value.trim(),
+      mood: document.getElementById('metaMood').value.trim(),
+      weather: document.getElementById('metaWeather').value.trim(),
+      location: document.getElementById('metaLocation').value.trim()
+    };
     novel.updatedAt = Date.now();
     saveNovels(novels);
     alert('已保存');
@@ -214,5 +259,6 @@
   function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 })();
 </script>
+
 </body>
 </html>
