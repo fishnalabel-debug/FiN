@@ -22,7 +22,7 @@ body {
 }
 
 .header {
-  display: flex; align-items: center; padding: 10px 14px;
+  display: flex; align-items: center; padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
   background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
 }
 .back-btn {
