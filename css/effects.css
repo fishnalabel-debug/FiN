@@ -1,0 +1,171 @@
+#effect-layer{
+    position:fixed;
+    inset:0;
+
+    pointer-events:none;
+
+    display:none;
+
+    overflow:hidden;
+
+    z-index:999;
+}
+
+.rain-drop{
+
+    position:absolute;
+
+    width:1px;
+
+    background:
+    rgba(120,120,120,.08);
+
+    border-radius:999px;
+
+    transform:rotate(12deg);
+
+    pointer-events:none;
+
+}
+
+.effect-buttons{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+.effect-buttons button{
+
+    border:none;
+
+    background:white;
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:14px;
+
+    font-size:18px;
+
+    box-shadow:
+    0 4px 12px rgba(0,0,0,.05);
+
+    cursor:pointer;
+
+}
+
+.paper{
+    background:
+    rgba(246,240,227,.25);
+}
+
+
+.snow-dot{
+
+    position:absolute;
+
+    width:4px;
+
+    height:4px;
+
+    border-radius:50%;
+
+    background:
+    rgba(255,255,255,.85);
+
+    pointer-events:none;
+
+}
+
+body {
+  background: #ffffff;
+  color: #1a1410;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* 夜间模式 */
+body.dark {
+  background: #0f0f12;
+  color: #f2f2f2;
+}
+
+/* ===== 夜间模式补全 ===== */
+body.dark .entry-title,
+body.dark .entry-date,
+body.dark .journal-title,
+body.dark .journal-name,
+body.dark .byline,
+body.dark .section-label,
+body.dark .stats-label,
+body.dark .stats-value {
+  color: #f2f2f2 !important;
+}
+
+body.dark .entry {
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+body.dark .search-wrap input {
+  background: rgba(255,255,255,0.06);
+  color: #f2f2f2;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+body.dark .search-wrap input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* ===== 夜间模式文字强制变白 ===== */
+body.dark .entry-title,
+body.dark .entry-date,
+body.dark .journal-title,
+body.dark .journal-name,
+body.dark .byline,
+body.dark .section-label,
+body.dark .stats-head,
+body.dark .stats-label,
+body.dark .stats-value {
+  color: #f2f2f2 !important;
+}
+
+/* entry整体边框变暗 */
+body.dark .entry {
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+/* 搜索框 */
+body.dark .search-wrap input {
+  background: rgba(255,255,255,0.06);
+  color: #f2f2f2;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+body.dark .search-wrap input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+body.paper-mode {
+  background: #f4e8d6;
+  color: #2a241d;
+}
+
+/* 让卡片/输入框也跟着变干净一点 */
+body.paper-mode .hero,
+body.paper-mode .tab-bar,
+body.paper-mode .tab-content {
+  background: transparent;
+}
+
+body.paper-mode .meta-val,
+body.paper-mode .observe-box p,
+body.paper-mode .heartbeat-box p {
+  color: #3a332b;
+}
+
+body.paper-mode .tab-button.active {
+  color: #2a241d;
+  border-bottom-color: #2a241d;
+}
