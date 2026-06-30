@@ -933,7 +933,7 @@ body {
     if(sel1.type===sel2.type&&sel1.id===sel2.id){alert('不能选同一个人');return;}
     localStorage.setItem('couple_data',JSON.stringify({person1:sel1,person2:sel2}));
     updateCoupleWidget(); modal.classList.remove('active');
-    window.location.href = '情侣空间/主页.html';
+    window.location.href = 'spouse/spouse.html';
   });
 
   // 第二页图片上传
