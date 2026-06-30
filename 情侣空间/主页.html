@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>情侣空间</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #f2f2f7; /* 更像是 iOS 系统桌面背景 */
+  --card: #ffffff;
+  --ink: #1d1d1f;
+  --soft: #8e8e93;
+  --line: rgba(0,0,0,0.03);
+  --safe-top: env(safe-area-inset-top, 44px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
+  
+  /* 卡片配色 - 轻莫兰迪 */
+  --sky-light: #dce7fc;
+  --rose-light: #f8e2e7;
+  --mint-light: #ddf1e8;
+  --lav-light: #e8e0fa;
+  --sand-light: #f2eadb;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  background: var(--bg);
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+}
+
+.status-bar-space { height: calc(var(--safe-top) + 2px); flex-shrink: 0; }
+
+/* ── 顶部导航（返回键保持纯系统样式） ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 16px 8px;
+  flex-shrink: 0;
+}
+.back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--ink);
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.back-btn:active { transform: scale(0.88); opacity: 0.7; }
+.topbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  margin-right: 34px;
+}
+
+/* ── 滑动区域 ── */
+.scroll-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+.scroll-wrapper::-webkit-scrollbar { display: none; }
+
+/* 每一页（板子） */
+.page-panel {
+  display: inline-block;
+  width: 100vw;
+  height: 100%;
+  padding: 0 16px 20px 16px;
+  scroll-snap-align: start;
+  white-space: normal;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* ── Hero 卡片（第一页专属） ── */
+@keyframes heroFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+
+.hero-card {
+  position: relative;
+  background: linear-gradient(120deg, rgba(236,228,251,0.75), rgba(227,237,253,0.75), rgba(251,229,234,0.75));
+  background-size: 200% 200%;
+  animation: heroFlow 14s ease-in-out infinite;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 28px;
+  padding: 24px 20px 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.hero-avatars { display: flex; align-items: center; justify-content: center; }
+.hero-avatar {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff; border: 3px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 23px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  animation: breathe 3.2s ease-in-out infinite;
+}
+.hero-avatar:last-child { margin-left: -16px; animation-delay: 0.4s; }
+.hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.hero-eyebrow { font-size: 10px; letter-spacing: 0.16em; color: #7c6ff7; font-weight: 700; }
+.hero-names { font-size: 16.5px; font-weight: 600; letter-spacing: -0.2px; }
+.hero-meta { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+.hero-stat { text-align: center; cursor: pointer; }
+.hero-stat-num {
+  font-size: 19px; font-weight: 800; letter-spacing: -0.3px;
+  background: linear-gradient(120deg, #7c6ff7, #5b8dee);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-stat-label { font-size: 10px; color: var(--soft); margin-top: 2px; font-weight: 500; }
+.hero-stat-divider { width: 1px; height: 26px; background: rgba(0,0,0,0.06); }
+
+/* ── Bento 不规则网格布局 ── */
+.bento-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+/* 定义不同比例的卡片 */
+.card-sm { grid-column: span 1; aspect-ratio: 1 / 1; } /* 1:1 正方 */
+.card-md { grid-column: span 1; aspect-ratio: 1 / 1.2; } /* 微长矩形 */
+.card-lg { grid-column: span 2; aspect-ratio: 2 / 1; } /* 2:1 大长条 */
+
+/* 卡片内容容器 */
+.bento-card {
+  position: relative;
+  background: var(--card);
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 18px 16px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+  border: 1px solid rgba(255,255,255,0.8);
+  text-decoration: none;
+}
+.bento-card:active { transform: scale(0.96); }
+
+/* 不规则卡片内部排版方向 */
+.card-lg .bento-inner { flex-direction: row; justify-content: space-between; width: 100%; align-items: center; }
+.card-sm .bento-inner { flex-direction: column; align-items: flex-start; justify-content: space-between; height: 100%; }
+
+/* 图标样式 */
+.bento-icon {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+.card-lg .bento-icon { margin-bottom: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); border-radius: 16px; }
+
+/* 文字样式 */
+.bento-text { display: flex; flex-direction: column; gap: 4px; }
+.bento-name { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.bento-sub { font-size: 11px; color: var(--soft); line-height: 1.3; }
+.card-lg .bento-name { font-size: 16px; }
+.card-lg .bento-sub { font-size: 12px; }
+
+/* AI 标记 */
+.ai-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 9px; font-weight: 700; color: #fff;
+  background: #7c6ff7; padding: 2px 6px; border-radius: 8px;
+}
+
+/* 区域标题（左滑提示的小点） */
+.page-indicator {
+  display: flex; justify-content: center; gap: 6px; margin: 10px 0 6px 0;
+}
+.dot { width: 4px; height: 4px; background: #ddd; border-radius: 50%; transition: 0.2s; }
+.dot.active { width: 10px; background: #8e8e93; border-radius: 4px; }
+
+/* 底部提示 */
+.hint-bar {
+  margin-top: 10px; text-align: center; font-size: 10px; color: var(--soft);
+}
+</style>
+</head>
+<body>
+
+<div class="status-bar-space"></div>
+
+<div class="topbar">
+  <div class="back-btn" id="backBtn">‹</div>
+  <div class="topbar-title">情侣空间</div>
+</div>
+
+<div class="scroll-wrapper" id="scrollWrapper">
+
+  <!-- ================= 第一页：首页 + 今日陪伴 ================= -->
+  <div class="page-panel" id="page0">
+    <div class="hero-card">
+      <div class="hero-eyebrow">COUPLE SPACE</div>
+      <div class="hero-avatars" id="heroAvatars">
+        <div class="hero-avatar">💑</div>
+        <div class="hero-avatar">❤️</div>
+      </div>
+      <div class="hero-names" id="heroNames">点击主页设置情侣</div>
+      <div class="hero-meta">
+        <div class="hero-stat" id="statTogether">
+          <div class="hero-stat-num" id="togetherNum">0</div>
+          <div class="hero-stat-label">在一起第几天</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat" id="statMeet">
+          <div class="hero-stat-num" id="meetNum">— —</div>
+          <div class="hero-stat-label">见面倒计时</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 今日陪伴区域 (不规则排列) -->
+    <div class="bento-grid" style="grid-template-columns: repeat(2, 1fr);">
+      <!-- 天气：大长条 -->
+      <a href="weather.html" class="bento-card card-lg" style="background: var(--sky-light);">
+        <div class="bento-inner">
+          <div class="bento-text"><div class="bento-name">实时天气</div><div class="bento-sub">你那里下雨了吗</div></div>
+          <div class="bento-icon">🌤️</div>
+        </div>
+      </a>
+      <!-- 今日话题：正方形 -->
+      <a href="daily.html" class="bento-card card-sm" style="background: var(--lav-light);">
+        <div class="bento-inner">
+          <div class="bento-icon" style="font-size: 24px;">🎲</div>
+          <div class="bento-text"><div class="bento-name">今日话题</div><div class="bento-sub">AI 生成</div></div>
+          <div class="ai-badge">AI</div>
+        </div>
+      </a>
+      <!-- 晚安：正方形 -->
+      <a href="goodnight.html" class="bento-card card-sm" style="background: var(--mint-light);">
+        <div class="bento-inner">
+          <div class="bento-icon" style="font-size: 24px;">🌙</div>
+          <div class="bento-text"><div class="bento-name">晚安</div><div class="bento-sub">每日最后一句话</div></div>
+        </div>
+      </a>
+      <!-- 身体日志：大长条 -->
+      <a href="bodylog.html" class="bento-card card-lg" style="background: var(--rose-light);">
+        <div class="bento-inner">
+          <div class="bento-text"><div class="bento-name">身体日志</div><div class="bento-sub">今天的状态怎么样</div></div>
+          <div class="bento-icon">🩹</div>
+        </div>
+      </a>
+      <!-- 写信：中等长短 -->
+      <a href="letter.html" class="bento-card card-md" style="background: #f4f4f6; grid-column: span 2; aspect-ratio: auto; padding: 20px;">
+        <div class="bento-inner" style="flex-direction: row; justify-content: space-between; width: 100%; align-items: center;">
+          <div class="bento-text"><div class="bento-name" style="font-size: 17px;">✉️ 写信</div><div class="bento-sub">AI 也能帮你起笔</div></div>
+          <div class="ai-badge">AI</div>
+        </div>
+      </a>
+    </div>
+    <div class="hint-bar">← 往左滑动查看更多 →</div>
+  </div>
+
+  <!-- ================= 第二页：心意与回忆 ================= -->
+  <div class="page-panel" id="page1">
+    <div class="bento-grid" style="grid-template-columns: repeat(3, 1fr); gap: 12px;">
+      <!-- 回忆墙：偏长 -->
+      <a href="memories.html" class="bento-card card-md" style="grid-column: span 2; background: #f7f3fd;">
+        <div class="bento-inner" style="flex-direction: row; gap: 12px; align-items: center;">
+          <div class="bento-icon" style="margin:0; font-size: 20px;">📸</div>
+          <div class="bento-text"><div class="bento-name" style="font-size: 14px;">回忆墙</div></div>
+        </div>
+      </a>
+      <!-- 心愿清单：正方 -->
+      <a href="wishlist.html" class="bento-card card-sm" style="background: #fcf3e8;">
+        <div class="bento-inner">
+          <div class="bento-icon" style="font-size: 22px;">📝</div>
+          <div class="bento-text"><div class="bento-name" style="font-size: 13px;">心愿清单</div></div>
+        </div>
+      </a>
+      <!-- 约定：正方 -->
+      <a href="promises.html" class="bento-card card-sm" style="background: #edf5ef;">
+        <div class="bento-inner">
+          <div class="bento-icon" style="font-size: 22px;">✅</div>
+          <div class="bento-text"><div class="bento-name" style="font-size: 13px;">约定</div></div>
+        </div>
+      </a>
+      <!-- 日记本：大长条 -->
+      <a href="diary.html" class="bento-card card-lg" style="background: #fbf4f6;">
+        <div class="bento-inner">
+          <div class="bento-text"><div class="bento-name">日记本交换</div><div class="bento-sub">想说的话丢进去</div></div>
+          <div class="bento-icon">📔</div>
+        </div>
+      </a>
+      <!-- 备忘录：大长条 -->
+      <a href="memo.html" class="bento-card card-lg" style="background: #f0f4f9;">
+        <div class="bento-inner">
+          <div class="bento-text"><div class="bento-name">备忘录</div><div class="bento-sub">随时翻看，不删除</div></div>
+          <div class="bento-icon">🗒️</div>
+        </div>
+      </a>
+    </div>
+    <div class="page-indicator"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+  </div>
+
+  <!-- ================= 第三页：成长与陪伴等 ================= -->
+  <div class="page-panel" id="page2">
+    <div class="bento-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
+      <!-- 成长档案：大长条 -->
+      <a href="growth.html" class="bento-card card-lg" style="background: #e3f0ee;">
+        <div class="bento-inner">
+          <div class="bento-text"><div class="bento-name">成长档案</div><div class="bento-sub">一步步走向你</div></div>
+          <div class="bento-icon">🌱</div>
+        </div>
+      </a>
+      <!-- 番茄钟：正方 -->
+      <a href="pomodoro.html" class="bento-card card-sm" style="background: #fdedeb;">
+        <div class="bento-inner">
+          <div class="bento-icon" style="font-size: 22px;">🍅</div>
+          <div class="bento-text"><div class="bento-name" style="font-size: 13px;">番茄钟</div></div>
+        </div>
+      </a>
+      <!-- 项目开发：正方 -->
+      <a href="devlog.html" class="bento-card card-sm" style="background: #e9ecf3;">
+        <div class="bento-inner">
+          <div class="bento-icon" style="font-size: 22px;">🛠️</div>
+          <div class="bento-text"><div class="bento-name" style="font-size: 13px;">项目开发</div></div>
+        </div>
+      </a>
+      <!-- 见证时间线：大长条 -->
+      <a href="timeline.html" class="bento-card card-lg" style="background: #f5f0e6;">
+        <div class="bento-inner">
+          <div class="bento-text"><div class="bento-name">见证时间线</div><div class="bento-sub">从第一行代码开始</div></div>
+          <div class="bento-icon">🧭</div>
+        </div>
+      </a>
+      <!-- 语音与作品：合成一个长条 -->
+      <a href="voice.html" class="bento-card card-md" style="grid-column: span 1; background: #f3f0f9; align-items: center; justify-content: center;">
+         <div class="bento-icon" style="font-size: 24px; margin:0;">🎙️</div>
+         <div class="bento-name" style="font-size: 12px; margin-top: 4px;">语音</div>
+      </a>
+      <a href="gallery.html" class="bento-card card-md" style="grid-column: span 1; background: #f3f0f9; align-items: center; justify-content: center;">
+         <div class="bento-icon" style="font-size: 24px; margin:0;">🎨</div>
+         <div class="bento-name" style="font-size: 12px; margin-top: 4px;">作品集</div>
+      </a>
+      
+       <!-- 底部设置等 -->
+       <div style="display: flex; gap: 12px; grid-column: span 2;">
+         <a href="cooldown.html" class="bento-card card-md" style="flex: 1; aspect-ratio: auto; justify-content: center; align-items: center; background: #fcfcfc;">
+             <div class="bento-icon" style="font-size: 18px; margin:0;">🕊️</div>
+             <div class="bento-name" style="font-size: 12px; margin-top: 2px;">冷静区</div>
+         </a>
+         <a href="settings.html" class="bento-card card-md" style="flex: 1; aspect-ratio: auto; justify-content: center; align-items: center; background: #fcfcfc;">
+             <div class="bento-icon" style="font-size: 18px; margin:0;">⚙️</div>
+             <div class="bento-name" style="font-size: 12px; margin-top: 2px;">设置</div>
+         </a>
+       </div>
+    </div>
+    <div class="page-indicator"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // 加载数据逻辑 (保持原样)
+  function loadCouple() { try { return JSON.parse(localStorage.getItem('couple_data')) || null; } catch(e) { return null; } }
+  function loadChars() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
+  function loadUser() { try { return JSON.parse(localStorage.getItem('user_data')) || {}; } catch(e) { return {}; } }
+  function getAv(t, id) { if (t === 'user') return loadUser().avatar || ''; return (loadChars().find(c => c.id == id) || {}).avatar || ''; }
+  function getName(t, id) { if (t === 'user') return loadUser().name || '我'; return (loadChars().find(c => c.id == id) || {}).name || '角色'; }
+
+  function renderHero() {
+    const d = loadCouple();
+    const av = document.getElementById('heroAvatars');
+    const names = document.getElementById('heroNames');
+    if (d?.person1 && d?.person2) {
+      const a1 = getAv(d.person1.type, d.person1.id), a2 = getAv(d.person2.type, d.person2.id);
+      av.innerHTML = `<div class="hero-avatar">${a1 ? `<img src="${a1}">` : '💑'}</div><div class="hero-avatar">${a2 ? `<img src="${a2}">` : '❤️'}</div>`;
+      names.textContent = getName(d.person1.type, d.person1.id) + ' & ' + getName(d.person2.type, d.person2.id);
+    }
+  }
+  renderHero();
+
+  // 日期逻辑
+  function coupleKeySuffix() {
+    const d = loadCouple();
+    if (!d?.person1 || !d?.person2) return 'default';
+    return [d.person1.type + d.person1.id, d.person2.type + d.person2.id].sort().join('_');
+  }
+  function startDateKey() { return 'cs_start_' + coupleKeySuffix(); }
+  function meetDateKey() { return 'cs_meet_' + coupleKeySuffix(); }
+
+  function renderTogether() {
+    const v = localStorage.getItem(startDateKey());
+    const num = document.getElementById('togetherNum');
+    if (v) {
+      const days = Math.floor((Date.now() - new Date(v).getTime()) / 86400000) + 1;
+      num.textContent = days > 0 ? days : 1;
+    } else { num.textContent = '--'; }
+  }
+  function renderMeet() {
+    const v = localStorage.getItem(meetDateKey());
+    const num = document.getElementById('meetNum');
+    if (v) {
+      const days = Math.ceil((new Date(v).setHours(0,0,0,0) - new Date().setHours(0,0,0,0)) / 86400000);
+      num.textContent = days > 0 ? days + '天' : (days === 0 ? '今天' : '已过');
+    } else { num.textContent = '— —'; }
+  }
+  renderTogether(); renderMeet();
+
+  document.getElementById('statTogether').addEventListener('click', () => {
+    const input = prompt('在一起的开始日期（YYYY-MM-DD）：', localStorage.getItem(startDateKey()) || '');
+    if (input === null) return;
+    input.trim() === '' ? localStorage.removeItem(startDateKey()) : localStorage.setItem(startDateKey(), input.trim());
+    renderTogether();
+  });
+  document.getElementById('statMeet').addEventListener('click', () => {
+    const input = prompt('下一次见面的日期（YYYY-MM-DD）：', localStorage.getItem(meetDateKey()) || '');
+    if (input === null) return;
+    input.trim() === '' ? localStorage.removeItem(meetDateKey()) : localStorage.setItem(meetDateKey(), input.trim());
+    renderMeet();
+  });
+
+  // 返回键
+  document.getElementById('backBtn').addEventListener('click', () => {
+    if (window.history.length > 1) { window.history.back(); }
+    else { window.location.href = '../main.html'; }
+  });
+
+  // 滑动指示点联动 (通过监听滚动计算当前在第几页)
+  const wrapper = document.getElementById('scrollWrapper');
+  const dots = document.querySelectorAll('.dot');
+  
+  wrapper.addEventListener('scroll', () => {
+    const pageWidth = window.innerWidth;
+    const index = Math.round(wrapper.scrollLeft / pageWidth);
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === index);
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
