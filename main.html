@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
   <link rel="apple-touch-icon" href="FiN.jpg">
@@ -33,7 +32,6 @@ background: var(–bg);
 background-size: cover;
 background-position: center;
 width: 100vw;
-/* 关键修改 1：利用 flex 结合 100vh，让视口高度严格等于屏幕高度，不产生外部溢出 */
 height: 100vh;
 overflow: hidden;
 display: flex;
@@ -42,27 +40,26 @@ flex-direction: column;
 
 /* ── 顶部安全区留白 ── */
 .status-bar-space {
-height: calc(var(–safe-top) + 96px);
+height: calc(var(–safe-top) + 16px);  /* 减少顶部占用，让内容整体下移 */
 flex-shrink: 0;
 }
 
 /* ── 页面滑动区 ── */
 .pages-container {
-/* 关键修改 2：让中间的滑动区自动撑满除了顶栏、指示器和底栏之外的所有剩余空间 */
 flex: 1;
-min-height: 0; /* 防止子元素撑大容器 */
+min-height: 0;
 overflow-x: auto;
 scroll-snap-type: x mandatory;
 display: flex;
 scrollbar-width: none;
 -webkit-overflow-scrolling: touch;
+padding-top: 8px;  /* 增加一点上边距，让内容更靠下 */
 }
 .pages-container::-webkit-scrollbar { display: none; }
 
 .page {
 min-width: 100vw;
 scroll-snap-align: start;
-/* 关键修改 3：缩减内边距，给内容留出更多垂直空间，确保小屏幕下不拥挤 */
 padding: 4px 16px 4px;
 display: flex;
 flex-direction: column;
@@ -76,7 +73,7 @@ scrollbar-width: none;
 시계 위젯 — Clock Widget
 ════════════════════ */
 .clock-widget {
-padding: 14px 22px 12px; /* 适当微调了内边距，让小手机屏幕更精致 */
+padding: 14px 22px 12px;
 background: rgba(255,255,255,0.82);
 backdrop-filter: blur(24px) saturate(180%);
 -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -127,7 +124,6 @@ color: var(–soft);
 margin-top: 3px;
 font-weight: 400;
 }
-/* 小装饰线 */
 .clock-divider {
 width: 1px;
 height: 38px;
@@ -196,7 +192,7 @@ flex-shrink: 0;
 .app-grid {
 display: grid;
 grid-template-columns: repeat(4, 1fr);
-gap: 16px 6px; /* 微调间距 */
+gap: 16px 6px;
 padding: 2px 0;
 }
 .app-item {
@@ -266,7 +262,7 @@ background: rgba(0,0,0,0.5);
 display: flex;
 justify-content: space-around;
 align-items: center;
-padding: 6px 20px calc(var(–safe-bottom) + 6px); /* 略微缩减上边距 */
+padding: 6px 20px calc(var(–safe-bottom) + 6px);
 flex-shrink: 0;
 background: rgba(255,255,255,0.65);
 backdrop-filter: blur(30px) saturate(180%);
@@ -496,7 +492,7 @@ backdrop-filter: blur(24px) saturate(180%);
 -webkit-backdrop-filter: blur(24px) saturate(180%);
 border: 1px solid rgba(255,255,255,0.9);
 border-radius: 24px;
-padding: 12px 16px 10px; /* 稍微压缩高度空间 */
+padding: 12px 16px 10px;
 display: flex;
 flex-direction: column;
 gap: 11px;
@@ -592,14 +588,6 @@ gap: 10px 2px;
 flex: 1;
 align-content: center;
 }
-.p2-placeholder-app { cursor: pointer; }
-.p2-slot-icon {
-background: rgba(0,0,0,0.03) !important;
-border: 1.5px dashed rgba(0,0,0,0.1) !important;
-box-shadow: none !important;
-}
-.p2-slot-icon .icon-fallback { font-size: 20px; color: #c7c7cc; }
-.p2-slot-icon img { width:100%; height:100%; object-fit:cover; border-radius:14px; }
 
 /* 右侧竖条区 */
 .p2-strips {
@@ -645,12 +633,24 @@ font-size: 14px; color: var(–soft);
 line-height: 20px; text-align: center;
 }
 
-/* ── 新增：第二页中间两行图标 ── */
-.p2-extra-icons {
-display: flex;
-flex-direction: column;
-gap: 10px;
+/* 第二页 4 个功能 App（记忆/角色/衣柜/储藏室）— 支持点击跳转 + 更换图标 */
+.p2-func-app { position: relative; }
+.p2-func-editbtn {
+position: absolute;
+top: -4px; right: 2px;
+width: 18px; height: 18px;
+border-radius: 50%;
+background: rgba(0,0,0,0.4);
+color: #fff;
+font-size: 9px;
+display: flex; align-items: center; justify-content: center;
+z-index: 4;
+cursor: pointer;
+opacity: 0;
+transition: opacity .15s ease;
 }
+.p2-func-app:hover .p2-func-editbtn,
+.p2-func-app:active .p2-func-editbtn { opacity: 1; }
 
 /* ════════════════════
 第一页 - 情侣时钟卡片（图3款式）
@@ -780,74 +780,126 @@ transition: opacity .15s ease;
 .p3-clock-card:active .p3-clock-editbtn { opacity: 1; }
 
 /* ════════════════════
-第二页 - 双人播放器组件（图2款式）
+第二页 - 背景卡片组件（熊熊卡片款式，支持自定义背景图）
 ════════════════════ */
-.p2-couple-player {
+.p2-hero-card {
+position: relative;
 flex-shrink: 0;
-padding: 14px 16px 12px;
-border-radius: 24px;
-background: rgba(255,255,255,0.6);
-position: relative;
-}
-.p2cp-avatars-row {
-display: flex;
-justify-content: center;
-align-items: flex-end;
-gap: 38px;
-position: relative;
-}
-.p2cp-avatar-col {
+min-height: 210px;
+border-radius: 26px;
+overflow: hidden;
+background: #eef0f4 linear-gradient(150deg, #f3f4f7, #e7e9ee);
+box-shadow: 0 2px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
+padding: 16px;
 display: flex;
 flex-direction: column;
+gap: 10px;
+}
+.p2-hero-bg {
+position: absolute;
+inset: 0;
+width: 100%; height: 100%;
+object-fit: cover;
+display: block;
+z-index: 0;
+}
+.p2-hero-card::after {
+content: ‘’;
+position: absolute; inset: 0;
+background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.12) 100%);
+pointer-events: none;
+z-index: 1;
+}
+.p2-hero-editbtn {
+position: absolute;
+top: 10px; right: 10px;
+width: 26px; height: 26px;
+border-radius: 50%;
+background: rgba(0,0,0,0.32);
+color: #fff;
+font-size: 12px;
+display: flex; align-items: center; justify-content: center;
+z-index: 3;
+cursor: pointer;
+opacity: 0;
+transition: opacity .15s ease;
+}
+.p2-hero-card:hover .p2-hero-editbtn,
+.p2-hero-card:active .p2-hero-editbtn { opacity: 1; }
+.p2-hero-content {
+position: relative;
+z-index: 2;
+flex: 1;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.p2-hero-title {
+font-size: 13.5px;
+font-weight: 700;
+color: var(–ink);
+letter-spacing: 0.01em;
+text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+align-self: flex-end;
+text-align: right;
+cursor: text;
+}
+.p2-hero-row {
+display: flex;
+gap: 8px;
+align-self: flex-end;
+width: 100%;
+justify-content: flex-end;
+}
+.p2-hero-chip {
+background: rgba(255,255,255,0.78);
+backdrop-filter: blur(16px) saturate(180%);
+-webkit-backdrop-filter: blur(16px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 16px;
+padding: 8px 14px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+display: flex;
+flex-direction: column;
+gap: 4px;
+justify-content: center;
+}
+.p2-hero-chip.datetime { min-width: 116px; }
+.p2-hero-chip .chip-line {
+display: flex;
 align-items: center;
 gap: 6px;
-position: relative;
-}
-.p2cp-label {
 font-size: 12px;
 font-weight: 600;
 color: var(–ink);
-background: rgba(255,255,255,0.0);
-cursor: text;
 white-space: nowrap;
 }
-.p2cp-avatar {
-width: 52px; height: 52px;
-border-radius: 50%;
-overflow: hidden;
-border: 2px dashed rgba(29,29,31,0.55);
-background: linear-gradient(135deg,#f0ecfd,#e3dcfb);
-display: flex; align-items: center; justify-content: center;
-font-size: 20px;
+.p2-hero-chip .chip-line span.chip-ico { font-size: 11px; color: var(–soft); }
+.p2-hero-chip.hearts {
+align-items: center;
+justify-content: center;
+min-width: 56px;
 cursor: pointer;
-position: relative;
 }
-.p2cp-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: none; }
-.p2cp-arc {
-position: absolute;
-top: 34px;
-left: 50%;
-width: 96px;
-height: 30px;
-transform: translateX(-50%);
-pointer-events: none;
+.p2-hero-chip.hearts .chip-emoji { font-size: 14px; letter-spacing: -2px; }
+.p2-hero-chip.hearts .chip-count {
+font-size: 15px;
+font-weight: 700;
+color: var(–ink);
+margin-top: 2px;
 }
-.p2cp-caption {
-text-align: center;
-font-size: 11.5px;
-color: var(–soft);
-margin-top: 10px;
-cursor: text;
-}
-.p2cp-player-bar {
-margin-top: 10px;
-background: rgba(255,255,255,0.85);
-backdrop-filter: blur(20px) saturate(180%);
--webkit-backdrop-filter: blur(20px) saturate(180%);
+.p2-hero-music {
+margin-top: auto;
+background: rgba(255,255,255,0.78);
+backdrop-filter: blur(18px) saturate(180%);
+-webkit-backdrop-filter: blur(18px) saturate(180%);
 border: 1px solid rgba(255,255,255,0.9);
 border-radius: 18px;
 padding: 10px 14px 8px;
 box-shadow: 0 2px 14px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+display: flex;
+flex-direction: column;
+gap: 6px;
 }
 .p2cp-toprow {
 display: flex;
@@ -871,7 +923,7 @@ letter-spacing: 0.02em;
 height: 3px;
 background: rgba(0,0,0,0.08);
 border-radius: 2px;
-margin-top: 8px;
+margin-top: 2px;
 overflow: hidden;
 }
 .p2cp-bar-fill {
@@ -884,12 +936,12 @@ transition: width .5s linear;
 .p2cp-times {
 display: flex; justify-content: space-between;
 font-size: 10px; color: var(–soft);
-margin-top: 4px;
+margin-top: 2px;
 font-variant-numeric: tabular-nums;
 }
 .p2cp-controls {
 display: flex; align-items: center; justify-content: space-between;
-margin-top: 6px;
+margin-top: 4px;
 padding: 0 2px;
 }
 .p2cp-ctrl-btn {
@@ -900,18 +952,6 @@ cursor: pointer;
 transition: transform .15s ease, opacity .15s ease;
 }
 .p2cp-ctrl-btn:active { transform: scale(.85); opacity: .6; }
-.p2cp-editbtn {
-position: absolute;
-top: 8px; right: 10px;
-width: 22px; height: 22px;
-border-radius: 50%;
-background: rgba(0,0,0,0.06);
-color: var(–soft);
-font-size: 11px;
-display: flex; align-items: center; justify-content: center;
-cursor: pointer;
-z-index: 3;
-}
 
 /* ════════════════════
 第二页 - 消息气泡小组件（图4款式）
@@ -1050,84 +1090,71 @@ transition: none;
 
 <div class="page" style="gap:10px;">
 
-  <!-- 双人播放器组件 -->
+  <!-- 背景图卡片（可更换背景，参考熊熊卡片款式） -->
 
-  <div class="p2-couple-player" style="flex-shrink:0;">
-    <div class="p2cp-editbtn" id="p2cpEditBtn" title="更换头像">🖼</div>
-    <div class="p2cp-avatars-row">
-      <div class="p2cp-avatar-col">
-        <div class="p2cp-label" id="p2cpLabelLeft" contenteditable="true" spellcheck="false">你在左边</div>
-        <div class="p2cp-avatar" id="p2cpAvatarLeft" data-target="left">🙂</div>
+  <div class="p2-hero-card" id="p2HeroCard">
+    <img class="p2-hero-bg" id="p2HeroBg" src="" style="display:none;">
+    <div class="p2-hero-editbtn" id="p2HeroEditBtn" title="更换背景图">🖼</div>
+    <div class="p2-hero-content">
+      <div class="p2-hero-title" id="p2HeroTitle" contenteditable="true" spellcheck="false">★HAVE A WONDERFUL DAY♡ﾒ ✧</div>
+      <div class="p2-hero-row">
+        <div class="p2-hero-chip datetime">
+          <div class="chip-line"><span class="chip-ico">●</span><span id="p2HeroDate">2026/07</span></div>
+          <div class="chip-line"><span class="chip-ico">♡</span><span id="p2HeroTime">19:28</span></div>
+        </div>
+        <div class="p2-hero-chip hearts" id="p2HeroHearts">
+          <div class="chip-emoji">🐾🐾</div>
+          <div class="chip-count" id="p2HeroHeartCount">0</div>
+        </div>
       </div>
-      <svg class="p2cp-arc" viewBox="0 0 96 30"><path d="M2 2 C 2 26, 94 26, 94 2" fill="none" stroke="#1d1d1f" stroke-width="1.6"/></svg>
-      <div class="p2cp-avatar-col">
-        <div class="p2cp-label" id="p2cpLabelRight" contenteditable="true" spellcheck="false">我紧靠右</div>
-        <div class="p2cp-avatar" id="p2cpAvatarRight" data-target="right">🙂</div>
+      <div class="p2-hero-music">
+        <div class="p2cp-toprow">
+          <div class="p2cp-songname" id="musicSong">暂无播放</div>
+          <div class="p2cp-waveicon">▐▐▐</div>
+        </div>
+        <div class="p2cp-subline" id="musicArtist">— —</div>
+        <div class="p2cp-bar">
+          <div class="p2cp-bar-fill" id="musicProgressFill"></div>
+        </div>
+        <div class="p2cp-times">
+          <span id="musicCurrent">0:00</span>
+          <span id="musicTotal">0:00</span>
+        </div>
+        <div class="p2cp-controls">
+          <div class="p2cp-ctrl-btn" id="btnShuffle">★</div>
+          <div class="p2cp-ctrl-btn" id="btnPrev">⏮</div>
+          <div class="p2cp-ctrl-btn" id="btnPlay" style="font-size:19px;">⏸</div>
+          <div class="p2cp-ctrl-btn" id="btnNext">⏭</div>
+          <div class="p2cp-ctrl-btn" id="btnRepeat">♥</div>
+        </div>
       </div>
     </div>
-    <div class="p2cp-caption" id="p2cpCaption" contenteditable="true" spellcheck="false">谁在乎没有你的明天</div>
+  </div>
+  <input type="file" accept="image/*" id="p2HeroBgUpload" style="display:none;">
 
-<div class="p2cp-player-bar">
-  <div class="p2cp-toprow">
-    <div class="p2cp-songname" id="musicSong">暂无播放</div>
-    <div class="p2cp-waveicon">▐▐▐</div>
-  </div>
-  <div class="p2cp-subline" id="musicArtist">— —</div>
-  <div class="p2cp-bar">
-    <div class="p2cp-bar-fill" id="musicProgressFill"></div>
-  </div>
-  <div class="p2cp-times">
-    <span id="musicCurrent">0:00</span>
-    <span id="musicTotal">0:00</span>
-  </div>
-  <div class="p2cp-controls">
-    <div class="p2cp-ctrl-btn" id="btnShuffle">★</div>
-    <div class="p2cp-ctrl-btn" id="btnPrev">⏮</div>
-    <div class="p2cp-ctrl-btn" id="btnPlay" style="font-size:19px;">⏸</div>
-    <div class="p2cp-ctrl-btn" id="btnNext">⏭</div>
-    <div class="p2cp-ctrl-btn" id="btnRepeat">♥</div>
-  </div>
-</div>
-
-  </div>
-  <input type="file" accept="image/*" id="p2cpAvatarUpload" style="display:none;">
-
-  <!-- ★ 两行图标（共8个），点击上传自定义，颜色与左边4个一致 -->
-
-  <div class="p2-extra-icons">
-    <div class="app-grid" id="sortGrid-p2a">
-      <div class="app-item p2-placeholder-app" data-slot="4"><div class="app-icon p2-slot-icon" id="slotIcon4"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-      <div class="app-item p2-placeholder-app" data-slot="5"><div class="app-icon p2-slot-icon" id="slotIcon5"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-      <div class="app-item p2-placeholder-app" data-slot="6"><div class="app-icon p2-slot-icon" id="slotIcon6"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-      <div class="app-item p2-placeholder-app" data-slot="7"><div class="app-icon p2-slot-icon" id="slotIcon7"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-    </div>
-    <div class="app-grid" id="sortGrid-p2b">
-      <div class="app-item p2-placeholder-app" data-slot="8"><div class="app-icon p2-slot-icon" id="slotIcon8"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-      <div class="app-item p2-placeholder-app" data-slot="9"><div class="app-icon p2-slot-icon" id="slotIcon9"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-      <div class="app-item p2-placeholder-app" data-slot="10"><div class="app-icon p2-slot-icon" id="slotIcon10"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-      <div class="app-item p2-placeholder-app" data-slot="11"><div class="app-icon p2-slot-icon" id="slotIcon11"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
-    </div>
-  </div>
-
-  <!-- 下半区：左2列app占位 + 右2列竖条照片 -->
+  <!-- 下半区：4个功能app + 右侧照片墙 -->
 
   <div class="p2-bottom" style="flex:1;min-height:0;align-items:center;">
     <div class="p2-apps" id="sortGrid-p2c">
-      <div class="app-item p2-placeholder-app" data-slot="0">
-        <div class="app-icon p2-slot-icon" id="slotIcon0"><span class="icon-fallback">＋</span></div>
-        <span class="app-name">自定义</span>
+      <div class="app-item p2-func-app" data-app="memory" data-func-key="memory">
+        <div class="p2-func-editbtn" data-func-key="memory" title="更换图标">🖼</div>
+        <div class="app-icon" id="funcIcon-memory"><img src="icon/记忆.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💭</span>';"></div>
+        <span class="app-name">记忆</span>
       </div>
-      <div class="app-item p2-placeholder-app" data-slot="1">
-        <div class="app-icon p2-slot-icon" id="slotIcon1"><span class="icon-fallback">＋</span></div>
-        <span class="app-name">自定义</span>
+      <div class="app-item p2-func-app" data-app="role" data-func-key="role">
+        <div class="p2-func-editbtn" data-func-key="role" title="更换图标">🖼</div>
+        <div class="app-icon" id="funcIcon-role"><img src="icon/角色.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎭</span>';"></div>
+        <span class="app-name">角色</span>
       </div>
-      <div class="app-item p2-placeholder-app" data-slot="2">
-        <div class="app-icon p2-slot-icon" id="slotIcon2"><span class="icon-fallback">＋</span></div>
-        <span class="app-name">自定义</span>
+      <div class="app-item p2-func-app" data-app="closet" data-func-key="closet">
+        <div class="p2-func-editbtn" data-func-key="closet" title="更换图标">🖼</div>
+        <div class="app-icon" id="funcIcon-closet"><img src="icon/衣柜.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>👗</span>';"></div>
+        <span class="app-name">衣柜</span>
       </div>
-      <div class="app-item p2-placeholder-app" data-slot="3">
-        <div class="app-icon p2-slot-icon" id="slotIcon3"><span class="icon-fallback">＋</span></div>
-        <span class="app-name">自定义</span>
+      <div class="app-item p2-func-app" data-app="storage" data-func-key="storage">
+        <div class="p2-func-editbtn" data-func-key="storage" title="更换图标">🖼</div>
+        <div class="app-icon" id="funcIcon-storage"><img src="icon/储藏室.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📦</span>';"></div>
+        <span class="app-name">储藏室</span>
       </div>
     </div>
 
@@ -1237,7 +1264,8 @@ transition: none;
     'phone': 'chat/chat/phone.html', 'diary': 'diary/diary.html', 'music': 'music/music.html',
     'novel': 'novel/novel.html', 'icon': 'icon/icon.html', 'forum': 'forum/forum.html',
     'takeout': 'takeout/takeout.html', 'plan': 'plan/plan.html',
-    'momo': 'momo.html', 'make': 'make.html', 'album': 'album.html', 'calendar': 'calendar.html'
+    'momo': 'momo.html', 'make': 'make.html', 'album': 'album.html', 'calendar': 'calendar.html',
+    'memory': '记忆/记忆.html', 'role': '角色/角色.html', 'closet': '衣柜/衣柜.html', 'storage': '储藏室/储藏室.html'
   };
   document.querySelectorAll('.app-item, .dock-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -1341,33 +1369,6 @@ transition: none;
   }
 
   window.addEventListener('storage', updateCoupleWidget);
-
-  // 图标占位槽 - 点击换图（包含所有 data-slot 0~11）
-  const slotUpload = document.createElement('input');
-  slotUpload.type = 'file'; slotUpload.accept = 'image/*'; slotUpload.style.display = 'none';
-  document.body.appendChild(slotUpload);
-  let currentSlot = null;
-  document.querySelectorAll('.p2-placeholder-app').forEach(el => {
-    const slot = el.getAttribute('data-slot');
-    const saved = localStorage.getItem('slot_icon_' + slot);
-    if (saved) { const ic = document.getElementById('slotIcon' + slot); if(ic){ ic.innerHTML = `<img src="${saved}">`; } }
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      currentSlot = slot;
-      slotUpload.click();
-    });
-  });
-  slotUpload.addEventListener('change', e => {
-    const file = e.target.files[0]; if (!file || currentSlot === null) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      localStorage.setItem('slot_icon_' + currentSlot, ev.target.result);
-      const ic = document.getElementById('slotIcon' + currentSlot);
-      if (ic) ic.innerHTML = `<img src="${ev.target.result}">`;
-    };
-    reader.readAsDataURL(file);
-    slotUpload.value = ''; currentSlot = null;
-  });
 
   // 气泡消息组件（图4款式）— 头像上传 + 文案本地保存
   const bubbleAvatarUpload = document.getElementById('bubbleAvatarUpload');
@@ -1480,46 +1481,92 @@ transition: none;
     p3AvatarTarget = null;
   });
 
-  // 双人播放器组件（图2款式）— 头像 + 文案
-  const p2cpAvatarUpload = document.getElementById('p2cpAvatarUpload');
-  const p2cpAvatarLeft = document.getElementById('p2cpAvatarLeft');
-  const p2cpAvatarRight = document.getElementById('p2cpAvatarRight');
-  const p2cpEditBtn = document.getElementById('p2cpEditBtn');
-  let p2cpTarget = null;
+  // 第二页背景图卡片 — 背景图 + 标题文案 + 日期时间 + 爱心计数
+  const p2HeroCard = document.getElementById('p2HeroCard');
+  const p2HeroBg = document.getElementById('p2HeroBg');
+  const p2HeroBgUpload = document.getElementById('p2HeroBgUpload');
+  const p2HeroEditBtn = document.getElementById('p2HeroEditBtn');
+  const p2HeroTitle = document.getElementById('p2HeroTitle');
+  const p2HeroHearts = document.getElementById('p2HeroHearts');
+  const p2HeroHeartCount = document.getElementById('p2HeroHeartCount');
 
-  const savedP2cpLeft = localStorage.getItem('p2cp_avatar_left');
-  if (savedP2cpLeft) { p2cpAvatarLeft.innerHTML = `<img src="${savedP2cpLeft}">`; p2cpAvatarLeft.style.border = 'none'; }
-  const savedP2cpRight = localStorage.getItem('p2cp_avatar_right');
-  if (savedP2cpRight) { p2cpAvatarRight.innerHTML = `<img src="${savedP2cpRight}">`; p2cpAvatarRight.style.border = 'none'; }
+  const savedHeroBg = localStorage.getItem('p2_hero_bg');
+  if (savedHeroBg) { p2HeroBg.src = savedHeroBg; p2HeroBg.style.display = 'block'; }
 
-  ['p2cpLabelLeft','p2cpLabelRight','p2cpCaption'].forEach(id => {
-    const el = document.getElementById(id);
-    const saved = localStorage.getItem(id);
-    if (saved && el) el.textContent = saved;
-    if (el) {
-      el.addEventListener('click', e => e.stopPropagation());
-      el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim()));
-    }
-  });
+  const savedHeroTitle = localStorage.getItem('p2HeroTitle');
+  if (savedHeroTitle && p2HeroTitle) p2HeroTitle.textContent = savedHeroTitle;
+  if (p2HeroTitle) {
+    p2HeroTitle.addEventListener('click', e => e.stopPropagation());
+    p2HeroTitle.addEventListener('blur', () => localStorage.setItem('p2HeroTitle', p2HeroTitle.textContent.trim()));
+  }
 
-  function openP2cpUpload(target) { p2cpTarget = target; p2cpAvatarUpload.click(); }
-  if (p2cpAvatarLeft) p2cpAvatarLeft.addEventListener('click', e => { e.stopPropagation(); openP2cpUpload('left'); });
-  if (p2cpAvatarRight) p2cpAvatarRight.addEventListener('click', e => { e.stopPropagation(); openP2cpUpload('right'); });
-  if (p2cpEditBtn) p2cpEditBtn.addEventListener('click', e => { e.stopPropagation(); openP2cpUpload('left'); });
-
-  p2cpAvatarUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0]; if (!file || !p2cpTarget) return;
+  if (p2HeroEditBtn) p2HeroEditBtn.addEventListener('click', e => { e.stopPropagation(); p2HeroBgUpload.click(); });
+  p2HeroBgUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const key = 'p2cp_avatar_' + p2cpTarget;
-      const el = p2cpTarget === 'left' ? p2cpAvatarLeft : p2cpAvatarRight;
-      localStorage.setItem(key, ev.target.result);
-      el.innerHTML = `<img src="${ev.target.result}">`;
-      el.style.border = 'none';
+      localStorage.setItem('p2_hero_bg', ev.target.result);
+      p2HeroBg.src = ev.target.result;
+      p2HeroBg.style.display = 'block';
     };
     reader.readAsDataURL(file);
-    p2cpAvatarUpload.value = '';
-    p2cpTarget = null;
+    p2HeroBgUpload.value = '';
+  });
+
+  // 日期/时间显示
+  function updateHeroDateTime() {
+    const now = new Date();
+    const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+    const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+    const dateEl = document.getElementById('p2HeroDate');
+    const timeEl = document.getElementById('p2HeroTime');
+    if (dateEl) dateEl.textContent = `${y}/${m}/${d}`;
+    if (timeEl) timeEl.textContent = `${hh}:${mm}`;
+  }
+  updateHeroDateTime(); setInterval(updateHeroDateTime, 10000);
+
+  // 爱心计数 — 点击 +1，本地保存
+  let heroHeartCount = parseInt(localStorage.getItem('p2_hero_heart_count') || '0', 10);
+  if (p2HeroHeartCount) p2HeroHeartCount.textContent = heroHeartCount;
+  if (p2HeroHearts) {
+    p2HeroHearts.addEventListener('click', e => {
+      e.stopPropagation();
+      heroHeartCount++;
+      localStorage.setItem('p2_hero_heart_count', heroHeartCount);
+      if (p2HeroHeartCount) p2HeroHeartCount.textContent = heroHeartCount;
+    });
+  }
+
+  // 4个功能app（记忆/角色/衣柜/储藏室）— 点击更换图标
+  const funcIconUpload = document.createElement('input');
+  funcIconUpload.type = 'file'; funcIconUpload.accept = 'image/*'; funcIconUpload.style.display = 'none';
+  document.body.appendChild(funcIconUpload);
+  let currentFuncKey = null;
+  document.querySelectorAll('.p2-func-editbtn').forEach(btn => {
+    const key = btn.getAttribute('data-func-key');
+    const saved = localStorage.getItem('func_icon_' + key);
+    if (saved) {
+      const ic = document.getElementById('funcIcon-' + key);
+      if (ic) ic.innerHTML = `<img src="${saved}">`;
+    }
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      currentFuncKey = key;
+      funcIconUpload.click();
+    });
+  });
+  funcIconUpload.addEventListener('change', e => {
+    const file = e.target.files[0]; if (!file || !currentFuncKey) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      localStorage.setItem('func_icon_' + currentFuncKey, ev.target.result);
+      const ic = document.getElementById('funcIcon-' + currentFuncKey);
+      if (ic) ic.innerHTML = `<img src="${ev.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+    funcIconUpload.value = '';
+    currentFuncKey = null;
   });
 
   // 音乐组件联动
@@ -1612,14 +1659,12 @@ transition: none;
     let ghost = null;
 
     function itemKey(el) {
-      // 用 data-app 或 data-slot 作为唯一标识
       return el.getAttribute('data-app') || ('slot-' + el.getAttribute('data-slot'));
     }
     function containerKey(container) {
       return container.id;
     }
 
-    // 加载已保存的排序
     function applySavedOrder(container) {
       const key = 'icon_order_' + containerKey(container);
       const saved = JSON.parse(localStorage.getItem(key) || 'null');
@@ -1630,7 +1675,6 @@ transition: none;
       saved.forEach(k => {
         if (map[k]) container.appendChild(map[k]);
       });
-      // 追加未在保存列表中的新图标（保底）
       items.forEach(it => {
         if (!saved.includes(itemKey(it))) container.appendChild(it);
       });
@@ -1694,7 +1738,6 @@ transition: none;
     }
 
     function onEarlyMove(e) {
-      // 长按判定期间，如果手指移动太多则取消长按（视为滚动/点击拖动）
       const pt = getPoint(e);
       const dist = Math.hypot(pt.x - startX, pt.y - startY);
       if (dist > 10 && !dragging) {
@@ -1733,7 +1776,6 @@ transition: none;
       ghost.style.left = (pt.x - offsetX) + 'px';
       ghost.style.top = (pt.y - offsetY) + 'px';
 
-      // 找到当前指针下最近的兄弟节点，决定插入位置
       const siblings = Array.from(dragContainer.children).filter(el => el !== dragEl);
       let closest = null, closestDist = Infinity;
       siblings.forEach(sib => {
@@ -1765,13 +1807,11 @@ transition: none;
           saveOrder(dragContainer);
         }
         dragging = false;
-        // 延迟退出抖动，给用户视觉反馈；点击图标之外区域也会退出
         setTimeout(() => { if (!dragging) exitJiggle(); }, 150);
         dragEl = null; dragContainer = null;
       }
     }
 
-    // 点击空白处退出抖动模式；抖动模式下点图标本身也只退出、不跳转
     document.addEventListener('click', (e) => {
       if (jiggleMode) {
         const item = e.target.closest('.app-item, .dock-item, .p2-placeholder-app');
@@ -1783,7 +1823,6 @@ transition: none;
       }
     }, true);
 
-    // 抑制拖动后触发的click跳转（避免拖完手一松又跳转到app页面）
     document.addEventListener('click', (e) => {
       if (didDrag) {
         e.preventDefault();
