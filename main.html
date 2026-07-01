@@ -15,60 +15,60 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #f5f5f7;
-  --card: #ffffff;
-  --ink: #1d1d1f;
-  --soft: #8e8e93;
-  --line: rgba(0,0,0,0.06);
-  --accent: #7c6ff7;
-  --accent2: #5b8dee;
-  --gold: #c9a96e;
-  --safe-top: env(safe-area-inset-top, 44px);
-  --safe-bottom: env(safe-area-inset-bottom, 20px);
+–bg: #f5f5f7;
+–card: #ffffff;
+–ink: #1d1d1f;
+–soft: #8e8e93;
+–line: rgba(0,0,0,0.06);
+–accent: #7c6ff7;
+–accent2: #5b8dee;
+–gold: #c9a96e;
+–safe-top: env(safe-area-inset-top, 44px);
+–safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
-  background: var(--bg);
-  background-size: cover;
-  background-position: center;
-  width: 100vw;
-  /* 关键修改 1：利用 flex 结合 100vh，让视口高度严格等于屏幕高度，不产生外部溢出 */
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+font-family: -apple-system, BlinkMacSystemFont, ‘SF Pro Text’, ‘SF Pro Display’, ‘Helvetica Neue’, sans-serif;
+background: var(–bg);
+background-size: cover;
+background-position: center;
+width: 100vw;
+/* 关键修改 1：利用 flex 结合 100vh，让视口高度严格等于屏幕高度，不产生外部溢出 */
+height: 100vh;
+overflow: hidden;
+display: flex;
+flex-direction: column;
 }
 
 /* ── 顶部安全区留白 ── */
 .status-bar-space {
-  height: calc(var(--safe-top) + 4px);
-  flex-shrink: 0;
+height: calc(var(–safe-top) + 4px);
+flex-shrink: 0;
 }
 
 /* ── 页面滑动区 ── */
 .pages-container {
-  /* 关键修改 2：让中间的滑动区自动撑满除了顶栏、指示器和底栏之外的所有剩余空间 */
-  flex: 1;
-  min-height: 0; /* 防止子元素撑大容器 */
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  display: flex;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+/* 关键修改 2：让中间的滑动区自动撑满除了顶栏、指示器和底栏之外的所有剩余空间 */
+flex: 1;
+min-height: 0; /* 防止子元素撑大容器 */
+overflow-x: auto;
+scroll-snap-type: x mandatory;
+display: flex;
+scrollbar-width: none;
+-webkit-overflow-scrolling: touch;
 }
 .pages-container::-webkit-scrollbar { display: none; }
 
 .page {
-  min-width: 100vw;
-  scroll-snap-align: start;
-  /* 关键修改 3：缩减内边距，给内容留出更多垂直空间，确保小屏幕下不拥挤 */
-  padding: 4px 16px 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
-  scrollbar-width: none;
+min-width: 100vw;
+scroll-snap-align: start;
+/* 关键修改 3：缩减内边距，给内容留出更多垂直空间，确保小屏幕下不拥挤 */
+padding: 4px 16px 4px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+overflow-y: auto;
+scrollbar-width: none;
 }
 .page::-webkit-scrollbar { display: none; }
 
@@ -76,229 +76,229 @@ body {
 시계 위젯 — Clock Widget
 ════════════════════ */
 .clock-widget {
-  padding: 14px 22px 12px; /* 适当微调了内边距，让小手机屏幕更精致 */
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-  position: relative;
-  overflow: hidden;
+padding: 14px 22px 12px; /* 适当微调了内边距，让小手机屏幕更精致 */
+background: rgba(255,255,255,0.82);
+backdrop-filter: blur(24px) saturate(180%);
+-webkit-backdrop-filter: blur(24px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 26px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-shrink: 0;
+box-shadow: 0 2px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+position: relative;
+overflow: hidden;
 }
 .clock-widget::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
 }
 .clock-left { display: flex; flex-direction: column; gap: 2px; }
 .clock-time {
-  font-size: 46px;
-  font-weight: 200;
-  color: var(--ink);
-  letter-spacing: -1px;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+font-size: 46px;
+font-weight: 200;
+color: var(–ink);
+letter-spacing: -1px;
+line-height: 1;
+font-variant-numeric: tabular-nums;
 }
 .clock-ampm {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--soft);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-top: 2px;
+font-size: 11px;
+font-weight: 500;
+color: var(–soft);
+letter-spacing: 0.06em;
+text-transform: uppercase;
+margin-top: 2px;
 }
 .clock-right { text-align: right; }
 .date-day {
-  font-size: 17px;
-  color: var(--ink);
-  font-weight: 600;
-  letter-spacing: -0.3px;
+font-size: 17px;
+color: var(–ink);
+font-weight: 600;
+letter-spacing: -0.3px;
 }
 .date-full {
-  font-size: 12px;
-  color: var(--soft);
-  margin-top: 3px;
-  font-weight: 400;
+font-size: 12px;
+color: var(–soft);
+margin-top: 3px;
+font-weight: 400;
 }
 /* 小装饰线 */
 .clock-divider {
-  width: 1px;
-  height: 38px;
-  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.08), transparent);
-  margin: 0 18px;
-  flex-shrink: 0;
+width: 1px;
+height: 38px;
+background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.08), transparent);
+margin: 0 18px;
+flex-shrink: 0;
 }
 
 /* ════════════════════
 情侣小组件
 ════════════════════ */
 .couple-widget {
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 22px;
-  padding: 13px 16px;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
-  transition: transform 0.15s ease, opacity 0.15s ease;
+background: rgba(255,255,255,0.82);
+backdrop-filter: blur(24px) saturate(180%);
+-webkit-backdrop-filter: blur(24px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 22px;
+padding: 13px 16px;
+display: flex;
+align-items: center;
+gap: 13px;
+cursor: pointer;
+flex-shrink: 0;
+box-shadow: 0 2px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
+transition: transform 0.15s ease, opacity 0.15s ease;
 }
 .couple-widget:active { transform: scale(0.97); opacity: 0.85; }
 .couple-avatars { display: flex; align-items: center; flex-shrink: 0; }
 .couple-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #f0ecfd, #e3dcfb);
-  border: 2px solid #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+width: 40px;
+height: 40px;
+border-radius: 50%;
+overflow: hidden;
+background: linear-gradient(135deg, #f0ecfd, #e3dcfb);
+border: 2px solid #ffffff;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 17px;
+box-shadow: 0 1px 6px rgba(0,0,0,0.1);
 }
 .couple-avatar:last-child { margin-left: -12px; }
 .couple-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .couple-info { flex: 1; min-width: 0; }
 .couple-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.2px;
+font-size: 14px;
+font-weight: 600;
+color: var(–ink);
+letter-spacing: -0.2px;
 }
 .couple-subtitle {
-  font-size: 11px;
-  color: var(--soft);
-  margin-top: 1px;
+font-size: 11px;
+color: var(–soft);
+margin-top: 1px;
 }
 .couple-chevron {
-  color: #c7c7cc;
-  font-size: 13px;
-  font-weight: 600;
-  flex-shrink: 0;
+color: #c7c7cc;
+font-size: 13px;
+font-weight: 600;
+flex-shrink: 0;
 }
 
 /* ════════════════════
 应用网格
 ════════════════════ */
 .app-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px 6px; /* 微调间距 */
-  padding: 2px 0;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 16px 6px; /* 微调间距 */
+padding: 2px 0;
 }
 .app-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 2px 0;
-  -webkit-tap-highlight-color: transparent;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 6px;
+cursor: pointer;
+padding: 2px 0;
+-webkit-tap-highlight-color: transparent;
 }
 .app-item:active .app-icon { transform: scale(0.88); opacity: 0.75; }
 .app-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 15px;
-  background: var(--card);
-  border: 1px solid rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.04);
-  transition: transform 0.15s ease, opacity 0.15s ease;
+width: 58px;
+height: 58px;
+border-radius: 15px;
+background: var(–card);
+border: 1px solid rgba(0,0,0,0.05);
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.04);
+transition: transform 0.15s ease, opacity 0.15s ease;
 }
 .app-icon img { width: 100%; height: 100%; object-fit: cover; }
 .app-icon .icon-fallback { font-size: 26px; }
 .app-name {
-  font-size: 11px;
-  color: var(--soft);
-  text-align: center;
-  max-width: 64px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 400;
-  letter-spacing: 0.01em;
+font-size: 11px;
+color: var(–soft);
+text-align: center;
+max-width: 64px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+font-weight: 400;
+letter-spacing: 0.01em;
 }
 
 /* ════════════════════
 页面指示器
 ════════════════════ */
 .page-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 0 4px;
-  flex-shrink: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 5px;
+padding: 4px 0 4px;
+flex-shrink: 0;
 }
 .page-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 3px;
-  background: rgba(0,0,0,0.18);
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+width: 5px;
+height: 5px;
+border-radius: 3px;
+background: rgba(0,0,0,0.18);
+transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .page-dot.active {
-  width: 20px;
-  background: rgba(0,0,0,0.5);
+width: 20px;
+background: rgba(0,0,0,0.5);
 }
 
 /* ════════════════════
 底部 Dock
 ════════════════════ */
 .bottom-dock {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 6px 20px calc(var(--safe-bottom) + 6px); /* 略微缩减上边距 */
-  flex-shrink: 0;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border-top: 0.5px solid rgba(0,0,0,0.08);
+display: flex;
+justify-content: space-around;
+align-items: center;
+padding: 6px 20px calc(var(–safe-bottom) + 6px); /* 略微缩减上边距 */
+flex-shrink: 0;
+background: rgba(255,255,255,0.65);
+backdrop-filter: blur(30px) saturate(180%);
+-webkit-backdrop-filter: blur(30px) saturate(180%);
+border-top: 0.5px solid rgba(0,0,0,0.08);
 }
 .dock-inner {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 0.5px solid rgba(255,255,255,0.9);
-  border-radius: 26px;
-  padding: 10px 16px;
-  width: 100%;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+display: flex;
+justify-content: space-around;
+align-items: center;
+background: rgba(255,255,255,0.55);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border: 0.5px solid rgba(255,255,255,0.9);
+border-radius: 26px;
+padding: 10px 16px;
+width: 100%;
+box-shadow: 0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
 }
 .dock-item {
-  width: 52px;
-  height: 52px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 26px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.04);
-  overflow: hidden;
-  background: white;
+width: 52px;
+height: 52px;
+border-radius: 15px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+font-size: 26px;
+transition: transform 0.15s ease, opacity 0.15s ease;
+box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.04);
+overflow: hidden;
+background: white;
 }
 .dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
 .dock-item:active { transform: scale(0.88); opacity: 0.7; }
@@ -307,352 +307,659 @@ body {
 情侣弹窗
 ════════════════════ */
 .modal-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 100;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.28s ease, visibility 0.28s;
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: rgba(0,0,0,0.35);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+display: flex;
+align-items: flex-end;
+justify-content: center;
+z-index: 100;
+visibility: hidden;
+opacity: 0;
+transition: opacity 0.28s ease, visibility 0.28s;
 }
 .modal-overlay.active { visibility: visible; opacity: 1; }
 .modal-card {
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-radius: 28px 28px 0 0;
-  padding: 10px 22px 22px;
-  width: 100%;
-  max-width: 480px;
-  max-height: 88vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
-  transform: translateY(24px);
-  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+background: rgba(255,255,255,0.96);
+backdrop-filter: blur(30px);
+-webkit-backdrop-filter: blur(30px);
+border-radius: 28px 28px 0 0;
+padding: 10px 22px 22px;
+width: 100%;
+max-width: 480px;
+max-height: 88vh;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 16px;
+box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
+transform: translateY(24px);
+transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .modal-overlay.active .modal-card { transform: translateY(0); }
 .modal-handle {
-  width: 36px;
-  height: 4px;
-  background: rgba(0,0,0,0.15);
-  border-radius: 2px;
-  margin: 0 auto 4px;
-  flex-shrink: 0;
+width: 36px;
+height: 4px;
+background: rgba(0,0,0,0.15);
+border-radius: 2px;
+margin: 0 auto 4px;
+flex-shrink: 0;
 }
 .modal-header { text-align: center; padding: 0 4px; }
 .modal-eyebrow {
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: var(--gold);
-  font-weight: 600;
-  text-transform: uppercase;
+font-size: 10px;
+letter-spacing: 0.14em;
+color: var(–gold);
+font-weight: 600;
+text-transform: uppercase;
 }
 .modal-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-top: 3px;
-  letter-spacing: -0.4px;
+font-size: 20px;
+font-weight: 700;
+color: var(–ink);
+margin-top: 3px;
+letter-spacing: -0.4px;
 }
 .modal-sub {
-  font-size: 12px;
-  color: var(--soft);
-  margin-top: 3px;
+font-size: 12px;
+color: var(–soft);
+margin-top: 3px;
 }
 .divider { height: 0.5px; background: rgba(0,0,0,0.1); }
 .select-label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--soft);
-  text-transform: uppercase;
-  font-weight: 600;
+font-size: 11px;
+letter-spacing: 0.08em;
+color: var(–soft);
+text-transform: uppercase;
+font-weight: 600;
 }
 .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .role-card {
-  background: #f9f9fb;
-  border: 1.5px solid rgba(0,0,0,0.07);
-  border-radius: 18px;
-  padding: 16px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+background: #f9f9fb;
+border: 1.5px solid rgba(0,0,0,0.07);
+border-radius: 18px;
+padding: 16px 12px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 10px;
+cursor: pointer;
+transition: all 0.2s ease;
 }
-.role-card.selected { border-color: var(--accent); background: #f5f3ff; }
-.role-card.selected.role-b { border-color: var(--accent2); background: #f0f6ff; }
+.role-card.selected { border-color: var(–accent); background: #f5f3ff; }
+.role-card.selected.role-b { border-color: var(–accent2); background: #f0f6ff; }
 .role-avatar-circle {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  background: linear-gradient(135deg, #ede8fd, #d9d3f7);
-  position: relative;
-  box-shadow: 0 2px 8px rgba(124,111,247,0.15);
+width: 56px;
+height: 56px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 26px;
+background: linear-gradient(135deg, #ede8fd, #d9d3f7);
+position: relative;
+box-shadow: 0 2px 8px rgba(124,111,247,0.15);
 }
 .role-card.role-b .role-avatar-circle {
-  background: linear-gradient(135deg, #e0eeff, #c8dffb);
-  box-shadow: 0 2px 8px rgba(91,141,238,0.15);
+background: linear-gradient(135deg, #e0eeff, #c8dffb);
+box-shadow: 0 2px 8px rgba(91,141,238,0.15);
 }
 .check-mark {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.2s;
-  border: 1.5px solid white;
+position: absolute;
+bottom: -2px;
+right: -2px;
+width: 18px;
+height: 18px;
+border-radius: 50%;
+background: var(–accent);
+color: white;
+font-size: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 0;
+transform: scale(0.5);
+transition: all 0.2s;
+border: 1.5px solid white;
 }
 .role-card.selected .check-mark { opacity: 1; transform: scale(1); }
-.role-card.selected.role-b .check-mark { background: var(--accent2); }
-.role-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.role-card.selected.role-b .check-mark { background: var(–accent2); }
+.role-name { font-size: 13px; font-weight: 500; color: var(–ink); }
 .modal-actions { display: flex; gap: 10px; }
 .btn {
-  flex: 1;
-  padding: 14px;
-  border-radius: 16px;
-  border: none;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  letter-spacing: -0.2px;
+flex: 1;
+padding: 14px;
+border-radius: 16px;
+border: none;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.18s ease;
+letter-spacing: -0.2px;
 }
 .btn-cancel {
-  background: #f2f2f6;
-  color: var(--soft);
+background: #f2f2f6;
+color: var(–soft);
 }
 .btn-confirm {
-  background: var(--ink);
-  color: white;
-  box-shadow: 0 2px 12px rgba(29,29,31,0.2);
+background: var(–ink);
+color: white;
+box-shadow: 0 2px 12px rgba(29,29,31,0.2);
 }
 .btn-confirm:disabled { opacity: 0.25; pointer-events: none; }
 .btn:active { transform: scale(0.97); }
 
 /* 音乐小组件 */
 .music-widget-sm {
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 20px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 2px 14px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+background: rgba(255,255,255,0.82);
+backdrop-filter: blur(24px) saturate(180%);
+-webkit-backdrop-filter: blur(24px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 20px;
+padding: 12px 16px;
+display: flex;
+align-items: center;
+gap: 12px;
+box-shadow: 0 2px 14px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
 }
 .sm-art {
-  width: 42px; height: 42px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, #ede8fd, #d8d1f7);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(124,111,247,0.18);
+width: 42px; height: 42px;
+border-radius: 11px;
+background: linear-gradient(135deg, #ede8fd, #d8d1f7);
+display: flex; align-items: center; justify-content: center;
+font-size: 20px; flex-shrink: 0;
+box-shadow: 0 2px 8px rgba(124,111,247,0.18);
 }
 .sm-info { flex: 1; min-width: 0; }
-.sm-song { font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sm-artist { font-size: 11px; color: var(--soft); }
+.sm-song { font-size: 14px; font-weight: 600; color: var(–ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sm-artist { font-size: 11px; color: var(–soft); }
 .sm-progress { height: 2px; background: rgba(0,0,0,0.07); border-radius: 1px; margin-top: 4px; overflow: hidden; }
-.sm-progress-fill { height: 100%; width: 38%; background: linear-gradient(90deg, var(--accent), #a59bf8); border-radius: 1px; }
+.sm-progress-fill { height: 100%; width: 38%; background: linear-gradient(90deg, var(–accent), #a59bf8); border-radius: 1px; }
 .sm-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .sm-btn {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; cursor: pointer; color: var(--soft);
+width: 32px; height: 32px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 15px; cursor: pointer; color: var(–soft);
 }
-.sm-btn.play { background: var(--ink); color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(29,29,31,0.18); }
+.sm-btn.play { background: var(–ink); color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(29,29,31,0.18); }
 .sm-btn:active { transform: scale(0.86); opacity: 0.65; }
 
 /* ════════════════════
 第二页 大音乐组件
 ════════════════════ */
 .music-widget-lg {
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 24px;
-  padding: 12px 16px 10px; /* 稍微压缩高度空间 */
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.8);
-  position: relative;
-  overflow: hidden;
+background: rgba(255,255,255,0.82);
+backdrop-filter: blur(24px) saturate(180%);
+-webkit-backdrop-filter: blur(24px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 24px;
+padding: 12px 16px 10px; /* 稍微压缩高度空间 */
+display: flex;
+flex-direction: column;
+gap: 11px;
+box-shadow: 0 2px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.8);
+position: relative;
+overflow: hidden;
 }
 .music-widget-lg::before {
-  content: '';
-  position: absolute;
-  right: -24px; top: -24px;
-  width: 110px; height: 110px;
-  border-radius: 50%;
-  border: 22px solid rgba(124,111,247,0.05);
-  pointer-events: none;
+content: ‘’;
+position: absolute;
+right: -24px; top: -24px;
+width: 110px; height: 110px;
+border-radius: 50%;
+border: 22px solid rgba(124,111,247,0.05);
+pointer-events: none;
 }
 .music-top { display: flex; align-items: center; gap: 12px; }
 .album-art-lg {
-  width: 52px; height: 52px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #ede8fd, #d8d1f7);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; flex-shrink: 0;
-  box-shadow: 0 3px 12px rgba(124,111,247,0.2), 0 0 0 0.5px rgba(0,0,0,0.04);
-  overflow: hidden;
+width: 52px; height: 52px;
+border-radius: 13px;
+background: linear-gradient(135deg, #ede8fd, #d8d1f7);
+display: flex; align-items: center; justify-content: center;
+font-size: 24px; flex-shrink: 0;
+box-shadow: 0 3px 12px rgba(124,111,247,0.2), 0 0 0 0.5px rgba(0,0,0,0.04);
+overflow: hidden;
 }
 .album-art-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 13px; }
 .music-info-lg { flex: 1; min-width: 0; }
 .now-badge-lg {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(124,111,247,0.1); border-radius: 6px;
-  padding: 2px 7px; margin-bottom: 4px;
+display: inline-flex; align-items: center; gap: 4px;
+background: rgba(124,111,247,0.1); border-radius: 6px;
+padding: 2px 7px; margin-bottom: 4px;
 }
 .now-dot-lg {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 1.4s ease-in-out infinite;
+width: 5px; height: 5px; border-radius: 50%;
+background: var(–accent);
+animation: pulse 1.4s ease-in-out infinite;
 }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.7)} }
-.now-text-lg { font-size: 10px; color: var(--accent); font-weight: 600; letter-spacing: .04em; }
+.now-text-lg { font-size: 10px; color: var(–accent); font-weight: 600; letter-spacing: .04em; }
 .music-song-lg {
-  font-size: 15px; font-weight: 600; color: var(--ink);
-  letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+font-size: 15px; font-weight: 600; color: var(–ink);
+letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.music-artist-lg { font-size: 12px; color: var(--soft); margin-top: 1px; }
+.music-artist-lg { font-size: 12px; color: var(–soft); margin-top: 1px; }
 .music-progress-wrap { display: flex; flex-direction: column; gap: 4px; }
 .music-progress-bar {
-  width: 100%; height: 3px;
-  background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden;
+width: 100%; height: 3px;
+background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden;
 }
 .music-progress-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--accent), #a59bf8);
-  border-radius: 2px; transition: width .5s linear;
+height: 100%; width: 0%;
+background: linear-gradient(90deg, var(–accent), #a59bf8);
+border-radius: 2px; transition: width .5s linear;
 }
 .music-times {
-  display: flex; justify-content: space-between;
-  font-size: 10px; color: var(--soft); font-variant-numeric: tabular-nums;
+display: flex; justify-content: space-between;
+font-size: 10px; color: var(–soft); font-variant-numeric: tabular-nums;
 }
 .music-controls-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 2px;
+display: flex; align-items: center; justify-content: space-between;
+padding: 0 2px;
 }
 .mctrl-btn {
-  width: 34px; height: 34px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; cursor: pointer; color: var(--soft);
-  transition: all .15s ease;
-  -webkit-tap-highlight-color: transparent;
+width: 34px; height: 34px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 15px; cursor: pointer; color: var(–soft);
+transition: all .15s ease;
+-webkit-tap-highlight-color: transparent;
 }
 .mctrl-btn:active { transform: scale(.85); opacity: .55; }
 .mctrl-play {
-  width: 42px; height: 42px;
-  background: var(--ink); color: white; font-size: 17px;
-  box-shadow: 0 3px 10px rgba(29,29,31,.2);
+width: 42px; height: 42px;
+background: var(–ink); color: white; font-size: 17px;
+box-shadow: 0 3px 10px rgba(29,29,31,.2);
 }
 
 /* ════════════════════
 第二页 下半区布局
 ════════════════════ */
 .p2-bottom {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
+display: flex;
+gap: 10px;
+align-items: stretch;
 }
 
 /* 左侧2×2 app占位 */
 .p2-apps {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 10px 2px;
-  flex: 1;
-  align-content: center;
+display: grid;
+grid-template-columns: 1fr 1fr;
+grid-template-rows: 1fr 1fr;
+gap: 10px 2px;
+flex: 1;
+align-content: center;
 }
 .p2-placeholder-app { cursor: pointer; }
 .p2-slot-icon {
-  background: rgba(0,0,0,0.03) !important;
-  border: 1.5px dashed rgba(0,0,0,0.1) !important;
-  box-shadow: none !important;
+background: rgba(0,0,0,0.03) !important;
+border: 1.5px dashed rgba(0,0,0,0.1) !important;
+box-shadow: none !important;
 }
 .p2-slot-icon .icon-fallback { font-size: 20px; color: #c7c7cc; }
 .p2-slot-icon img { width:100%; height:100%; object-fit:cover; border-radius:14px; }
 
 /* 右侧竖条区 */
 .p2-strips {
-  flex:1;
-  aspect-ratio:1/1;
-  display:flex;
-  gap:7px;
-  align-self:center;
-  align-items:stretch;
+flex:1;
+aspect-ratio:1/1;
+display:flex;
+gap:7px;
+align-self:center;
+align-items:stretch;
 }
 .p2-strip {
-  flex: 1;
-  border-radius: 100px;
-  overflow: hidden;
-  cursor: pointer;
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.9);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  transition: transform .16s ease;
-  min-height: 0;
+flex: 1;
+border-radius: 100px;
+overflow: hidden;
+cursor: pointer;
+background: rgba(255,255,255,0.82);
+backdrop-filter: blur(20px) saturate(180%);
+-webkit-backdrop-filter: blur(20px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+box-shadow: 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+transition: transform .16s ease;
+min-height: 0;
 }
 .p2-strip:active { transform: scale(.96); }
 .p2-strip img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .p2-strip-ph {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; height: 100%;
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+gap: 6px; height: 100%;
 }
 .p2-strip-ph span { font-size: 18px; opacity: .45; }
 .p2-strip.empty::after {
-  content: '+';
-  position: absolute; bottom: 8px;
-  width: 20px; height: 20px;
-  background: rgba(0,0,0,0.045);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: var(--soft);
-  line-height: 20px; text-align: center;
+content: ‘+’;
+position: absolute; bottom: 8px;
+width: 20px; height: 20px;
+background: rgba(0,0,0,0.045);
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 14px; color: var(–soft);
+line-height: 20px; text-align: center;
 }
 
 /* ── 新增：第二页中间两行图标 ── */
 .p2-extra-icons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+/* ════════════════════
+第一页 - 情侣时钟卡片（图3款式）
+════════════════════ */
+.p3-clock-card {
+position: relative;
+border-radius: 26px;
+overflow: hidden;
+flex-shrink: 0;
+height: 128px;
+cursor: pointer;
+background: #dfe3ea linear-gradient(135deg, #e6e9f0, #d5dae4);
+box-shadow: 0 2px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.p3-clock-card img.p3-clock-bg {
+position: absolute;
+inset: 0;
+width: 100%; height: 100%;
+object-fit: cover;
+display: block;
+}
+.p3-clock-card::after {
+content: ‘’;
+position: absolute; inset: 0;
+background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.18) 100%);
+pointer-events: none;
+}
+.p3-clock-topbar {
+position: absolute;
+top: 10px; left: 12px; right: 12px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+z-index: 2;
+}
+.p3-clock-user {
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.p3-clock-avatar {
+width: 22px; height: 22px;
+border-radius: 50%;
+overflow: hidden;
+background: rgba(60,60,60,0.55);
+display: flex; align-items: center; justify-content: center;
+font-size: 11px; color: #fff;
+flex-shrink: 0;
+border: 1px solid rgba(255,255,255,0.6);
+}
+.p3-clock-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.p3-clock-name {
+font-size: 12px;
+font-weight: 600;
+color: rgba(255,255,255,0.95);
+text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+}
+.p3-clock-stars { display: flex; gap: 4px; font-size: 13px; color: #ffd76b; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.p3-clock-center {
+position: absolute;
+top: 42px; left: 0; right: 0;
+text-align: center;
+z-index: 2;
+}
+.p3-clock-time {
+font-size: 26px;
+font-weight: 600;
+color: #fff;
+letter-spacing: 0.5px;
+text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+font-variant-numeric: tabular-nums;
+}
+.p3-clock-msg {
+font-size: 12px;
+color: rgba(255,255,255,0.92);
+margin-top: 3px;
+text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+cursor: text;
+}
+.p3-clock-bottom {
+position: absolute;
+bottom: 10px; right: 12px;
+display: flex;
+align-items: center;
+gap: 6px;
+z-index: 2;
+}
+.p3-clock-bubble {
+background: rgba(255,255,255,0.85);
+backdrop-filter: blur(8px);
+border-radius: 14px;
+padding: 5px 12px;
+font-size: 11px;
+color: #444;
+font-weight: 500;
+cursor: text;
+max-width: 130px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.p3-clock-avatar-sm {
+width: 26px; height: 26px;
+border-radius: 50%;
+overflow: hidden;
+background: linear-gradient(135deg,#e9c9cf,#d9b9c2);
+border: 1.5px solid rgba(255,255,255,0.9);
+flex-shrink: 0;
+display: flex; align-items: center; justify-content: center;
+font-size: 12px;
+}
+.p3-clock-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+.p3-clock-editbtn {
+position: absolute;
+top: 8px; right: 10px;
+width: 22px; height: 22px;
+border-radius: 50%;
+background: rgba(0,0,0,0.32);
+color: #fff;
+font-size: 11px;
+display: flex; align-items: center; justify-content: center;
+z-index: 3;
+opacity: 0;
+transition: opacity .15s ease;
+}
+.p3-clock-card:hover .p3-clock-editbtn,
+.p3-clock-card:active .p3-clock-editbtn { opacity: 1; }
+
+/* ════════════════════
+第二页 - 双人播放器组件（图2款式）
+════════════════════ */
+.p2-couple-player {
+flex-shrink: 0;
+padding: 14px 16px 12px;
+border-radius: 24px;
+background: rgba(255,255,255,0.6);
+position: relative;
+}
+.p2cp-avatars-row {
+display: flex;
+justify-content: center;
+align-items: flex-end;
+gap: 38px;
+position: relative;
+}
+.p2cp-avatar-col {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 6px;
+position: relative;
+}
+.p2cp-label {
+font-size: 12px;
+font-weight: 600;
+color: var(–ink);
+background: rgba(255,255,255,0.0);
+cursor: text;
+white-space: nowrap;
+}
+.p2cp-avatar {
+width: 52px; height: 52px;
+border-radius: 50%;
+overflow: hidden;
+border: 2px solid #1d1d1f;
+background: linear-gradient(135deg,#f0ecfd,#e3dcfb);
+display: flex; align-items: center; justify-content: center;
+font-size: 20px;
+cursor: pointer;
+position: relative;
+}
+.p2cp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.p2cp-arc {
+position: absolute;
+top: 34px;
+left: 50%;
+width: 96px;
+height: 30px;
+transform: translateX(-50%);
+pointer-events: none;
+}
+.p2cp-caption {
+text-align: center;
+font-size: 11.5px;
+color: var(–soft);
+margin-top: 10px;
+cursor: text;
+}
+.p2cp-player-bar {
+margin-top: 10px;
+background: rgba(255,255,255,0.85);
+backdrop-filter: blur(20px) saturate(180%);
+-webkit-backdrop-filter: blur(20px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 18px;
+padding: 10px 14px 8px;
+box-shadow: 0 2px 14px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.p2cp-toprow {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.p2cp-songname {
+font-size: 14px;
+font-weight: 600;
+color: var(–ink);
+letter-spacing: -.2px;
+}
+.p2cp-waveicon { color: var(–soft); font-size: 12px; }
+.p2cp-subline {
+font-size: 10.5px;
+color: var(–soft);
+margin-top: 1px;
+letter-spacing: 0.02em;
+}
+.p2cp-bar {
+height: 3px;
+background: rgba(0,0,0,0.08);
+border-radius: 2px;
+margin-top: 8px;
+overflow: hidden;
+}
+.p2cp-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–accent), #a59bf8);
+border-radius: 2px;
+width: 0%;
+transition: width .5s linear;
+}
+.p2cp-times {
+display: flex; justify-content: space-between;
+font-size: 10px; color: var(–soft);
+margin-top: 4px;
+font-variant-numeric: tabular-nums;
+}
+.p2cp-controls {
+display: flex; align-items: center; justify-content: space-between;
+margin-top: 6px;
+padding: 0 2px;
+}
+.p2cp-ctrl-btn {
+font-size: 15px; color: var(–soft);
+display: flex; align-items: center; justify-content: center;
+width: 30px; height: 30px;
+cursor: pointer;
+transition: transform .15s ease, opacity .15s ease;
+}
+.p2cp-ctrl-btn:active { transform: scale(.85); opacity: .6; }
+.p2cp-editbtn {
+position: absolute;
+top: 8px; right: 10px;
+width: 22px; height: 22px;
+border-radius: 50%;
+background: rgba(0,0,0,0.06);
+color: var(–soft);
+font-size: 11px;
+display: flex; align-items: center; justify-content: center;
+cursor: pointer;
+z-index: 3;
+}
+
+/* ════════════════════
+第二页 - 消息气泡小组件（图4款式）
+════════════════════ */
+.p4-bubbles {
+display: flex;
+flex-direction: column;
+gap: 8px;
+flex: 1;
+min-width: 0;
+justify-content: center;
+}
+.p4-bubble-row {
+display: flex;
+align-items: center;
+gap: 8px;
+cursor: pointer;
+}
+.p4-bubble-row.align-right { justify-content: flex-end; }
+.p4-avatar {
+width: 30px; height: 30px;
+border-radius: 50%;
+overflow: hidden;
+flex-shrink: 0;
+background: linear-gradient(135deg,#e7e4fb,#d9d3f7);
+display: flex; align-items: center; justify-content: center;
+font-size: 13px;
+border: 1px solid rgba(255,255,255,0.8);
+box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.p4-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.p4-bubble-text {
+background: rgba(255,255,255,0.85);
+backdrop-filter: blur(16px) saturate(180%);
+-webkit-backdrop-filter: blur(16px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.9);
+border-radius: 16px;
+padding: 8px 14px;
+font-size: 12.5px;
+color: var(–ink);
+font-weight: 500;
+max-width: 74%;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
 }
 </style>
-
 
 </head>
 <body id="mainBody">
@@ -666,17 +973,27 @@ body {
 <!-- ★ 第一页 -->
 
 <div class="page">
-  <div class="clock-widget">
-    <div class="clock-left">
-      <div class="clock-time" id="bigTime">00:00</div>
-      <div class="clock-ampm" id="clockAmpm">上午</div>
+  <div class="p3-clock-card" id="p3ClockCard">
+    <img class="p3-clock-bg" id="p3ClockBg" src="" style="display:none;">
+    <div class="p3-clock-editbtn" id="p3ClockEditBtn" title="更换背景图">🖼</div>
+    <div class="p3-clock-topbar">
+      <div class="p3-clock-user">
+        <div class="p3-clock-avatar" id="p3ClockUserAvatar">🐰</div>
+        <div class="p3-clock-name" id="p3ClockUserName" contenteditable="true" spellcheck="false">장이빈</div>
+      </div>
+      <div class="p3-clock-stars">★ ★</div>
     </div>
-    <div class="clock-divider"></div>
-    <div class="clock-right">
-      <div class="date-day" id="dateDay">周一</div>
-      <div class="date-full" id="dateFull">1月1日</div>
+    <div class="p3-clock-center">
+      <div class="p3-clock-time" id="bigTime">00:00</div>
+      <div class="p3-clock-msg" id="p3ClockMsg" contenteditable="true" spellcheck="false">사랑해</div>
+    </div>
+    <div class="p3-clock-bottom">
+      <div class="p3-clock-bubble" id="p3ClockBubble" contenteditable="true" spellcheck="false">사랑해</div>
+      <div class="p3-clock-avatar-sm" id="p3ClockPartnerAvatar">🐨</div>
     </div>
   </div>
+  <input type="file" accept="image/*" id="p3ClockBgUpload" style="display:none;">
+  <input type="file" accept="image/*" id="p3ClockAvatarUpload" style="display:none;">
 
   <div class="couple-widget" id="coupleWidget">
     <div class="couple-avatars" id="coupleAvatars">
@@ -706,37 +1023,47 @@ body {
 
 <div class="page" style="gap:10px;">
 
-  <!-- 音乐组件 -->
+  <!-- 双人播放器组件 -->
 
-  <div class="music-widget-lg" style="flex-shrink:0;">
-    <div class="music-top">
-      <div class="album-art-lg" id="musicArt">🎵</div>
-      <div class="music-info-lg">
-        <div class="now-badge-lg">
-          <div class="now-dot-lg"></div>
-          <span class="now-text-lg">正在播放</span>
-        </div>
-        <div class="music-song-lg" id="musicSong">暂无播放</div>
-        <div class="music-artist-lg" id="musicArtist">— —</div>
+  <div class="p2-couple-player" style="flex-shrink:0;">
+    <div class="p2cp-editbtn" id="p2cpEditBtn" title="更换头像">🖼</div>
+    <div class="p2cp-avatars-row">
+      <div class="p2cp-avatar-col">
+        <div class="p2cp-label" id="p2cpLabelLeft" contenteditable="true" spellcheck="false">你在左边</div>
+        <div class="p2cp-avatar" id="p2cpAvatarLeft" data-target="left">🙂</div>
+      </div>
+      <svg class="p2cp-arc" viewBox="0 0 96 30"><path d="M2 2 C 2 26, 94 26, 94 2" fill="none" stroke="#1d1d1f" stroke-width="1.6"/></svg>
+      <div class="p2cp-avatar-col">
+        <div class="p2cp-label" id="p2cpLabelRight" contenteditable="true" spellcheck="false">我紧靠右</div>
+        <div class="p2cp-avatar" id="p2cpAvatarRight" data-target="right">🙂</div>
       </div>
     </div>
-    <div class="music-progress-wrap">
-      <div class="music-progress-bar">
-        <div class="music-progress-fill" id="musicProgressFill"></div>
-      </div>
-      <div class="music-times">
-        <span id="musicCurrent">0:00</span>
-        <span id="musicTotal">0:00</span>
-      </div>
-    </div>
-    <div class="music-controls-row">
-      <div class="mctrl-btn" id="btnShuffle">⇄</div>
-      <div class="mctrl-btn" id="btnPrev">⏮</div>
-      <div class="mctrl-btn mctrl-play" id="btnPlay">▶</div>
-      <div class="mctrl-btn" id="btnNext">⏭</div>
-      <div class="mctrl-btn" id="btnRepeat">↺</div>
-    </div>
+    <div class="p2cp-caption" id="p2cpCaption" contenteditable="true" spellcheck="false">谁在乎没有你的明天</div>
+
+<div class="p2cp-player-bar">
+  <div class="p2cp-toprow">
+    <div class="p2cp-songname" id="musicSong">暂无播放</div>
+    <div class="p2cp-waveicon">▐▐▐</div>
   </div>
+  <div class="p2cp-subline" id="musicArtist">— —</div>
+  <div class="p2cp-bar">
+    <div class="p2cp-bar-fill" id="musicProgressFill"></div>
+  </div>
+  <div class="p2cp-times">
+    <span id="musicCurrent">0:00</span>
+    <span id="musicTotal">0:00</span>
+  </div>
+  <div class="p2cp-controls">
+    <div class="p2cp-ctrl-btn" id="btnShuffle">★</div>
+    <div class="p2cp-ctrl-btn" id="btnPrev">⏮</div>
+    <div class="p2cp-ctrl-btn" id="btnPlay" style="font-size:19px;">⏸</div>
+    <div class="p2cp-ctrl-btn" id="btnNext">⏭</div>
+    <div class="p2cp-ctrl-btn" id="btnRepeat">♥</div>
+  </div>
+</div>
+
+  </div>
+  <input type="file" accept="image/*" id="p2cpAvatarUpload" style="display:none;">
 
   <!-- ★ 两行图标（共8个），点击上传自定义，颜色与左边4个一致 -->
 
@@ -777,12 +1104,25 @@ body {
       </div>
     </div>
 
-<div class="p2-strips">
-  <div class="p2-strip empty" id="photo1"><div class="p2-strip-ph"><span>🌸</span></div></div>
-  <div class="p2-strip empty" id="photo2"><div class="p2-strip-ph"><span>☕</span></div></div>
-  <div class="p2-strip empty" id="photo3"><div class="p2-strip-ph"><span>🌙</span></div></div>
-  <div class="p2-strip empty" id="photo4"><div class="p2-strip-ph"><span>🌿</span></div></div>
+<div class="p4-bubbles">
+  <div class="p4-bubble-row" id="bubbleRow1" data-target="bubble1">
+    <div class="p4-avatar" id="bubbleAvatar1">🙂</div>
+    <div class="p4-bubble-text" id="bubbleText1" contenteditable="true" spellcheck="false">have a nice day 🌟</div>
+  </div>
+  <div class="p4-bubble-row align-right" id="bubbleRow2" data-target="bubble2">
+    <div class="p4-bubble-text" id="bubbleText2" contenteditable="true" spellcheck="false">HAPPY EVERYDAY</div>
+    <div class="p4-avatar" id="bubbleAvatar2">🙂</div>
+  </div>
+  <div class="p4-bubble-row" id="bubbleRow3" data-target="bubble3">
+    <div class="p4-avatar" id="bubbleAvatar3">🙂</div>
+    <div class="p4-bubble-text" id="bubbleText3" contenteditable="true" spellcheck="false">今天也要开心哦</div>
+  </div>
+  <div class="p4-bubble-row align-right" id="bubbleRow4" data-target="bubble4">
+    <div class="p4-bubble-text" id="bubbleText4" contenteditable="true" spellcheck="false">晚安啦～</div>
+    <div class="p4-avatar" id="bubbleAvatar4">🙂</div>
+  </div>
 </div>
+<input type="file" accept="image/*" id="bubbleAvatarUpload" style="display:none;">
 
   </div>
 </div>
@@ -998,13 +1338,156 @@ body {
     slotUpload.value = ''; currentSlot = null;
   });
 
-  // 竖条照片上传
-  ['photo1','photo2','photo3','photo4'].forEach(id => {
+  // 气泡消息组件（图4款式）— 头像上传 + 文案本地保存
+  const bubbleAvatarUpload = document.getElementById('bubbleAvatarUpload');
+  let currentBubbleTarget = null;
+
+  [1,2,3,4].forEach(i => {
+    const avatarEl = document.getElementById('bubbleAvatar' + i);
+    const textEl = document.getElementById('bubbleText' + i);
+    const rowEl = document.getElementById('bubbleRow' + i);
+
+    // 加载已保存头像
+    const savedAvatar = localStorage.getItem('bubble_avatar_' + i);
+    if (savedAvatar && avatarEl) avatarEl.innerHTML = `<img src="${savedAvatar}">`;
+
+    // 加载已保存文案
+    const savedText = localStorage.getItem('bubble_text_' + i);
+    if (savedText && textEl) textEl.textContent = savedText;
+
+    // 点击头像 → 上传图片
+    if (avatarEl) {
+      avatarEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentBubbleTarget = i;
+        bubbleAvatarUpload.click();
+      });
+    }
+
+    // 编辑文案 → 本地保存
+    if (textEl) {
+      textEl.addEventListener('click', (e) => e.stopPropagation());
+      textEl.addEventListener('blur', () => {
+        localStorage.setItem('bubble_text_' + i, textEl.textContent.trim());
+      });
+    }
+  });
+
+  bubbleAvatarUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentBubbleTarget) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      localStorage.setItem('bubble_avatar_' + currentBubbleTarget, ev.target.result);
+      const avatarEl = document.getElementById('bubbleAvatar' + currentBubbleTarget);
+      if (avatarEl) avatarEl.innerHTML = `<img src="${ev.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+    bubbleAvatarUpload.value = '';
+    currentBubbleTarget = null;
+  });
+
+  // 情侣时钟卡片（图3款式）— 背景图 + 头像 + 文案
+  const p3ClockCard = document.getElementById('p3ClockCard');
+  const p3ClockBg = document.getElementById('p3ClockBg');
+  const p3ClockBgUpload = document.getElementById('p3ClockBgUpload');
+  const p3ClockAvatarUpload = document.getElementById('p3ClockAvatarUpload');
+  const p3ClockEditBtn = document.getElementById('p3ClockEditBtn');
+  const p3ClockUserAvatar = document.getElementById('p3ClockUserAvatar');
+  const p3ClockPartnerAvatar = document.getElementById('p3ClockPartnerAvatar');
+  let p3AvatarTarget = null;
+
+  const savedClockBg = localStorage.getItem('p3_clock_bg');
+  if (savedClockBg) { p3ClockBg.src = savedClockBg; p3ClockBg.style.display = 'block'; }
+
+  const savedUserAvatar = localStorage.getItem('p3_clock_user_avatar');
+  if (savedUserAvatar) p3ClockUserAvatar.innerHTML = `<img src="${savedUserAvatar}">`;
+  const savedPartnerAvatar = localStorage.getItem('p3_clock_partner_avatar');
+  if (savedPartnerAvatar) p3ClockPartnerAvatar.innerHTML = `<img src="${savedPartnerAvatar}">`;
+
+  ['p3ClockUserName','p3ClockMsg','p3ClockBubble'].forEach(id => {
     const el = document.getElementById(id);
-    if (!el) return;
-    const saved = localStorage.getItem('photo_' + id);
-    if (saved) { el.innerHTML = `<img src="${saved}">`; el.classList.remove('empty'); }
-    el.addEventListener('click', () => openPhotoUpload(id));
+    const saved = localStorage.getItem(id);
+    if (saved && el) el.textContent = saved;
+    if (el) {
+      el.addEventListener('click', e => e.stopPropagation());
+      el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim()));
+    }
+  });
+
+  if (p3ClockEditBtn) {
+    p3ClockEditBtn.addEventListener('click', (e) => { e.stopPropagation(); p3ClockBgUpload.click(); });
+  }
+  if (p3ClockUserAvatar) {
+    p3ClockUserAvatar.addEventListener('click', (e) => { e.stopPropagation(); p3AvatarTarget = 'user'; p3ClockAvatarUpload.click(); });
+  }
+  if (p3ClockPartnerAvatar) {
+    p3ClockPartnerAvatar.addEventListener('click', (e) => { e.stopPropagation(); p3AvatarTarget = 'partner'; p3ClockAvatarUpload.click(); });
+  }
+  p3ClockBgUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      localStorage.setItem('p3_clock_bg', ev.target.result);
+      p3ClockBg.src = ev.target.result;
+      p3ClockBg.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    p3ClockBgUpload.value = '';
+  });
+  p3ClockAvatarUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file || !p3AvatarTarget) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const key = p3AvatarTarget === 'user' ? 'p3_clock_user_avatar' : 'p3_clock_partner_avatar';
+      const el = p3AvatarTarget === 'user' ? p3ClockUserAvatar : p3ClockPartnerAvatar;
+      localStorage.setItem(key, ev.target.result);
+      el.innerHTML = `<img src="${ev.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+    p3ClockAvatarUpload.value = '';
+    p3AvatarTarget = null;
+  });
+
+  // 双人播放器组件（图2款式）— 头像 + 文案
+  const p2cpAvatarUpload = document.getElementById('p2cpAvatarUpload');
+  const p2cpAvatarLeft = document.getElementById('p2cpAvatarLeft');
+  const p2cpAvatarRight = document.getElementById('p2cpAvatarRight');
+  const p2cpEditBtn = document.getElementById('p2cpEditBtn');
+  let p2cpTarget = null;
+
+  const savedP2cpLeft = localStorage.getItem('p2cp_avatar_left');
+  if (savedP2cpLeft) p2cpAvatarLeft.innerHTML = `<img src="${savedP2cpLeft}">`;
+  const savedP2cpRight = localStorage.getItem('p2cp_avatar_right');
+  if (savedP2cpRight) p2cpAvatarRight.innerHTML = `<img src="${savedP2cpRight}">`;
+
+  ['p2cpLabelLeft','p2cpLabelRight','p2cpCaption'].forEach(id => {
+    const el = document.getElementById(id);
+    const saved = localStorage.getItem(id);
+    if (saved && el) el.textContent = saved;
+    if (el) {
+      el.addEventListener('click', e => e.stopPropagation());
+      el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim()));
+    }
+  });
+
+  function openP2cpUpload(target) { p2cpTarget = target; p2cpAvatarUpload.click(); }
+  if (p2cpAvatarLeft) p2cpAvatarLeft.addEventListener('click', e => { e.stopPropagation(); openP2cpUpload('left'); });
+  if (p2cpAvatarRight) p2cpAvatarRight.addEventListener('click', e => { e.stopPropagation(); openP2cpUpload('right'); });
+  if (p2cpEditBtn) p2cpEditBtn.addEventListener('click', e => { e.stopPropagation(); openP2cpUpload('left'); });
+
+  p2cpAvatarUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file || !p2cpTarget) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const key = 'p2cp_avatar_' + p2cpTarget;
+      const el = p2cpTarget === 'left' ? p2cpAvatarLeft : p2cpAvatarRight;
+      localStorage.setItem(key, ev.target.result);
+      el.innerHTML = `<img src="${ev.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+    p2cpAvatarUpload.value = '';
+    p2cpTarget = null;
   });
 
   // 音乐组件联动
