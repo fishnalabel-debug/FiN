@@ -960,6 +960,32 @@ overflow: hidden;
 text-overflow: ellipsis;
 box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
 }
+
+/* ════════════════════
+拖拽排序（iOS 长按抖动风格）
+════════════════════ */
+@keyframes icon-jiggle {
+0%   { transform: rotate(-1.6deg); }
+25%  { transform: rotate(1.6deg); }
+50%  { transform: rotate(-1.6deg); }
+75%  { transform: rotate(1.6deg); }
+100% { transform: rotate(-1.6deg); }
+}
+.jiggling {
+animation: icon-jiggle 0.26s ease-in-out infinite;
+animation-delay: calc(var(–jiggle-i, 0) * 0.045s);
+}
+.drag-dragging {
+opacity: 0.35;
+}
+.drag-ghost {
+position: fixed;
+z-index: 999;
+pointer-events: none;
+transform: scale(1.12);
+filter: drop-shadow(0 8px 18px rgba(0,0,0,0.28));
+transition: none;
+}
 </style>
 
 </head>
@@ -1008,7 +1034,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     <div class="couple-chevron">›</div>
   </div>
 
-  <div class="app-grid">
+  <div class="app-grid" id="sortGrid-p1">
     <div class="app-item" data-app="phone"><div class="app-icon"><img src="chat/chat.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💬</span>';"></div><span class="app-name">聊天</span></div>
     <div class="app-item" data-app="diary"><div class="app-icon"><img src="diary/diary.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📔</span>';"></div><span class="app-name">日记</span></div>
     <div class="app-item" data-app="music"><div class="app-icon"><img src="music/music.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎵</span>';"></div><span class="app-name">音乐</span></div>
@@ -1069,13 +1095,13 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
   <!-- ★ 两行图标（共8个），点击上传自定义，颜色与左边4个一致 -->
 
   <div class="p2-extra-icons">
-    <div class="app-grid">
+    <div class="app-grid" id="sortGrid-p2a">
       <div class="app-item p2-placeholder-app" data-slot="4"><div class="app-icon p2-slot-icon" id="slotIcon4"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
       <div class="app-item p2-placeholder-app" data-slot="5"><div class="app-icon p2-slot-icon" id="slotIcon5"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
       <div class="app-item p2-placeholder-app" data-slot="6"><div class="app-icon p2-slot-icon" id="slotIcon6"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
       <div class="app-item p2-placeholder-app" data-slot="7"><div class="app-icon p2-slot-icon" id="slotIcon7"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
     </div>
-    <div class="app-grid">
+    <div class="app-grid" id="sortGrid-p2b">
       <div class="app-item p2-placeholder-app" data-slot="8"><div class="app-icon p2-slot-icon" id="slotIcon8"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
       <div class="app-item p2-placeholder-app" data-slot="9"><div class="app-icon p2-slot-icon" id="slotIcon9"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
       <div class="app-item p2-placeholder-app" data-slot="10"><div class="app-icon p2-slot-icon" id="slotIcon10"><span class="icon-fallback">＋</span></div><span class="app-name">自定义</span></div>
@@ -1086,7 +1112,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
   <!-- 下半区：左2列app占位 + 右2列竖条照片 -->
 
   <div class="p2-bottom" style="flex:1;min-height:0;align-items:center;">
-    <div class="p2-apps">
+    <div class="p2-apps" id="sortGrid-p2c">
       <div class="app-item p2-placeholder-app" data-slot="0">
         <div class="app-icon p2-slot-icon" id="slotIcon0"><span class="icon-fallback">＋</span></div>
         <span class="app-name">自定义</span>
@@ -1140,7 +1166,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
   <!-- 底栏 -->
 
   <div class="bottom-dock">
-    <div class="dock-inner">
+    <div class="dock-inner" id="sortGrid-dock">
       <div class="dock-item" data-app="momo" title="便签"><img src="momo/momo.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='📝';"></div>
       <div class="dock-item" data-app="make" title="代餐"><img src="make/make.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='🍽️';"></div>
       <div class="dock-item" data-app="album" title="相册"><img src="album/album.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='🖼️';"></div>
@@ -1569,6 +1595,208 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
   }
   
   loadCustomPages();
+
+  // ════════════════════
+  // 图标拖拽排序（iOS 长按抖动风格）
+  // ════════════════════
+  (function initIconSort() {
+    const containers = document.querySelectorAll('[id^="sortGrid-"]');
+    let jiggleMode = false;
+    let longPressTimer = null;
+    let dragging = false;
+    let didDrag = false;
+    let dragEl = null;
+    let dragContainer = null;
+    let startX = 0, startY = 0;
+    let offsetX = 0, offsetY = 0;
+    let ghost = null;
+
+    function itemKey(el) {
+      // 用 data-app 或 data-slot 作为唯一标识
+      return el.getAttribute('data-app') || ('slot-' + el.getAttribute('data-slot'));
+    }
+    function containerKey(container) {
+      return container.id;
+    }
+
+    // 加载已保存的排序
+    function applySavedOrder(container) {
+      const key = 'icon_order_' + containerKey(container);
+      const saved = JSON.parse(localStorage.getItem(key) || 'null');
+      if (!saved) return;
+      const items = Array.from(container.children);
+      const map = {};
+      items.forEach(it => { map[itemKey(it)] = it; });
+      saved.forEach(k => {
+        if (map[k]) container.appendChild(map[k]);
+      });
+      // 追加未在保存列表中的新图标（保底）
+      items.forEach(it => {
+        if (!saved.includes(itemKey(it))) container.appendChild(it);
+      });
+    }
+    function saveOrder(container) {
+      const key = 'icon_order_' + containerKey(container);
+      const order = Array.from(container.children).map(itemKey);
+      localStorage.setItem(key, JSON.stringify(order));
+    }
+
+    containers.forEach(applySavedOrder);
+
+    function enterJiggle() {
+      if (jiggleMode) return;
+      jiggleMode = true;
+      containers.forEach(c => {
+        Array.from(c.children).forEach((el, i) => {
+          el.style.setProperty('--jiggle-i', i);
+          el.classList.add('jiggling');
+        });
+      });
+      document.body.classList.add('jiggle-mode');
+    }
+    function exitJiggle() {
+      if (!jiggleMode) return;
+      jiggleMode = false;
+      containers.forEach(c => {
+        Array.from(c.children).forEach(el => el.classList.remove('jiggling'));
+      });
+      document.body.classList.remove('jiggle-mode');
+    }
+
+    function getPoint(e) {
+      if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function findSortableItem(el) {
+      return el.closest('.app-item, .dock-item');
+    }
+
+    function onPressStart(e) {
+      const item = findSortableItem(e.target);
+      if (!item) return;
+      const container = item.parentElement;
+      if (!container || !container.id || !container.id.startsWith('sortGrid-')) return;
+
+      didDrag = false;
+      const pt = getPoint(e);
+      startX = pt.x; startY = pt.y;
+
+      longPressTimer = setTimeout(() => {
+        enterJiggle();
+        beginDrag(item, container, pt);
+      }, 480);
+
+      document.addEventListener('touchmove', onEarlyMove, { passive: false });
+      document.addEventListener('mousemove', onEarlyMove);
+      document.addEventListener('touchend', onPressEnd);
+      document.addEventListener('mouseup', onPressEnd);
+    }
+
+    function onEarlyMove(e) {
+      // 长按判定期间，如果手指移动太多则取消长按（视为滚动/点击拖动）
+      const pt = getPoint(e);
+      const dist = Math.hypot(pt.x - startX, pt.y - startY);
+      if (dist > 10 && !dragging) {
+        clearTimeout(longPressTimer);
+      }
+    }
+
+    function beginDrag(item, container, pt) {
+      dragging = true;
+      didDrag = true;
+      dragEl = item;
+      dragContainer = container;
+      const rect = item.getBoundingClientRect();
+      offsetX = pt.x - rect.left;
+      offsetY = pt.y - rect.top;
+
+      ghost = item.cloneNode(true);
+      ghost.classList.add('drag-ghost');
+      ghost.style.width = rect.width + 'px';
+      ghost.style.height = rect.height + 'px';
+      ghost.style.left = rect.left + 'px';
+      ghost.style.top = rect.top + 'px';
+      document.body.appendChild(ghost);
+      item.classList.add('drag-dragging');
+
+      document.removeEventListener('touchmove', onEarlyMove, { passive: false });
+      document.removeEventListener('mousemove', onEarlyMove);
+      document.addEventListener('touchmove', onDragMove, { passive: false });
+      document.addEventListener('mousemove', onDragMove);
+    }
+
+    function onDragMove(e) {
+      if (!dragging || !ghost) return;
+      e.preventDefault && e.preventDefault();
+      const pt = getPoint(e);
+      ghost.style.left = (pt.x - offsetX) + 'px';
+      ghost.style.top = (pt.y - offsetY) + 'px';
+
+      // 找到当前指针下最近的兄弟节点，决定插入位置
+      const siblings = Array.from(dragContainer.children).filter(el => el !== dragEl);
+      let closest = null, closestDist = Infinity;
+      siblings.forEach(sib => {
+        const r = sib.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const d = Math.hypot(pt.x - cx, pt.y - cy);
+        if (d < closestDist) { closestDist = d; closest = sib; }
+      });
+      if (closest) {
+        const r = closest.getBoundingClientRect();
+        const before = pt.x < r.left + r.width / 2;
+        dragContainer.insertBefore(dragEl, before ? closest : closest.nextSibling);
+      }
+    }
+
+    function onPressEnd(e) {
+      clearTimeout(longPressTimer);
+      document.removeEventListener('touchmove', onEarlyMove, { passive: false });
+      document.removeEventListener('mousemove', onEarlyMove);
+      document.removeEventListener('touchend', onPressEnd);
+      document.removeEventListener('mouseup', onPressEnd);
+
+      if (dragging) {
+        document.removeEventListener('touchmove', onDragMove, { passive: false });
+        document.removeEventListener('mousemove', onDragMove);
+        if (ghost) { ghost.remove(); ghost = null; }
+        if (dragEl) {
+          dragEl.classList.remove('drag-dragging');
+          saveOrder(dragContainer);
+        }
+        dragging = false;
+        // 延迟退出抖动，给用户视觉反馈；点击图标之外区域也会退出
+        setTimeout(() => { if (!dragging) exitJiggle(); }, 150);
+        dragEl = null; dragContainer = null;
+      }
+    }
+
+    // 点击空白处退出抖动模式；抖动模式下点图标本身也只退出、不跳转
+    document.addEventListener('click', (e) => {
+      if (jiggleMode) {
+        const item = e.target.closest('.app-item, .dock-item, .p2-placeholder-app');
+        if (item) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        exitJiggle();
+      }
+    }, true);
+
+    // 抑制拖动后触发的click跳转（避免拖完手一松又跳转到app页面）
+    document.addEventListener('click', (e) => {
+      if (didDrag) {
+        e.preventDefault();
+        e.stopPropagation();
+        didDrag = false;
+      }
+    }, true);
+
+    containers.forEach(container => {
+      container.addEventListener('touchstart', onPressStart, { passive: true });
+      container.addEventListener('mousedown', onPressStart);
+    });
+  })();
 })();
 </script>
 
