@@ -41,7 +41,7 @@ flex-direction: column;
 
 /* ── 顶部安全区留白 ── */
 .status-bar-space {
-height: calc(var(–safe-top) + 40px);  /* 留出状态栏/灵动岛安全区，避免内容被遮挡 */
+height: calc(var(–safe-top) + 64px);  /* 留出状态栏/灵动岛安全区，避免内容被遮挡（全屏书签模式加强） */
 flex-shrink: 0;
 }
 
@@ -1102,20 +1102,20 @@ transition: none;
 
 <div class="p4-bubbles">
   <div class="p4-bubble-row" id="bubbleRow1" data-target="bubble1">
-    <div class="p4-avatar" id="bubbleAvatar1">🐱</div>
+    <div class="p4-avatar" id="bubbleAvatar1">🙂</div>
     <div class="p4-bubble-text" id="bubbleText1" contenteditable="true" spellcheck="false">have a nice day 🌟</div>
   </div>
   <div class="p4-bubble-row align-right" id="bubbleRow2" data-target="bubble2">
     <div class="p4-bubble-text" id="bubbleText2" contenteditable="true" spellcheck="false">HAPPY EVERYDAY</div>
-    <div class="p4-avatar" id="bubbleAvatar2">🐶</div>
+    <div class="p4-avatar" id="bubbleAvatar2">🙂</div>
   </div>
   <div class="p4-bubble-row" id="bubbleRow3" data-target="bubble3">
-    <div class="p4-avatar" id="bubbleAvatar3">🐱</div>
+    <div class="p4-avatar" id="bubbleAvatar3">🙂</div>
     <div class="p4-bubble-text" id="bubbleText3" contenteditable="true" spellcheck="false">今天也要开心哦</div>
   </div>
   <div class="p4-bubble-row align-right" id="bubbleRow4" data-target="bubble4">
     <div class="p4-bubble-text" id="bubbleText4" contenteditable="true" spellcheck="false">晚安啦～</div>
-    <div class="p4-avatar" id="bubbleAvatar4">🐶</div>
+    <div class="p4-avatar" id="bubbleAvatar4">🙂</div>
   </div>
 </div>
 <input type="file" accept="image/*" id="bubbleAvatarUpload" style="display:none;">
