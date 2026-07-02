@@ -433,7 +433,7 @@ padding:2px;
   </div>
 
   <!-- 身体日志：半圆 -->
-  <div class="btn semi cn" onclick="go('bodylog.html')">
+  <div class="btn semi cn" onclick="goBodyLog()">
     <span class="bi">🩹</span><span class="bt">身体日志</span>
   </div>
 
@@ -482,6 +482,15 @@ padding:2px;
 <script>
 (function(){
   window.go = url => window.location.href = url;
+window.go = url => window.location.href = url;
+
+  window.goBodyLog = function() {
+    const d = couple();
+    if (!d?.person1 || !d?.person2) { alert('请先设置情侣'); return; }
+    const charPerson = d.person1.type === 'char' ? d.person1 : (d.person2.type === 'char' ? d.person2 : null);
+    if (!charPerson) { alert('情侣中至少需要一个角色'); return; }
+    window.location.href = 'bodylog.html?id=' + charPerson.id;
+  };
 
   /* ── data ── */
   const lj = k => { try{ return JSON.parse(localStorage.getItem(k))||null; }catch(e){ return null; } };
@@ -547,6 +556,7 @@ padding:2px;
     window.history.length>1?window.history.back():window.location.href='../main.html';
   };
 })();
+
 </script>
 
 </body>
