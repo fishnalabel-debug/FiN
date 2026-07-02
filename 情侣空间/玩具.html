@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>小玩具 · 小手机</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f4f3f0;
+      --card: #ffffff;
+      --blue: #c8d8e4;
+      --apr: #f5e6d3;
+      --neu: #edecea;
+      --ink: #2c2c2e;
+      --ink2: #636366;
+      --ink3: #aeaeb2;
+      --green: #34c759;
+      --red: #ff3b30;
+      --orange: #ff9500;
+      --safe-top: env(safe-area-inset-top, 44px);
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      width: 100vw; height: 100vh;
+      overflow: hidden; display: flex; flex-direction: column;
+      color: var(--ink);
+    }
+
+    .ss { height: var(--safe-top); flex-shrink: 0; }
+
+    .topbar {
+      display: flex; align-items: center;
+      padding: 6px 16px; flex-shrink: 0;
+    }
+    .back-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: 0 2px 10px rgba(44,44,46,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; flex-shrink: 0;
+    }
+    .topbar-title {
+      flex: 1; text-align: center; font-size: 15px;
+      font-weight: 600; letter-spacing: -0.2px; margin-right: 34px;
+    }
+
+    .scroll {
+      flex: 1; min-height: 0;
+      overflow-y: auto; overflow-x: hidden;
+      padding: 8px 16px calc(var(--safe-bottom) + 36px);
+      scrollbar-width: none;
+    }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: var(--card); border-radius: 24px;
+      border: 1px solid rgba(44,44,46,0.06);
+      box-shadow: 0 4px 18px rgba(44,44,46,0.09);
+      overflow: hidden; margin-bottom: 20px;
+      animation: rise 0.5s ease forwards; opacity: 0;
+    }
+    .card-header {
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink2);
+      padding: 16px 18px 8px;
+    }
+
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px;
+    }
+    .toggle-label { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .toggle-hint { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+    .switch {
+      width: 52px; height: 30px; border-radius: 15px;
+      background: #e5e5ea; cursor: pointer; position: relative;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .switch.on { background: var(--green); }
+    .switch::after {
+      content: ''; width: 26px; height: 26px; border-radius: 13px;
+      background: #fff; position: absolute; top: 2px; left: 2px;
+      transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+    .switch.on::after { left: 24px; }
+
+    .slider-row {
+      padding: 12px 18px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .slider-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink2); }
+    .slider {
+      -webkit-appearance: none; width: 100%; height: 6px;
+      border-radius: 3px; background: #e5e5ea; outline: none;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 24px; height: 24px;
+      border-radius: 12px; background: var(--ink);
+      cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .mode-row { display: flex; gap: 8px; padding: 10px 18px 16px; }
+    .mode-chip {
+      flex: 1; padding: 10px 8px; border-radius: 12px;
+      border: 1px solid rgba(44,44,46,0.1); text-align: center;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      background: var(--neu); color: var(--ink2); transition: all 0.15s;
+    }
+    .mode-chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .divider { height: 1px; background: rgba(44,44,46,0.06); margin: 0 18px; }
+
+    /* 悬浮头像 */
+    .floating-avatar {
+      position: fixed; z-index: 80; width: 52px; height: 52px; border-radius: 50%;
+      overflow: hidden; cursor: pointer;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5);
+      border: 3px solid #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #fff; transition: transform 0.1s;
+      touch-action: none; user-select: none;
+    }
+    .floating-avatar:active { transform: scale(1.1); }
+    .floating-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* 迷你聊天窗 */
+    .mini-chat-panel {
+      position: fixed; z-index: 81; width: 280px; max-height: 380px;
+      background: rgba(255,255,255,0.98); border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .mini-chat-panel.show { display: flex; }
+    .mini-chat-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid rgba(44,44,46,0.08);
+      font-size: 13px; font-weight: 600;
+    }
+    .mini-chat-panel-msgs {
+      flex: 1; overflow-y: auto; padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+      max-height: 220px; min-height: 100px;
+    }
+    .mini-chat-panel-input {
+      display: flex; gap: 6px; padding: 8px 12px;
+      border-top: 1px solid rgba(44,44,46,0.08); align-items: center;
+    }
+    .mini-chat-panel-input input {
+      flex: 1; border: 1px solid rgba(44,44,46,0.12); border-radius: 14px;
+      padding: 7px 12px; font-size: 12px; outline: none; font-family: inherit;
+    }
+    .mini-chat-panel-input button {
+      background: var(--ink); color: #fff; border: none;
+      border-radius: 14px; padding: 7px 14px; font-size: 12px; cursor: pointer;
+    }
+    .mini-save-btn {
+      background: none; border: 1px solid rgba(44,44,46,0.15); border-radius: 14px;
+      padding: 7px 10px; font-size: 16px; cursor: pointer; color: var(--ink2); flex-shrink: 0;
+    }
+    .mc-msg {
+      padding: 6px 10px; border-radius: 12px; font-size: 12px;
+      max-width: 85%; line-height: 1.4;
+    }
+    .mc-msg.other { background: #f2f2f5; align-self: flex-start; color: var(--ink); }
+    .mc-msg.self { background: var(--ink); color: #fff; align-self: flex-end; }
+    .mc-msg.system { background: #fff3e0; align-self: center; color: #e65100; font-size: 10px; text-align: center; }
+
+    /* 历史记录界面 */
+    .history-panel {
+      position: fixed; z-index: 82; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 300px; max-height: 400px;
+      background: rgba(255,255,255,0.98); border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .history-panel.show { display: flex; }
+    .history-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid rgba(44,44,46,0.08);
+      font-size: 14px; font-weight: 600;
+    }
+    .history-list {
+      flex: 1; overflow-y: auto; padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .history-item {
+      padding: 10px 12px; background: #f9f9fb; border-radius: 12px;
+      font-size: 12px; line-height: 1.4; cursor: pointer;
+    }
+    .history-item:active { background: #eeeef2; }
+    .history-empty { text-align: center; padding: 30px; color: var(--ink3); font-size: 13px; }
+
+    .modal-overlay {
+      position: fixed; top:0;left:0;width:100%;height:100%;
+      background: rgba(0,0,0,0.4); z-index: 90;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-card {
+      background: #fff; border-radius: 20px; padding: 24px 20px;
+      width: 280px; text-align: center; font-size: 14px; line-height: 1.6;
+    }
+    .modal-card button {
+      margin-top: 14px; padding: 10px 24px; border-radius: 14px;
+      border: none; background: var(--ink); color: #fff; font-size: 14px; cursor: pointer;
+    }
+
+    .toast {
+      position: fixed; bottom: calc(var(--safe-bottom) + 24px); left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(44,44,46,0.9); color: #fff;
+      font-size: 13px; font-weight: 500; padding: 10px 22px;
+      border-radius: 22px; white-space: nowrap;
+      opacity: 0; transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none; z-index: 99;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+<div class="ss"></div>
+<div class="topbar">
+  <div class="back-btn" id="backBtn">‹</div>
+  <div class="topbar-title">小玩具控制</div>
+</div>
+<div class="scroll">
+  <div class="card">
+    <div class="card-header">佩戴状态</div>
+    <div class="toggle-row">
+      <div><div class="toggle-label" id="equipLabel">未佩戴</div><div class="toggle-hint" id="equipHint">点击开关引导角色佩戴</div></div>
+      <div class="switch" id="equipSwitch"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="card-header">震动控制</div>
+    <div class="slider-row"><div class="slider-header"><span>强度</span><span id="powerVal">3</span></div><input type="range" class="slider" id="powerSlider" min="1" max="10" value="3"></div>
+    <div class="slider-row"><div class="slider-header"><span>频率</span><span id="freqVal">5</span></div><input type="range" class="slider" id="freqSlider" min="1" max="10" value="5"></div>
+    <div class="slider-row"><div class="slider-header"><span>幅度</span><span id="ampVal">4</span></div><input type="range" class="slider" id="ampSlider" min="1" max="10" value="4"></div>
+    <div class="divider"></div>
+    <div class="card-header">模式</div>
+    <div class="mode-row" id="modeRow">
+      <div class="mode-chip active" data-mode="波浪">波浪</div>
+      <div class="mode-chip" data-mode="脉冲">脉冲</div>
+      <div class="mode-chip" data-mode="持续">持续</div>
+      <div class="mode-chip" data-mode="随机">随机</div>
+    </div>
+  </div>
+</div>
+
+<div class="floating-avatar" id="floatingAvatar">
+  <div class="avatar-placeholder">🤖</div>
+  <img id="floatingAvatarImg" src="" style="display:none;">
+</div>
+
+<div class="mini-chat-panel" id="miniChatPanel">
+  <div class="mini-chat-panel-header">
+    <span id="miniPanelTitle">角色</span>
+    <div>
+      <span class="mini-chat-panel-more" id="miniPanelMore" title="历史聊天" style="cursor:pointer;margin-right:6px;">⋯</span>
+      <span class="mini-chat-panel-more" id="miniPanelClose" title="关闭" style="cursor:pointer;">✕</span>
+    </div>
+  </div>
+  <div class="mini-chat-panel-msgs" id="miniPanelMsgs"></div>
+  <div class="mini-chat-panel-input">
+    <button class="mini-save-btn" id="miniSaveBtn" title="保存记忆">🔘</button>
+    <input type="text" id="miniPanelInput" placeholder="发消息...">
+    <button id="miniPanelSend">发送</button>
+  </div>
+</div>
+
+<div class="history-panel" id="historyPanel">
+  <div class="history-panel-header">
+    <span>历史聊天</span>
+    <span style="cursor:pointer;font-size:18px;" id="historyClose">✕</span>
+  </div>
+  <div class="history-list" id="historyList"></div>
+</div>
+
+<div class="modal-overlay" id="saveModal">
+  <div class="modal-card">
+    <div id="saveModalText">确认保存记忆？</div>
+    <button id="saveModalConfirm">确认保存</button>
+    <button style="background:#f2f2f5;color:var(--ink);margin-top:8px;" id="saveModalCancel">取消</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const charId = params.get('id');
+  if (!charId) { alert('未指定角色'); window.location.href = '主页.html'; return; }
+
+  function getCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters') || '[]'); } catch(e) { return []; } }
+  function loadWorldbooks() { try { return JSON.parse(localStorage.getItem('worldbooks') || '[]'); } catch(e) { return []; } }
+  const char = getCharacters().find(c => c.id == charId);
+  if (!char) { alert('角色未找到'); window.location.href = '主页.html'; return; }
+
+  function getApiConfig() {
+    return { endpoint: localStorage.getItem('ai_base_url')||'', key: localStorage.getItem('ai_api_key')||'', model: localStorage.getItem('ai_model')||'gpt-3.5-turbo' };
+  }
+
+  function getToySettings() { try { return JSON.parse(localStorage.getItem('toy_'+charId))||{equipped:false,power:3,frequency:5,amplitude:4,mode:'波浪'}; } catch(e) { return {equipped:false,power:3,frequency:5,amplitude:4,mode:'波浪'}; } }
+  function saveToySettings(d) { localStorage.setItem('toy_'+charId, JSON.stringify(d)); }
+  let settings = getToySettings();
+
+  function syncBodyLog() {
+    try { const b=JSON.parse(localStorage.getItem('body_log_'+charId)||'{}'); b.toyEquipped=settings.equipped; b.toyPower=settings.equipped?settings.power:0; localStorage.setItem('body_log_'+charId,JSON.stringify(b)); } catch(e) {}
+  }
+
+  function getRelevantWorldbooks() { const all=loadWorldbooks(); return all.filter(b=>b.isGlobal||(b.characters&&b.characters.includes(charId))); }
+  function buildWorldbookContext() { const books=getRelevantWorldbooks(); return books.length?'【世界书设定】\n'+books.map(b=>`《${b.name}》：${b.content}`).join('\n'):''; }
+
+  async function loadChatHistory(c=100) { return new Promise(r=>{ try{ const req=indexedDB.open('FiN_DB',1); req.onsuccess=e=>{ const db=e.target.result; if(!db.objectStoreNames.contains('chat_messages')){db.close();r([]);return;} const tx=db.transaction('chat_messages','readonly'); const st=tx.objectStore('chat_messages'); const r2=st.get(`chat_msg_${charId}`); r2.onsuccess=()=>{ const msgs=r2.result?.messages||[]; db.close(); r(msgs.filter(m=>m.type!=='system').slice(-c)); }; r2.onerror=()=>{db.close();r([]);}; }; req.onerror=()=>r([]); } catch(e){r([]);} }); }
+
+  async function callAI(p) {
+    const cfg=getApiConfig(); if(!cfg.endpoint||!cfg.key) throw new Error('请配置API');
+    let u=cfg.endpoint.trim().replace(/\/+$/,''); if(!u.includes('/chat/completions')) u+=u.endsWith('/v1')?'/chat/completions':'/v1/chat/completions';
+    return new Promise((res,rej)=>{ const x=new XMLHttpRequest(); x.open('POST',u,true); x.setRequestHeader('Content-Type','application/json'); x.setRequestHeader('Authorization','Bearer '+cfg.key); x.timeout=60000;
+      x.onload=()=>{ if(x.status>=200&&x.status<300){ try{res(JSON.parse(x.responseText).choices[0].message.content);}catch(e){rej(new Error('解析失败'));} } else rej(new Error('HTTP '+x.status)); };
+      x.onerror=()=>rej(new Error('网络错误')); x.ontimeout=()=>rej(new Error('超时'));
+      x.send(JSON.stringify({model:cfg.model||'gpt-3.5-turbo',messages:[{role:'user',content:p}],max_tokens:150,temperature:0.7})); });
+  }
+
+  function showToast(m) { const el=document.getElementById('toast'); el.textContent=m; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2000); }
+
+  const equipSwitch=document.getElementById('equipSwitch'), equipLabel=document.getElementById('equipLabel'), equipHint=document.getElementById('equipHint');
+  const powerSlider=document.getElementById('powerSlider'), freqSlider=document.getElementById('freqSlider'), ampSlider=document.getElementById('ampSlider');
+
+  function updateUI() {
+    equipSwitch.className='switch'+(settings.equipped?' on':''); equipLabel.textContent=settings.equipped?'已佩戴':'未佩戴';
+    equipHint.textContent=settings.equipped?'震动强度 '+settings.power+' · 模式：'+(settings.mode||'波浪'):'点击开关引导角色佩戴';
+    powerSlider.value=settings.power; freqSlider.value=settings.frequency; ampSlider.value=settings.amplitude;
+    document.getElementById('powerVal').textContent=settings.power; document.getElementById('freqVal').textContent=settings.frequency; document.getElementById('ampVal').textContent=settings.amplitude;
+    document.querySelectorAll('.mode-chip').forEach(c=>c.classList.toggle('active',c.getAttribute('data-mode')===(settings.mode||'波浪')));
+  }
+  updateUI();
+
+  // 悬浮头像
+  const floatingAvatar=document.getElementById('floatingAvatar');
+  if(char.avatar){ document.getElementById('floatingAvatarImg').src=char.avatar; document.getElementById('floatingAvatarImg').style.display='block'; floatingAvatar.querySelector('.avatar-placeholder').style.display='none'; }
+  floatingAvatar.style.right='16px'; floatingAvatar.style.bottom='100px';
+  let dragging=false, dsx=0,dsy=0,ix=0,iy=0;
+  floatingAvatar.addEventListener('touchstart',e=>{ if(e.touches.length===1){ dragging=true; dsx=e.touches[0].clientX; dsy=e.touches[0].clientY; ix=floatingAvatar.offsetLeft; iy=floatingAvatar.offsetTop; } });
+  floatingAvatar.addEventListener('touchmove',e=>{ if(!dragging)return; const dx=e.touches[0].clientX-dsx, dy=e.touches[0].clientY-dsy; floatingAvatar.style.left=(ix+dx)+'px'; floatingAvatar.style.top=(iy+dy)+'px'; floatingAvatar.style.right='auto'; floatingAvatar.style.bottom='auto'; });
+  floatingAvatar.addEventListener('touchend',()=>{ dragging=false; });
+
+  // 迷你聊天窗
+  const miniPanel=document.getElementById('miniChatPanel'), miniMsgs=document.getElementById('miniPanelMsgs'), miniInput=document.getElementById('miniPanelInput');
+  let panelOpen=false;
+  function addPanelMsg(text,type){ const d=document.createElement('div'); d.className='mc-msg '+(type||'other'); d.textContent=text; miniMsgs.appendChild(d); miniMsgs.scrollTop=miniMsgs.scrollHeight; }
+
+  floatingAvatar.addEventListener('click',()=>{ if(dragging)return; panelOpen=!panelOpen; miniPanel.classList.toggle('show',panelOpen); if(panelOpen){ const ar=floatingAvatar.getBoundingClientRect(); miniPanel.style.left=Math.max(8,ar.left-120)+'px'; miniPanel.style.top=Math.max(60,ar.top-300)+'px'; document.getElementById('miniPanelTitle').textContent=char.name||'角色'; miniInput.focus(); } });
+  document.getElementById('miniPanelClose').addEventListener('click',()=>{ panelOpen=false; miniPanel.classList.remove('show'); });
+
+  // 发送：有文字发文字，无文字让AI回复
+  document.getElementById('miniPanelSend').addEventListener('click',async ()=>{
+    const text=miniInput.value.trim();
+    if(text){ addPanelMsg(text,'self'); miniInput.value=''; }
+    try{
+      const history=await loadChatHistory(10); const ht=history.length?'【最近聊天】\n'+history.slice(-10).map(m=>(m.sender==='self'?'伴侣':char.name)+'：'+m.text).join('\n'):'';
+      const wb=buildWorldbookContext(); const toyInfo=settings.equipped?`戴着小玩具，${settings.mode||'波浪'}模式，强度${settings.power}`:'没戴玩具';
+      const prompt=`${wb?wb+'\n':''}${ht?ht+'\n':''}你是${char.name}，人设：${char.aiPrompt||'普通'}。${toyInfo}。${text?'伴侣说：'+text:'伴侣没有说话，但你可以主动说点什么。'}回复1-2句话或输出[沉默]。`;
+      const resp=await callAI(prompt); if(resp.trim()!=='[沉默]') addPanelMsg(resp.trim(),'other');
+    } catch(e){ addPanelMsg('（连接失败）','system'); }
+  });
+  miniInput.addEventListener('keypress',e=>{ if(e.key==='Enter') document.getElementById('miniPanelSend').click(); });
+
+  // 🔘 保存记忆
+  const saveModal=document.getElementById('saveModal');
+  document.getElementById('miniSaveBtn').addEventListener('click',()=>{
+    const count=miniMsgs.querySelectorAll('.mc-msg').length;
+    document.getElementById('saveModalText').textContent=`确认保存记忆？当前聊天记录 ${count}/100`;
+    saveModal.classList.add('show');
+  });
+  document.getElementById('saveModalConfirm').addEventListener('click',()=>{
+    const msgs=[]; miniMsgs.querySelectorAll('.mc-msg').forEach(m=>msgs.push({text:m.textContent,type:m.classList.contains('self')?'self':m.classList.contains('other')?'other':'system'}));
+    localStorage.setItem('mini_chat_'+charId,JSON.stringify(msgs.slice(-100))); saveModal.classList.remove('show'); showToast('已保存');
+  });
+  document.getElementById('saveModalCancel').addEventListener('click',()=>{ saveModal.classList.remove('show'); });
+  saveModal.addEventListener('click',e=>{ if(e.target===saveModal) saveModal.classList.remove('show'); });
+
+  // ⋯ 历史记录
+  const historyPanel=document.getElementById('historyPanel'), historyList=document.getElementById('historyList');
+  document.getElementById('miniPanelMore').addEventListener('click',()=>{
+    const saved=JSON.parse(localStorage.getItem('mini_chat_'+charId)||'[]');
+    if(!saved.length){ historyList.innerHTML='<div class="history-empty">暂无历史记录</div>'; }
+    else {
+      historyList.innerHTML=saved.map((m,i)=>`<div class="history-item" data-index="${i}">${m.text.substring(0,60)}${m.text.length>60?'…':''}</div>`).join('');
+      historyList.querySelectorAll('.history-item').forEach(item=>{
+        item.addEventListener('click',()=>{ const m=saved[parseInt(item.getAttribute('data-index'))]; alert((m.type==='self'?'我':char.name)+'：'+m.text); });
+        item.addEventListener('dblclick',()=>{
+          const idx=parseInt(item.getAttribute('data-index')); saved.splice(idx,1);
+          localStorage.setItem('mini_chat_'+charId,JSON.stringify(saved)); item.remove();
+          if(!saved.length) historyList.innerHTML='<div class="history-empty">暂无历史记录</div>';
+          showToast('已删除');
+        });
+      });
+    }
+    historyPanel.classList.add('show');
+  });
+  document.getElementById('historyClose').addEventListener('click',()=>historyPanel.classList.remove('show'));
+
+  // 开关联动AI消息
+  equipSwitch.addEventListener('click',async()=>{
+    const was=settings.equipped; settings.equipped=!settings.equipped; saveToySettings(settings); syncBodyLog(); updateUI();
+    if(settings.equipped&&!was){
+      showToast('已开启，引导角色佩戴中...');
+      try{ const h=await loadChatHistory(10); const ht=h.length?'【最近聊天】\n'+h.slice(-10).map(m=>(m.sender==='self'?'伴侣':char.name)+'：'+m.text).join('\n'):''; const wb=buildWorldbookContext();
+        const p=`${wb?wb+'\n':''}${ht?ht+'\n':''}你是${char.name}，人设：${char.aiPrompt||'普通'}。伴侣刚刚给你戴上了小玩具（${settings.mode||'波浪'}模式，强度${settings.power}）。你会如何反应？说1-2句话，或输出[沉默]。`;
+        const r=await callAI(p); if(r.trim()!=='[沉默]'){ addPanelMsg(r.trim(),'other'); if(!panelOpen){ panelOpen=true; miniPanel.classList.add('show'); const ar=floatingAvatar.getBoundingClientRect(); miniPanel.style.left=Math.max(8,ar.left-120)+'px'; miniPanel.style.top=Math.max(60,ar.top-300)+'px'; document.getElementById('miniPanelTitle').textContent=char.name||'角色'; } } } catch(e){}
+    } else if(!settings.equipped){ showToast('已关闭'); }
+  });
+
+  // 滑块变化时AI也可能发消息
+  let sliderTimeout;
+  function onSliderChange(){
+    settings.power=parseInt(powerSlider.value); settings.frequency=parseInt(freqSlider.value); settings.amplitude=parseInt(ampSlider.value);
+    saveToySettings(settings); syncBodyLog(); updateUI();
+    clearTimeout(sliderTimeout);
+    sliderTimeout=setTimeout(async()=>{
+      if(!settings.equipped) return;
+      try{ const h=await loadChatHistory(5); const ht=h.length?'【最近聊天】\n'+h.slice(-5).map(m=>(m.sender==='self'?'伴侣':char.name)+'：'+m.text).join('\n'):''; const wb=buildWorldbookContext();
+        const p=`${wb?wb+'\n':''}${ht?ht+'\n':''}你是${char.name}。伴侣把玩具调到了${settings.mode||'波浪'}模式，强度${settings.power}，频率${settings.frequency}，幅度${settings.amplitude}。根据人设，你会有什么反应？说1句话或输出[沉默]。`;
+        const r=await callAI(p); if(r.trim()!=='[沉默]'){ addPanelMsg(r.trim(),'other'); if(!panelOpen){ panelOpen=true; miniPanel.classList.add('show'); const ar=floatingAvatar.getBoundingClientRect(); miniPanel.style.left=Math.max(8,ar.left-120)+'px'; miniPanel.style.top=Math.max(60,ar.top-300)+'px'; } } } catch(e){}
+    },1500);
+  }
+  powerSlider.addEventListener('input',onSliderChange); freqSlider.addEventListener('input',onSliderChange); ampSlider.addEventListener('input',onSliderChange);
+
+  document.querySelectorAll('.mode-chip').forEach(chip=>{ chip.addEventListener('click',()=>{ settings.mode=chip.getAttribute('data-mode'); saveToySettings(settings); syncBodyLog(); updateUI(); }); });
+
+  // 加载已保存的迷你聊天
+  const savedMini=JSON.parse(localStorage.getItem('mini_chat_'+charId)||'[]');
+  if(savedMini.length) savedMini.forEach(m=>addPanelMsg(m.text,m.type));
+
+  document.getElementById('backBtn').addEventListener('click',()=>{ window.location.href='bodylog.html?id='+charId; });
+})();
+</script>
+</body>
+</html>
