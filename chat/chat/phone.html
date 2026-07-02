@@ -1,25 +1,17 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-
-  <!-- 让页面真正按设备宽度渲染，并允许铺到刘海/底部安全区 -->
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-  <!-- iPhone 添加到主屏幕后作为独立网页 App 打开 -->
-
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="FiN">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.json">
-
-  <title>聊天列表 · 简约圆角</title>
+  <title>聊天列表</title>
 
   <style>
-        * {
+    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -33,15 +25,15 @@
 
     html, body {
       width: 100%;
-      height: 100vh; /* 严格等于视口高度 */
+      height: 100vh;
       margin: 0;
       padding: 0;
-      background: #ffffff;
+      background: #f7f8fa; /* 背景改浅灰，突出卡片 */
       overflow: hidden;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       color: #1d1d1f;
       display: flex;
       flex-direction: column;
@@ -50,34 +42,46 @@
     .app-container {
       width: 100%;
       max-width: 420px;
-      height: 100vh; /* 改为撑满动态视口 */
-      background: #ffffff;
+      height: 100vh;
+      background: #f7f8fa;
       display: flex;
       flex-direction: column;
       margin: 0 auto;
       overflow: hidden;
       position: relative;
-      /* 关键修改：用 padding-top 把整个顶栏推到 iOS 状态栏下方 */
-      padding-top: calc(var(--safe-top) + 4px); 
+      padding-top: calc(var(--safe-top) + 4px);
       padding-bottom: var(--safe-bottom);
     }
 
-    /* 让聊天列表在中间完美滚动，不挤压底部 */
-    .chat-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 16px;
-    }
-
-
+    /* --- 顶部导航 --- */
     .header {
-      padding: 14px 20px 10px 20px;
-      background: #ffffff;
+      padding: 12px 16px 8px 16px;
+      background: #f7f8fa;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #f0f0f0;
       flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: none;
+      font-size: 26px;
+      line-height: 1;
+      color: #1d1d1f;
+      cursor: pointer;
+      padding: 4px 8px 4px 0;
+      font-weight: 300;
+    }
+
+    .back-btn:active {
+      opacity: 0.6;
     }
 
     .header-title {
@@ -88,9 +92,9 @@
     }
 
     .add-btn {
-      background: none;
+      background: #ffffff;
       border: none;
-      font-size: 24px;
+      font-size: 20px;
       color: #1d1d1f;
       cursor: pointer;
       width: 36px;
@@ -99,30 +103,33 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      transition: background 0.15s;
-      font-weight: 300;
-      line-height: 1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: all 0.2s;
     }
 
     .add-btn:active {
-      background: #f2f2f2;
+      transform: scale(0.92);
+      background: #f0f0f0;
     }
 
+    /* --- 搜索框 --- */
     .search-wrap {
-      padding: 10px 20px 8px 20px;
+      padding: 6px 16px 12px 16px;
       flex-shrink: 0;
-      background: #ffffff;
+      background: #f7f8fa;
     }
 
     .search-box {
-      background: #f2f2f6;
-      border-radius: 20px;
+      background: #ffffff;
+      border-radius: 24px;
       padding: 10px 16px;
       display: flex;
       align-items: center;
       gap: 8px;
       color: #8e8e93;
       font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      border: 1px solid #f0f0f0;
     }
 
     .search-box input {
@@ -132,48 +139,51 @@
       font-size: 14px;
       width: 100%;
       color: #1c1c1e;
-      appearance: none;
-      -webkit-appearance: none;
     }
 
     .search-box input::placeholder {
-      color: #8e8e93;
+      color: #9e9ea6;
     }
 
+    /* --- 聊天列表 --- */
     .chat-list {
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 6px 16px 10px 16px;
+      padding: 0 16px 16px 16px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      background: #ffffff;
+      gap: 12px;
+      background: #f7f8fa;
     }
 
     .chat-item {
       display: flex;
       align-items: center;
-      padding: 10px 12px;
+      padding: 14px 14px;
       border-radius: 20px;
       background: #ffffff;
-      border: 1px solid #f0f0f0;
-      transition: background 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s;
       cursor: pointer;
-      gap: 12px;
+      gap: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.02);
     }
 
     .chat-item:active {
-      background: #f5f5f5;
+      transform: scale(0.98);
+      background: #f9f9f9;
     }
 
+    /* 头像 */
     .avatar-wrapper {
-      width: 44px;
-      height: 44px;
-      border-radius: 16px;
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
       overflow: hidden;
       flex-shrink: 0;
-      background: #e9e9ef;
+      background: #f0f0f2;
+      border: 1px solid #f0f0f0;
     }
 
     .avatar-wrapper img {
@@ -186,12 +196,12 @@
     .avatar-placeholder {
       width: 100%;
       height: 100%;
-      background: #d9d9e3;
+      background: #e9e9ef;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #8e8e93;
-      font-size: 16px;
+      font-size: 20px;
     }
 
     .chat-info {
@@ -212,7 +222,7 @@
 
     .chat-name {
       font-weight: 600;
-      font-size: 15px;
+      font-size: 16px;
       color: #1d1d1f;
       white-space: nowrap;
       overflow: hidden;
@@ -223,9 +233,10 @@
 
     .chat-time {
       font-size: 12px;
-      color: #8e8e93;
+      color: #b0b0b8;
       white-space: nowrap;
       flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .chat-bottom {
@@ -237,7 +248,7 @@
 
     .chat-message {
       font-size: 13px;
-      color: #6c6c70;
+      color: #8e8e93;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -249,7 +260,7 @@
       background: #1d1d1f;
       color: white;
       border-radius: 12px;
-      padding: 1px 7px;
+      padding: 1px 8px;
       font-size: 11px;
       font-weight: 600;
       min-width: 20px;
@@ -257,7 +268,7 @@
       flex-shrink: 0;
     }
 
-    /* 底栏导航 */
+    /* --- 底栏导航 --- */
     .bottom-nav {
       display: flex;
       align-items: center;
@@ -276,7 +287,6 @@
       font-size: 12px;
       color: #8e8e93;
       cursor: pointer;
-      transition: color 0.15s;
       background: none;
       border: none;
       padding: 6px 12px;
@@ -284,6 +294,7 @@
       font-weight: 500;
       text-decoration: none;
       min-width: 60px;
+      transition: color 0.1s;
     }
 
     .nav-item.active {
@@ -292,7 +303,7 @@
     }
 
     .nav-item span {
-      font-size: 18px;
+      font-size: 20px;
       line-height: 1;
     }
 
@@ -300,7 +311,7 @@
       background: #f4f4f4;
     }
 
-    /* 弹窗 */
+    /* --- 弹窗 (样式不变, 保持原有) --- */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -314,11 +325,7 @@
       visibility: hidden;
       opacity: 0;
       transition: 0.2s ease;
-      padding:
-        calc(env(safe-area-inset-top) + 16px)
-        16px
-        calc(env(safe-area-inset-bottom) + 16px)
-        16px;
+      padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px) 16px;
     }
 
     .modal-overlay.active {
@@ -331,7 +338,7 @@
       border-radius: 28px;
       padding: 24px 20px;
       width: min(300px, 100%);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -420,45 +427,48 @@
       display: none;
     }
   </style>
-
 </head>
 <body>
   <div class="app-container">
+    <!-- 顶部：返回按钮 + 标题 + 新建按钮 -->
     <div class="header">
-      <div class="header-title">聊天</div>
-      <button class="add-btn" id="openCreateModalBtn" aria-label="新建角色">+</button>
+      <div class="header-left">
+        <button class="back-btn" id="backToMainBtn">‹</button>
+        <div class="header-title">聊天</div>
+      </div>
+      <button class="add-btn" id="openCreateModalBtn">+</button>
     </div>
 
-<div class="search-wrap">
-  <div class="search-box">
-    <span>🔍</span>
-    <input type="search" placeholder="搜索" id="searchInput">
+    <div class="search-wrap">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="search" placeholder="搜索联系人" id="searchInput">
+      </div>
+    </div>
+
+    <div class="chat-list" id="chatListContainer"></div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active" data-page="chat">
+        <span>💬</span>
+        聊天
+      </button>
+      <button class="nav-item" data-page="name">
+        <span>👥</span>
+        通讯录
+      </button>
+      <button class="nav-item" data-page="search">
+        <span>🧭</span>
+        发现
+      </button>
+      <button class="nav-item" data-page="my">
+        <span>👤</span>
+        我
+      </button>
+    </div>
   </div>
-</div>
 
-<div class="chat-list" id="chatListContainer"></div>
-
-<div class="bottom-nav">
-  <button class="nav-item active" data-page="chat">
-    <span>💬</span>
-    聊天
-  </button>
-  <button class="nav-item" data-page="name">
-    <span>👥</span>
-    通讯录
-  </button>
-  <button class="nav-item" data-page="search">
-    <span>🧭</span>
-    发现
-  </button>
-  <button class="nav-item" data-page="my">
-    <span>👤</span>
-    我
-  </button>
-</div>
-
-  </div>
-
+  <!-- 弹窗部分保持不变 -->
   <div class="modal-overlay" id="createModal">
     <div class="modal-card">
       <h3>新建角色</h3>
@@ -506,8 +516,9 @@
 
         if (characters.length === 0) {
           chatContainer.innerHTML = `
-            <div style="padding: 40px 20px; text-align: center; color: #8e8e93; font-size: 14px;">
-              暂无聊天角色，点击右上角 + 创建
+            <div style="padding: 60px 20px; text-align: center; color: #b0b0b8; font-size: 14px; background: transparent;">
+              <span style="font-size: 48px; display: block; margin-bottom: 12px;">👋</span>
+              还没有聊天角色，点击右上角 + 创建
             </div>
           `;
           return;
@@ -547,7 +558,6 @@
 
         chatContainer.innerHTML = html;
 
-        // 点击角色跳转到 chat.html
         document.querySelectorAll('.chat-item').forEach(item => {
           item.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
@@ -564,7 +574,12 @@
           .replace(/"/g, '&quot;');
       }
 
-      // 底栏导航跳转逻辑
+      // ----- 返回键逻辑 (新增) -----
+      document.getElementById('backToMainBtn').addEventListener('click', function() {
+        window.location.href = '../../main.html'; // 向上两级
+      });
+
+      // ----- 底部导航 -----
       const navItems = document.querySelectorAll('.bottom-nav .nav-item');
 
       const pageRoutes = {
@@ -590,7 +605,7 @@
         });
       });
 
-      // 创建角色弹窗逻辑
+      // ----- 创建角色逻辑 -----
       const modal = document.getElementById('createModal');
       const openBtn = document.getElementById('openCreateModalBtn');
       const cancelBtn = document.getElementById('cancelCreateBtn');
@@ -671,11 +686,10 @@
         fileInput.value = '';
         selectedAvatarData = '';
 
-        // 创建后自动跳转到 chat.html
         window.location.href = `chat.html?id=${newChar.id}`;
       });
 
-      // 搜索功能
+      // ----- 搜索 -----
       const searchInput = document.getElementById('searchInput');
       searchInput.addEventListener('input', function(e) {
         const query = e.target.value.toLowerCase().trim();
@@ -700,6 +714,5 @@
       renderChatList();
     })();
   </script>
-
 </body>
 </html>
