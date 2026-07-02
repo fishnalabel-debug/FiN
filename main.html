@@ -4,9 +4,9 @@
 <head>
   <link rel="apple-touch-icon" href="FiN.jpg">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="no">
+  <meta name="mobile-web-app-capable" content="no">
   <meta name="apple-mobile-web-app-title" content="FiN">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.json">
@@ -41,7 +41,7 @@ flex-direction: column;
 
 /* ── 顶部安全区留白 ── */
 .status-bar-space {
-height: calc(var(–safe-top) + 64px);  /* 留出状态栏/灵动岛安全区，避免内容被遮挡（全屏书签模式加强） */
+height: 16px;  /* 非全屏模式，系统状态栏已占位，这里只需少量间距 */
 flex-shrink: 0;
 }
 
