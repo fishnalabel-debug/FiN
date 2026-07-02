@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
   <link rel="apple-touch-icon" href="FiN.jpg">
@@ -40,7 +41,7 @@ flex-direction: column;
 
 /* ── 顶部安全区留白 ── */
 .status-bar-space {
-height: calc(var(–safe-top) + 16px);  /* 减少顶部占用，让内容整体下移 */
+height: calc(var(–safe-top) + 40px);  /* 留出状态栏/灵动岛安全区，避免内容被遮挡 */
 flex-shrink: 0;
 }
 
@@ -785,15 +786,16 @@ transition: opacity .15s ease;
 .p2-hero-card {
 position: relative;
 flex-shrink: 0;
-min-height: 210px;
-border-radius: 26px;
+margin-top: 8px;
+min-height: 340px;
+border-radius: 30px;
 overflow: hidden;
 background: #eef0f4 linear-gradient(150deg, #f3f4f7, #e7e9ee);
 box-shadow: 0 2px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
-padding: 16px;
+padding: 20px;
 display: flex;
 flex-direction: column;
-gap: 10px;
+gap: 14px;
 }
 .p2-hero-bg {
 position: absolute;
@@ -812,12 +814,12 @@ z-index: 1;
 }
 .p2-hero-editbtn {
 position: absolute;
-top: 10px; right: 10px;
-width: 26px; height: 26px;
+top: 12px; right: 12px;
+width: 28px; height: 28px;
 border-radius: 50%;
 background: rgba(0,0,0,0.32);
 color: #fff;
-font-size: 12px;
+font-size: 13px;
 display: flex; align-items: center; justify-content: center;
 z-index: 3;
 cursor: pointer;
@@ -832,10 +834,10 @@ z-index: 2;
 flex: 1;
 display: flex;
 flex-direction: column;
-gap: 10px;
+gap: 14px;
 }
 .p2-hero-title {
-font-size: 13.5px;
+font-size: 15px;
 font-weight: 700;
 color: var(–ink);
 letter-spacing: 0.01em;
@@ -857,101 +859,58 @@ backdrop-filter: blur(16px) saturate(180%);
 -webkit-backdrop-filter: blur(16px) saturate(180%);
 border: 1px solid rgba(255,255,255,0.9);
 border-radius: 16px;
-padding: 8px 14px;
+padding: 9px 16px;
 box-shadow: 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
 display: flex;
 flex-direction: column;
 gap: 4px;
 justify-content: center;
 }
-.p2-hero-chip.datetime { min-width: 116px; }
+.p2-hero-chip.datetime { min-width: 124px; }
 .p2-hero-chip .chip-line {
 display: flex;
 align-items: center;
 gap: 6px;
-font-size: 12px;
+font-size: 13px;
 font-weight: 600;
 color: var(–ink);
 white-space: nowrap;
 }
-.p2-hero-chip .chip-line span.chip-ico { font-size: 11px; color: var(–soft); }
+.p2-hero-chip .chip-line span.chip-ico { font-size: 12px; color: var(–soft); }
 .p2-hero-chip.hearts {
 align-items: center;
 justify-content: center;
-min-width: 56px;
+min-width: 60px;
 cursor: pointer;
 }
-.p2-hero-chip.hearts .chip-emoji { font-size: 14px; letter-spacing: -2px; }
+.p2-hero-chip.hearts .chip-emoji { font-size: 15px; letter-spacing: -2px; }
 .p2-hero-chip.hearts .chip-count {
-font-size: 15px;
+font-size: 16px;
 font-weight: 700;
 color: var(–ink);
 margin-top: 2px;
 }
-.p2-hero-music {
+.p2-hero-daywrap {
 margin-top: auto;
-background: rgba(255,255,255,0.78);
-backdrop-filter: blur(18px) saturate(180%);
--webkit-backdrop-filter: blur(18px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-border-radius: 18px;
-padding: 10px 14px 8px;
-box-shadow: 0 2px 14px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
 display: flex;
 flex-direction: column;
-gap: 6px;
+gap: 2px;
 }
-.p2cp-toprow {
-display: flex;
-align-items: center;
-justify-content: space-between;
-}
-.p2cp-songname {
-font-size: 14px;
+.p2-hero-weekday {
+font-size: 15px;
 font-weight: 600;
 color: var(–ink);
-letter-spacing: -.2px;
+text-shadow: 0 1px 2px rgba(255,255,255,0.4);
 }
-.p2cp-waveicon { color: var(–soft); font-size: 12px; }
-.p2cp-subline {
-font-size: 10.5px;
-color: var(–soft);
-margin-top: 1px;
-letter-spacing: 0.02em;
-}
-.p2cp-bar {
-height: 3px;
-background: rgba(0,0,0,0.08);
-border-radius: 2px;
-margin-top: 2px;
-overflow: hidden;
-}
-.p2cp-bar-fill {
-height: 100%;
-background: linear-gradient(90deg, var(–accent), #a59bf8);
-border-radius: 2px;
-width: 0%;
-transition: width .5s linear;
-}
-.p2cp-times {
-display: flex; justify-content: space-between;
-font-size: 10px; color: var(–soft);
-margin-top: 2px;
+.p2-hero-daynum {
+font-size: 54px;
+font-weight: 200;
+color: rgba(29,29,31,0.35);
+line-height: 1;
+letter-spacing: -1px;
 font-variant-numeric: tabular-nums;
+text-shadow: 0 1px 2px rgba(255,255,255,0.3);
 }
-.p2cp-controls {
-display: flex; align-items: center; justify-content: space-between;
-margin-top: 4px;
-padding: 0 2px;
-}
-.p2cp-ctrl-btn {
-font-size: 15px; color: var(–soft);
-display: flex; align-items: center; justify-content: center;
-width: 30px; height: 30px;
-cursor: pointer;
-transition: transform .15s ease, opacity .15s ease;
-}
-.p2cp-ctrl-btn:active { transform: scale(.85); opacity: .6; }
 
 /* ════════════════════
 第二页 - 消息气泡小组件（图4款式）
@@ -1107,26 +1066,9 @@ transition: none;
           <div class="chip-count" id="p2HeroHeartCount">0</div>
         </div>
       </div>
-      <div class="p2-hero-music">
-        <div class="p2cp-toprow">
-          <div class="p2cp-songname" id="musicSong">暂无播放</div>
-          <div class="p2cp-waveicon">▐▐▐</div>
-        </div>
-        <div class="p2cp-subline" id="musicArtist">— —</div>
-        <div class="p2cp-bar">
-          <div class="p2cp-bar-fill" id="musicProgressFill"></div>
-        </div>
-        <div class="p2cp-times">
-          <span id="musicCurrent">0:00</span>
-          <span id="musicTotal">0:00</span>
-        </div>
-        <div class="p2cp-controls">
-          <div class="p2cp-ctrl-btn" id="btnShuffle">★</div>
-          <div class="p2cp-ctrl-btn" id="btnPrev">⏮</div>
-          <div class="p2cp-ctrl-btn" id="btnPlay" style="font-size:19px;">⏸</div>
-          <div class="p2cp-ctrl-btn" id="btnNext">⏭</div>
-          <div class="p2cp-ctrl-btn" id="btnRepeat">♥</div>
-        </div>
+      <div class="p2-hero-daywrap">
+        <div class="p2-hero-weekday" id="p2HeroWeekday">星期三</div>
+        <div class="p2-hero-daynum" id="p2HeroDayNum">1</div>
       </div>
     </div>
   </div>
@@ -1160,20 +1102,20 @@ transition: none;
 
 <div class="p4-bubbles">
   <div class="p4-bubble-row" id="bubbleRow1" data-target="bubble1">
-    <div class="p4-avatar" id="bubbleAvatar1">🙂</div>
+    <div class="p4-avatar" id="bubbleAvatar1">🐱</div>
     <div class="p4-bubble-text" id="bubbleText1" contenteditable="true" spellcheck="false">have a nice day 🌟</div>
   </div>
   <div class="p4-bubble-row align-right" id="bubbleRow2" data-target="bubble2">
     <div class="p4-bubble-text" id="bubbleText2" contenteditable="true" spellcheck="false">HAPPY EVERYDAY</div>
-    <div class="p4-avatar" id="bubbleAvatar2">🙂</div>
+    <div class="p4-avatar" id="bubbleAvatar2">🐶</div>
   </div>
   <div class="p4-bubble-row" id="bubbleRow3" data-target="bubble3">
-    <div class="p4-avatar" id="bubbleAvatar3">🙂</div>
+    <div class="p4-avatar" id="bubbleAvatar3">🐱</div>
     <div class="p4-bubble-text" id="bubbleText3" contenteditable="true" spellcheck="false">今天也要开心哦</div>
   </div>
   <div class="p4-bubble-row align-right" id="bubbleRow4" data-target="bubble4">
     <div class="p4-bubble-text" id="bubbleText4" contenteditable="true" spellcheck="false">晚安啦～</div>
-    <div class="p4-avatar" id="bubbleAvatar4">🙂</div>
+    <div class="p4-avatar" id="bubbleAvatar4">🐶</div>
   </div>
 </div>
 <input type="file" accept="image/*" id="bubbleAvatarUpload" style="display:none;">
@@ -1514,14 +1456,19 @@ transition: none;
   });
 
   // 日期/时间显示
+  const WEEKDAY_NAMES = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
   function updateHeroDateTime() {
     const now = new Date();
     const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
     const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
     const dateEl = document.getElementById('p2HeroDate');
     const timeEl = document.getElementById('p2HeroTime');
+    const weekdayEl = document.getElementById('p2HeroWeekday');
+    const dayNumEl = document.getElementById('p2HeroDayNum');
     if (dateEl) dateEl.textContent = `${y}/${m}/${d}`;
     if (timeEl) timeEl.textContent = `${hh}:${mm}`;
+    if (weekdayEl) weekdayEl.textContent = WEEKDAY_NAMES[now.getDay()];
+    if (dayNumEl) dayNumEl.textContent = now.getDate();
   }
   updateHeroDateTime(); setInterval(updateHeroDateTime, 10000);
 
@@ -1568,43 +1515,6 @@ transition: none;
     funcIconUpload.value = '';
     currentFuncKey = null;
   });
-
-  // 音乐组件联动
-  function syncMusicWidget() {
-    try {
-      const song = localStorage.getItem('music_current_song') || '暂无播放';
-      const artist = localStorage.getItem('music_current_artist') || '— —';
-      const art = localStorage.getItem('music_current_art') || '';
-      const progress = parseFloat(localStorage.getItem('music_progress') || '0');
-      const current = localStorage.getItem('music_current_time') || '0:00';
-      const total = localStorage.getItem('music_total_time') || '5:20';
-      const playing = localStorage.getItem('music_playing') === 'true';
-      const songEl = document.getElementById('musicSong');
-      const artistEl = document.getElementById('musicArtist');
-      const artEl = document.getElementById('musicArt');
-      const fillEl = document.getElementById('musicProgressFill');
-      const curEl = document.getElementById('musicCurrent');
-      const totEl = document.getElementById('musicTotal');
-      const playBtn = document.getElementById('btnPlay');
-      if (songEl) songEl.textContent = song;
-      if (artistEl) artistEl.textContent = artist;
-      if (artEl) artEl.innerHTML = art ? `<img src="${art}">` : '🎵';
-      if (fillEl) fillEl.style.width = Math.min(100, progress * 100) + '%';
-      if (curEl) curEl.textContent = current;
-      if (totEl) totEl.textContent = total;
-      if (playBtn) playBtn.textContent = playing ? '⏸' : '▶';
-    } catch(e) {}
-  }
-  syncMusicWidget();
-  setInterval(syncMusicWidget, 2000);
-
-  function sendMusicCmd(cmd) { localStorage.setItem('music_cmd', cmd + '_' + Date.now()); }
-  const btnPlay = document.getElementById('btnPlay');
-  const btnPrev = document.getElementById('btnPrev');
-  const btnNext = document.getElementById('btnNext');
-  if (btnPlay) btnPlay.addEventListener('click', () => sendMusicCmd('toggle'));
-  if (btnPrev) btnPrev.addEventListener('click', () => sendMusicCmd('prev'));
-  if (btnNext) btnNext.addEventListener('click', () => sendMusicCmd('next'));
 
   // 加载自定义页面
   function loadCustomPages() {
