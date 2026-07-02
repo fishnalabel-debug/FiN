@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -10,191 +9,199 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 :root {
-–bg:      #f4f3f0;
-–card:    #ffffff;
-–blue:    #c8d8e4;
-–apr:     #f5e6d3;
-–neu:     #edecea;
-–ink:     #2c2c2e;
-–ink2:    #636366;
-–ink3:    #aeaeb2;
-–line:    rgba(44,44,46,.08);
-–sh:      0 2px 10px rgba(44,44,46,.06);
-–sh2:     0 4px 18px rgba(44,44,46,.09);
-–green:   #34c759;
-–red:     #ff3b30;
-–safe-top:    env(safe-area-inset-top, 44px);
-–safe-bottom: env(safe-area-inset-bottom, 20px);
+  --bg: #f4f3f0;
+  --card: rgba(255,255,255,0.85);
+  --blue: #c8d8e4;
+  --blue2: rgba(200,216,228,0.45);
+  --apr: #f5e6d3;
+  --apr2: rgba(245,230,211,0.55);
+  --neu: #edecea;
+  --ink: #2c2c2e;
+  --ink2: #636366;
+  --ink3: #aeaeb2;
+  --line: rgba(44,44,46,0.08);
+  --green: #34c759;
+  --red: #ff3b30;
+  --safe-top: env(safe-area-inset-top, 44px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 body {
-font-family: -apple-system, BlinkMacSystemFont, ‘SF Pro Text’, ‘Helvetica Neue’, sans-serif;
-background: var(–bg);
-width:100vw; height:100vh;
-overflow:hidden; display:flex; flex-direction:column;
-color:var(–ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  width: 100vw; height: 100vh;
+  overflow: hidden; display: flex; flex-direction: column;
+  color: var(--ink);
 }
 
-.ss { height:var(–safe-top); flex-shrink:0; }
+.ss { height: var(--safe-top); flex-shrink: 0; }
 
-/* topbar */
 .topbar {
-display:flex; align-items:center;
-padding:6px 16px 6px; flex-shrink:0;
+  display: flex; align-items: center;
+  padding: 10px 16px; flex-shrink: 0;
 }
 .back-btn {
-width:34px; height:34px; border-radius:50%;
-background:rgba(255,255,255,.75); border:1px solid rgba(255,255,255,.9);
-box-shadow:var(–sh); display:flex; align-items:center; justify-content:center;
-font-size:18px; cursor:pointer; flex-shrink:0;
-transition:transform .14s,opacity .14s;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 2px 10px rgba(44,44,46,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; flex-shrink: 0;
+  transition: transform 0.14s, opacity 0.14s;
 }
-.back-btn:active { transform:scale(.88); opacity:.7; }
+.back-btn:active { transform: scale(0.88); opacity: 0.7; }
 .topbar-title {
-flex:1; text-align:center; font-size:15px;
-font-weight:600; letter-spacing:-.2px; margin-right:34px;
+  flex: 1; text-align: center; font-size: 16px;
+  font-weight: 700; letter-spacing: -0.3px; margin-right: 34px;
 }
 
-/* scroll */
 .scroll {
-flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
-padding:12px 16px calc(var(–safe-bottom) + 40px);
-scrollbar-width:none;
+  flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+  padding: 12px 16px calc(var(--safe-bottom) + 40px);
+  scrollbar-width: none;
 }
-.scroll::-webkit-scrollbar { display:none; }
+.scroll::-webkit-scrollbar { display: none; }
 
-/* ── 卡片容器 ── */
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 卡片 ── */
 .card {
-background:var(–card); border-radius:22px;
-border:1px solid var(–line); box-shadow:var(–sh2);
-overflow:hidden; margin-bottom:20px;
+  background: var(--card);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 24px;
+  box-shadow: 0 2px 16px rgba(44,44,46,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+  overflow: hidden; margin-bottom: 20px;
+  animation: rise 0.4s ease forwards; opacity: 0;
 }
-.card-title {
-font-size:11px; font-weight:700; letter-spacing:.12em;
-text-transform:uppercase; color:var(–ink2);
-padding:16px 18px 0;
+.card-header {
+  padding: 16px 18px 0;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink2);
 }
+.card-header .dot { color: var(--blue); }
 
 /* ── 输入行 ── */
 .row {
-display:flex; align-items:center;
-padding:14px 18px; gap:12px;
-border-bottom:1px solid var(–line);
+  display: flex; align-items: center;
+  padding: 14px 18px; gap: 12px;
+  border-bottom: 1px solid var(--line);
 }
-.row:last-child { border-bottom:none; }
+.row:last-child { border-bottom: none; }
+.row-icon {
+  font-size: 18px; flex-shrink: 0; opacity: 0.7;
+}
 .row-label {
-font-size:13px; font-weight:500; color:var(–ink);
-flex-shrink:0; min-width:52px;
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  flex-shrink: 0; min-width: 56px;
 }
 .row-input {
-flex:1; border:none; outline:none; background:transparent;
-font-size:13px; color:var(–ink); font-family:inherit;
-min-width:0;
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 13px; color: var(--ink); font-family: inherit; min-width: 0;
 }
-.row-input::placeholder { color:var(–ink3); }
-/* 密码字段 */
-.row-input.masked { -webkit-text-security:disc; text-security:disc; }
-.row-input.masked.show { -webkit-text-security:none; text-security:none; }
+.row-input::placeholder { color: var(--ink3); }
+.row-input.masked { -webkit-text-security: disc; text-security: disc; }
+.row-input.masked.show { -webkit-text-security: none; text-security: none; }
 
 .eye-btn {
-flex-shrink:0; font-size:16px; cursor:pointer;
-opacity:.5; transition:opacity .15s;
-padding:2px 4px;
+  flex-shrink: 0; font-size: 16px; cursor: pointer;
+  opacity: 0.5; transition: opacity 0.15s; padding: 2px 4px;
 }
-.eye-btn:active { opacity:1; }
+.eye-btn:active { opacity: 1; }
 
 /* ── 拉取按钮 ── */
 .fetch-btn {
-display:flex; align-items:center; justify-content:center; gap:8px;
-width:calc(100% - 36px); margin:0 18px 16px;
-padding:12px; border-radius:14px;
-background:var(–blue); border:none; cursor:pointer;
-font-size:13.5px; font-weight:600; color:var(–ink);
-transition:opacity .15s, transform .12s;
-font-family:inherit;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: calc(100% - 36px); margin: 6px 18px 14px;
+  padding: 13px; border-radius: 16px;
+  background: var(--blue2); border: 1px solid rgba(255,255,255,0.9);
+  cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink);
+  transition: all 0.15s; font-family: inherit;
+  box-shadow: 0 2px 10px rgba(44,44,46,0.05);
 }
-.fetch-btn:active { opacity:.8; transform:scale(.98); }
-.fetch-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+.fetch-btn:active { opacity: 0.8; transform: scale(0.98); }
+.fetch-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-/* ── 状态提示 ── */
+/* ── 状态条 ── */
 .status-bar {
-margin:0 18px 14px;
-font-size:12px; font-weight:500;
-padding:9px 14px; border-radius:11px;
-display:none; align-items:center; gap:7px;
+  margin: 0 18px 14px;
+  font-size: 12px; font-weight: 500;
+  padding: 9px 14px; border-radius: 12px;
+  display: none; align-items: center; gap: 7px;
 }
-.status-bar.ok  { display:flex; background:rgba(52,199,89,.12);  color:#1a7a36; }
-.status-bar.err { display:flex; background:rgba(255,59,48,.10);  color:#c0392b; }
-.status-bar.ing { display:flex; background:rgba(200,216,228,.4); color:var(–ink2); }
+.status-bar.ok  { display:flex; background: rgba(52,199,89,0.1);  color: #1a7a36; }
+.status-bar.err { display:flex; background: rgba(255,59,48,0.08);  color: #c0392b; }
+.status-bar.ing { display:flex; background: rgba(200,216,228,0.4); color: var(--ink2); }
 
-/* 旋转动画 */
-@keyframes spin { to { transform:rotate(360deg); } }
-.spin { display:inline-block; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: inline-block; animation: spin 0.8s linear infinite; }
 
-/* ── 模型选择列表 ── */
+/* ── 模型列表 ── */
 .model-list {
-max-height:220px; overflow-y:auto;
-scrollbar-width:none;
+  max-height: 220px; overflow-y: auto;
+  scrollbar-width: none;
 }
-.model-list::-webkit-scrollbar { display:none; }
+.model-list::-webkit-scrollbar { display: none; }
 .model-item {
-display:flex; align-items:center; gap:12px;
-padding:13px 18px;
-border-bottom:1px solid var(–line);
-cursor:pointer; transition:background .13s;
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 18px; border-bottom: 1px solid var(--line);
+  cursor: pointer; transition: background 0.13s;
 }
-.model-item:last-child { border-bottom:none; }
-.model-item:active { background:rgba(200,216,228,.2); }
-.model-name { flex:1; font-size:13px; color:var(–ink); word-break:break-all; }
+.model-item:last-child { border-bottom: none; }
+.model-item:active { background: rgba(200,216,228,0.2); }
+.model-name { flex: 1; font-size: 13px; color: var(--ink); word-break: break-all; }
 .model-check {
-width:20px; height:20px; border-radius:50%;
-border:1.5px solid var(–ink3);
-display:flex; align-items:center; justify-content:center;
-flex-shrink:0; font-size:11px; color:#fff;
-transition:background .15s, border-color .15s;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--ink3); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 12px; color: #fff; transition: all 0.15s;
 }
-.model-item.selected .model-check {
-background:var(–blue); border-color:var(–blue);
-}
-.model-empty {
-padding:20px 18px;
-font-size:13px; color:var(–ink3); text-align:center;
-}
+.model-item.selected .model-check { background: var(--ink); border-color: var(--ink); }
+.model-empty { padding: 24px 18px; font-size: 13px; color: var(--ink3); text-align: center; }
 
-/* ── 已选模型展示 ── */
+/* ── 已选模型 ── */
 .selected-model-row {
-padding:14px 18px; display:flex; align-items:center; gap:10px;
+  padding: 14px 18px; display: flex; align-items: center; gap: 10px;
 }
 .selected-tag {
-background:var(–apr); border-radius:10px;
-padding:5px 12px; font-size:12.5px; font-weight:600;
-color:var(–ink); flex:1; word-break:break-all;
+  background: var(--apr2); border-radius: 12px;
+  padding: 6px 14px; font-size: 12.5px; font-weight: 600;
+  color: var(--ink); flex: 1; word-break: break-all;
 }
 .clear-btn {
-font-size:12px; color:var(–ink3); cursor:pointer;
-padding:4px 8px; border-radius:8px;
-transition:background .13s;
+  font-size: 12px; color: var(--ink3); cursor: pointer;
+  padding: 4px 10px; border-radius: 8px; transition: background 0.13s;
 }
-.clear-btn:active { background:rgba(44,44,46,.08); }
+.clear-btn:active { background: rgba(44,44,46,0.06); }
 
-/* ── 说明文字 ── */
 .hint {
-font-size:11.5px; color:var(–ink3); line-height:1.6;
-padding:0 18px 16px;
+  font-size: 11.5px; color: var(--ink3); line-height: 1.6;
+  padding: 4px 18px 16px;
 }
 
-/* ── 保存成功 toast ── */
+/* ── toast ── */
 .toast {
-position:fixed; bottom:calc(var(–safe-bottom) + 24px); left:50%; transform:translateX(-50%) translateY(10px);
-background:rgba(44,44,46,.88); color:#fff;
-font-size:13px; font-weight:500; padding:10px 20px;
-border-radius:20px; white-space:nowrap;
-opacity:0; transition:opacity .2s, transform .2s;
-pointer-events:none; z-index:99;
+  position: fixed; bottom: calc(var(--safe-bottom) + 24px); left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(44,44,46,0.9); color: #fff;
+  font-size: 13px; font-weight: 500; padding: 10px 22px;
+  border-radius: 22px; white-space: nowrap;
+  opacity: 0; transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none; z-index: 99;
 }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-</style>
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ── 测试按钮 ── */
+.test-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: calc(100% - 36px); margin: 0 18px 16px;
+  padding: 12px; border-radius: 14px;
+  background: var(--apr2); border: 1px solid rgba(255,255,255,0.9);
+  cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink);
+  font-family: inherit; transition: all 0.15s;
+}
+.test-btn:active { transform: scale(0.98); opacity: 0.8; }
+.test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+</style>
 </head>
 <body>
 
@@ -208,59 +215,53 @@ pointer-events:none; z-index:99;
 <div class="scroll">
 
   <!-- ═══ API 配置 ═══ -->
-
   <div class="card">
-    <div class="card-title">AI 接口配置</div>
+    <div class="card-header"><span class="dot">●</span> AI 接口配置</div>
 
-<!-- Base URL -->
-<div class="row">
-  <div class="row-label">地址</div>
-  <input class="row-input" id="inputUrl" type="url"
-    placeholder="https://api.openai.com"
-    autocomplete="off" autocorrect="off" spellcheck="false">
-</div>
+    <div class="row">
+      <span class="row-icon">🌐</span>
+      <span class="row-label">地址</span>
+      <input class="row-input" id="inputUrl" type="url" placeholder="https://api.openai.com" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
 
-<!-- API Key -->
-<div class="row">
-  <div class="row-label">API Key</div>
-  <input class="row-input masked" id="inputKey" type="text"
-    placeholder="sk-···"
-    autocomplete="off" autocorrect="off" spellcheck="false">
-  <div class="eye-btn" id="eyeBtn">👁️</div>
-</div>
+    <div class="row">
+      <span class="row-icon">🔑</span>
+      <span class="row-label">API Key</span>
+      <input class="row-input masked" id="inputKey" type="text" placeholder="sk-···" autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="eye-btn" id="eyeBtn">👁️</div>
+    </div>
 
-<!-- 拉取模型按钮 -->
-<div style="height:12px;"></div>
-<button class="fetch-btn" id="fetchBtn">
-  <span id="fetchIcon">🔍</span>
-  <span id="fetchLabel">拉取可用模型</span>
-</button>
+    <button class="fetch-btn" id="fetchBtn">
+      <span id="fetchIcon">🔍</span>
+      <span id="fetchLabel">拉取可用模型</span>
+    </button>
 
-<!-- 状态提示 -->
-<div class="status-bar" id="statusBar">
-  <span id="statusIcon"></span>
-  <span id="statusText"></span>
-</div>
+    <div class="status-bar" id="statusBar">
+      <span id="statusIcon"></span>
+      <span id="statusText"></span>
+    </div>
 
+    <button class="test-btn" id="testBtn">
+      <span id="testIcon">🔄</span>
+      <span id="testLabel">测试连接</span>
+    </button>
   </div>
 
   <!-- ═══ 模型选择 ═══ -->
-
   <div class="card" id="modelCard" style="display:none;">
-    <div class="card-title">选择模型</div>
+    <div class="card-header">选择模型</div>
     <div class="model-list" id="modelList"></div>
-    <div class="hint">选择后所有板块的 AI 功能都会使用这个模型。</div>
+    <div class="hint">选择后所有板块的 AI 功能都会使用此模型。</div>
   </div>
 
   <!-- ═══ 已选模型 ═══ -->
-
   <div class="card" id="selectedCard" style="display:none;">
-    <div class="card-title">当前模型</div>
+    <div class="card-header">当前模型</div>
     <div class="selected-model-row">
       <div class="selected-tag" id="selectedTag">—</div>
       <div class="clear-btn" id="clearBtn">清除</div>
     </div>
-    <div class="hint">已保存。所有板块的 AI 按钮都会读取此模型和密钥。</div>
+    <div class="hint">已保存。所有 AI 按钮都会读取此模型和密钥。</div>
   </div>
 
 </div>
@@ -269,45 +270,33 @@ pointer-events:none; z-index:99;
 
 <script>
 (function(){
-  /* ── localStorage keys ── */
-  const K_URL   = 'ai_base_url';
-  const K_KEY   = 'ai_api_key';
-  const K_MODEL = 'ai_model';
-  const K_LIST  = 'ai_model_list'; // 缓存上次拉到的列表
+  const K_URL = 'ai_base_url', K_KEY = 'ai_api_key', K_MODEL = 'ai_model', K_LIST = 'ai_model_list';
 
-  /* ── 元素引用 ── */
-  const inputUrl   = document.getElementById('inputUrl');
-  const inputKey   = document.getElementById('inputKey');
-  const eyeBtn     = document.getElementById('eyeBtn');
-  const fetchBtn   = document.getElementById('fetchBtn');
-  const fetchIcon  = document.getElementById('fetchIcon');
+  const inputUrl = document.getElementById('inputUrl');
+  const inputKey = document.getElementById('inputKey');
+  const eyeBtn = document.getElementById('eyeBtn');
+  const fetchBtn = document.getElementById('fetchBtn');
+  const fetchIcon = document.getElementById('fetchIcon');
   const fetchLabel = document.getElementById('fetchLabel');
-  const statusBar  = document.getElementById('statusBar');
+  const statusBar = document.getElementById('statusBar');
   const statusIcon = document.getElementById('statusIcon');
   const statusText = document.getElementById('statusText');
-  const modelCard  = document.getElementById('modelCard');
-  const modelList  = document.getElementById('modelList');
+  const modelCard = document.getElementById('modelCard');
+  const modelList = document.getElementById('modelList');
   const selectedCard = document.getElementById('selectedCard');
-  const selectedTag  = document.getElementById('selectedTag');
-  const clearBtn   = document.getElementById('clearBtn');
+  const selectedTag = document.getElementById('selectedTag');
+  const clearBtn = document.getElementById('clearBtn');
 
-  /* ── 初始化：读取已保存的值 ── */
   inputUrl.value = localStorage.getItem(K_URL) || '';
   inputKey.value = localStorage.getItem(K_KEY) || '';
   const savedModel = localStorage.getItem(K_MODEL);
   if (savedModel) showSelected(savedModel);
 
-  // 如果有缓存的模型列表，直接渲染出来（不用每次都重新拉）
   const cachedList = localStorage.getItem(K_LIST);
-  if (cachedList) {
-    try {
-      renderModelList(JSON.parse(cachedList), savedModel);
-    } catch(e){}
-  }
+  if (cachedList) { try { renderModelList(JSON.parse(cachedList), savedModel); } catch(e){} }
 
-  /* ── 自动保存 URL 和 Key（失焦时） ── */
   inputUrl.addEventListener('blur', () => {
-    const v = inputUrl.value.trim().replace(/\/+$/, ''); // 去掉尾部斜杠
+    const v = inputUrl.value.trim().replace(/\/+$/, '');
     if (v) { localStorage.setItem(K_URL, v); inputUrl.value = v; }
   });
   inputKey.addEventListener('blur', () => {
@@ -315,7 +304,6 @@ pointer-events:none; z-index:99;
     if (v) localStorage.setItem(K_KEY, v);
   });
 
-  /* ── 眼睛按钮：显示/隐藏 Key ── */
   let keyVisible = false;
   eyeBtn.addEventListener('click', () => {
     keyVisible = !keyVisible;
@@ -323,116 +311,12 @@ pointer-events:none; z-index:99;
     eyeBtn.textContent = keyVisible ? '🙈' : '👁️';
   });
 
-  /* ── 拉取模型列表 ── */
-  fetchBtn.addEventListener('click', async () => {
-    const url = (inputUrl.value.trim() || localStorage.getItem(K_URL) || '').replace(/\/+$/, '');
-    const key = inputKey.value.trim() || localStorage.getItem(K_KEY) || '';
-
-    if (!url) { showStatus('err', '⚠️', '请先填写接口地址'); return; }
-    if (!key) { showStatus('err', '⚠️', '请先填写 API Key'); return; }
-
-    // 保存最新值
-    localStorage.setItem(K_URL, url);
-    localStorage.setItem(K_KEY, key);
-
-    setFetchLoading(true);
-    showStatus('ing', '<span class="spin">⟳</span>', '正在拉取模型列表…');
-
-    try {
-      const res = await fetch(`${url}/v1/models`, {
-        headers: {
-          'Authorization': `Bearer ${key}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err?.error?.message || `HTTP ${res.status}`);
-      }
-
-      const data = await res.json();
-      // OpenAI 格式：data.data[].id；兼容直接返回数组的情况
-      let models = [];
-      if (Array.isArray(data)) {
-        models = data.map(m => typeof m === 'string' ? m : m.id || m.name || JSON.stringify(m));
-      } else if (Array.isArray(data?.data)) {
-        models = data.data.map(m => m.id || m.name || JSON.stringify(m));
-      } else if (Array.isArray(data?.models)) {
-        models = data.models.map(m => typeof m === 'string' ? m : m.name || m.id || JSON.stringify(m));
-      }
-
-      if (models.length === 0) throw new Error('没有找到可用模型');
-
-      models.sort();
-      localStorage.setItem(K_LIST, JSON.stringify(models));
-      renderModelList(models, localStorage.getItem(K_MODEL));
-      showStatus('ok', '✓', `找到 ${models.length} 个模型，点击选择`);
-
-    } catch(e) {
-      showStatus('err', '✕', e.message || '请求失败，请检查地址和 Key');
-    } finally {
-      setFetchLoading(false);
-    }
-  });
-
-  /* ── 渲染模型列表 ── */
-  function renderModelList(models, current) {
-    modelCard.style.display = '';
-    modelList.innerHTML = '';
-
-    if (!models || models.length === 0) {
-      modelList.innerHTML = '<div class="model-empty">暂无模型</div>';
-      return;
-    }
-
-    models.forEach(id => {
-      const item = document.createElement('div');
-      item.className = 'model-item' + (id === current ? ' selected' : '');
-      item.innerHTML = `
-        <div class="model-name">${id}</div>
-        <div class="model-check">${id === current ? '✓' : ''}</div>
-      `;
-      item.addEventListener('click', () => {
-        // 取消其他选中
-        document.querySelectorAll('.model-item').forEach(el => {
-          el.classList.remove('selected');
-          el.querySelector('.model-check').textContent = '';
-        });
-        item.classList.add('selected');
-        item.querySelector('.model-check').textContent = '✓';
-
-        localStorage.setItem(K_MODEL, id);
-        showSelected(id);
-        showToast('✓ 已选择 ' + id);
-      });
-      modelList.appendChild(item);
-    });
-  }
-
-  /* ── 显示已选模型区域 ── */
-  function showSelected(model) {
-    selectedCard.style.display = '';
-    selectedTag.textContent = model;
-  }
-
-  /* ── 清除已选模型 ── */
-  clearBtn.addEventListener('click', () => {
-    localStorage.removeItem(K_MODEL);
-    selectedCard.style.display = 'none';
-    // 重置列表里的选中状态
-    document.querySelectorAll('.model-item').forEach(el => {
-      el.classList.remove('selected');
-      el.querySelector('.model-check').textContent = '';
-    });
-    showToast('已清除模型选择');
-  });
-
-  /* ── 工具函数 ── */
-  function setFetchLoading(on) {
-    fetchBtn.disabled = on;
-    fetchIcon.innerHTML = on ? '<span class="spin">⟳</span>' : '🔍';
-    fetchLabel.textContent = on ? '拉取中…' : '拉取可用模型';
+  function getApiConfig() {
+    return {
+      endpoint: (inputUrl.value.trim() || localStorage.getItem(K_URL) || '').replace(/\/+$/, ''),
+      key: inputKey.value.trim() || localStorage.getItem(K_KEY) || '',
+      model: localStorage.getItem(K_MODEL) || 'gpt-3.5-turbo'
+    };
   }
 
   function showStatus(type, icon, text) {
@@ -441,21 +325,116 @@ pointer-events:none; z-index:99;
     statusText.textContent = text;
   }
 
+  function setFetchLoading(on) {
+    fetchBtn.disabled = on;
+    fetchIcon.innerHTML = on ? '<span class="spin">⟳</span>' : '🔍';
+    fetchLabel.textContent = on ? '拉取中…' : '拉取可用模型';
+  }
+
+  // ★ 拉取模型
+  fetchBtn.addEventListener('click', async () => {
+    const cfg = getApiConfig();
+    if (!cfg.endpoint) { showStatus('err','⚠️','请先填写接口地址'); return; }
+    if (!cfg.key) { showStatus('err','⚠️','请先填写 API Key'); return; }
+    localStorage.setItem(K_URL, cfg.endpoint);
+    localStorage.setItem(K_KEY, cfg.key);
+    setFetchLoading(true);
+    showStatus('ing','<span class="spin">⟳</span>','正在拉取模型列表…');
+
+    try {
+      const res = await fetch(`${cfg.endpoint}/v1/models`, {
+        headers: { 'Authorization': `Bearer ${cfg.key}`, 'Content-Type': 'application/json' }
+      });
+      if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err?.error?.message || `HTTP ${res.status}`); }
+      const data = await res.json();
+      let models = [];
+      if (Array.isArray(data)) models = data.map(m => typeof m==='string'?m:m.id||m.name||'');
+      else if (Array.isArray(data?.data)) models = data.data.map(m => m.id||'');
+      else if (Array.isArray(data?.models)) models = data.models.map(m => typeof m==='string'?m:m.name||m.id||'');
+      if (!models.length) throw new Error('没有找到可用模型');
+      models.sort();
+      localStorage.setItem(K_LIST, JSON.stringify(models));
+      renderModelList(models, localStorage.getItem(K_MODEL));
+      showStatus('ok','✓',`找到 ${models.length} 个模型，点击选择`);
+    } catch(e) {
+      showStatus('err','✕',e.message);
+    } finally {
+      setFetchLoading(false);
+    }
+  });
+
+  // ★ 测试连接
+  document.getElementById('testBtn').addEventListener('click', async () => {
+    const cfg = getApiConfig();
+    if (!cfg.endpoint || !cfg.key) { showStatus('err','⚠️','请先填写地址和Key'); return; }
+    localStorage.setItem(K_URL, cfg.endpoint); localStorage.setItem(K_KEY, cfg.key);
+    const btn = document.getElementById('testBtn');
+    const icon = document.getElementById('testIcon');
+    const label = document.getElementById('testLabel');
+    btn.disabled = true; icon.textContent = '⏳'; label.textContent = '测试中…';
+    showStatus('ing','<span class="spin">⟳</span>','正在测试连接…');
+
+    try {
+      const res = await fetch(`${cfg.endpoint}/v1/models`, {
+        headers: { 'Authorization': `Bearer ${cfg.key}` }
+      });
+      if (res.ok) {
+        showStatus('ok','✓','连接成功！API 可正常访问');
+        document.getElementById('testIcon').textContent = '✅';
+        document.getElementById('testLabel').textContent = '连接成功';
+      } else {
+        const err = await res.json().catch(()=>({}));
+        showStatus('err','✕',err?.error?.message || `HTTP ${res.status}`);
+        document.getElementById('testIcon').textContent = '❌';
+        document.getElementById('testLabel').textContent = '连接失败';
+      }
+    } catch(e) {
+      showStatus('err','✕','网络错误，请检查地址或科学上网');
+      document.getElementById('testIcon').textContent = '❌';
+      document.getElementById('testLabel').textContent = '连接失败';
+    } finally {
+      btn.disabled = false;
+      setTimeout(() => { document.getElementById('testIcon').textContent = '🔄'; document.getElementById('testLabel').textContent = '测试连接'; }, 3000);
+    }
+  });
+
+  function renderModelList(models, current) {
+    modelCard.style.display = '';
+    modelList.innerHTML = '';
+    if (!models || !models.length) { modelList.innerHTML = '<div class="model-empty">暂无模型</div>'; return; }
+    models.forEach(id => {
+      const item = document.createElement('div');
+      item.className = 'model-item' + (id === current ? ' selected' : '');
+      item.innerHTML = `<div class="model-name">${id}</div><div class="model-check">${id===current?'✓':''}</div>`;
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.model-item').forEach(el => { el.classList.remove('selected'); el.querySelector('.model-check').textContent = ''; });
+        item.classList.add('selected'); item.querySelector('.model-check').textContent = '✓';
+        localStorage.setItem(K_MODEL, id); showSelected(id);
+        showToast('✓ 已选择 ' + id);
+      });
+      modelList.appendChild(item);
+    });
+  }
+
+  function showSelected(model) { selectedCard.style.display = ''; selectedTag.textContent = model; }
+  clearBtn.addEventListener('click', () => {
+    localStorage.removeItem(K_MODEL); selectedCard.style.display = 'none';
+    document.querySelectorAll('.model-item').forEach(el => { el.classList.remove('selected'); el.querySelector('.model-check').textContent = ''; });
+    showToast('已清除模型选择');
+  });
+
   let toastTimer;
   function showToast(msg) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
+    el.textContent = msg; el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
   }
 
-  /* ── 返回键 ── */
   document.getElementById('backBtn').onclick = () => {
     window.history.length > 1 ? window.history.back() : window.location.href = '主页.html';
   };
 })();
 </script>
-
 </body>
 </html>
