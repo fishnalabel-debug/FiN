@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no,
+               viewport-fit=cover">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+      content="default">
+
+<title>发送红包</title>
+
+<style>
+
+*,
+*::before,
+*::after{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html{
+
+    height:100%;
+    background:#f7f5f2;
+
+}
+
+body{
+
+    min-height:100vh;
+    min-height:-webkit-fill-available;
+
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "PingFang SC",
+    sans-serif;
+
+    background:
+    linear-gradient(
+    180deg,
+    #faf8f5 0%,
+    #f6f3ee 100%);
+
+    color:#222;
+
+    overflow:hidden;
+
+}
+
+.page{
+
+    width:100%;
+    max-width:430px;
+
+    margin:auto;
+
+    min-height:100vh;
+    min-height:-webkit-fill-available;
+
+    display:flex;
+    flex-direction:column;
+
+    padding-top:
+    calc(env(safe-area-inset-top)+8px);
+
+    padding-bottom:
+    env(safe-area-inset-bottom);
+
+}
+
+/* ---------- 顶栏 ---------- */
+
+.topbar{
+
+    display:flex;
+    align-items:center;
+
+    padding:
+
+    12px
+    20px
+    18px;
+
+}
+
+.back-btn{
+
+    width:38px;
+    height:38px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:white;
+
+    color:#222;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    box-shadow:
+
+    0 8px 25px
+    rgba(0,0,0,.04);
+
+}
+
+.back-btn:active{
+
+    transform:scale(.94);
+
+}
+
+.topbar-title{
+
+    flex:1;
+
+    text-align:center;
+
+    font-size:20px;
+
+    font-weight:600;
+
+    letter-spacing:.02em;
+
+}
+
+.topbar-right{
+
+    width:38px;
+
+}
+
+/* ---------- 主体 ---------- */
+
+.envelope{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    padding:
+
+    8px
+    22px
+    26px;
+
+}
+
+/* 图标 */
+
+.icon-wrap{
+
+    width:84px;
+
+    height:84px;
+
+    margin:
+
+    10px auto
+    18px;
+
+    border-radius:28px;
+
+    background:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    box-shadow:
+
+    0 18px 50px
+    rgba(0,0,0,.05);
+
+}
+
+.icon-wrap svg{
+
+    width:34px;
+    height:34px;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    font-size:13px;
+
+    color:#9a958e;
+
+    letter-spacing:.08em;
+
+    margin-bottom:28px;
+
+}
+
+/* ---------- 卡片 ---------- */
+
+.card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:
+
+    22px
+    22px
+    20px;
+
+    box-shadow:
+
+    0 16px 45px
+    rgba(0,0,0,.045);
+
+    margin-bottom:18px;
+
+}
+
+.label{
+
+    font-size:12px;
+
+    color:#9b968f;
+
+    letter-spacing:.08em;
+
+    margin-bottom:16px;
+
+}
+
+/* ---------- 金额 ---------- */
+
+.amount-row{
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:10px;
+
+    padding-bottom:12px;
+
+    border-bottom:
+
+    1px solid
+    #ece8e2;
+
+}
+
+.cny{
+
+    font-size:28px;
+
+    font-weight:500;
+
+    color:#222;
+
+    margin-bottom:6px;
+
+}
+
+.amount-input{
+
+    flex:1;
+
+    border:none;
+
+    background:none;
+
+    outline:none;
+
+    font-size:52px;
+
+    font-weight:300;
+
+    color:#222;
+
+    letter-spacing:-2px;
+
+    font-family:inherit;
+
+    caret-color:#222;
+
+}
+
+.amount-input::placeholder{
+
+    color:#d5d1ca;
+
+    font-weight:300;
+
+}
+
+.amount-input::-webkit-inner-spin-button,
+.amount-input::-webkit-outer-spin-button{
+
+    -webkit-appearance:none;
+
+}
+
+.amount-input[type=number]{
+
+    -moz-appearance:textfield;
+
+}
+/* ---------- 留言 ---------- */
+
+.wish-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:
+
+    18px
+    22px;
+
+    box-shadow:
+
+    0 16px 45px
+    rgba(0,0,0,.045);
+
+    margin-bottom:30px;
+
+}
+
+.wish-label{
+
+    font-size:12px;
+
+    color:#9b968f;
+
+    letter-spacing:.08em;
+
+    margin-bottom:14px;
+
+}
+
+.wish-input{
+
+    width:100%;
+
+    border:none;
+
+    outline:none;
+
+    background:none;
+
+    font-size:16px;
+
+    line-height:1.6;
+
+    color:#222;
+
+    font-family:inherit;
+
+    caret-color:#222;
+
+}
+
+.wish-input::placeholder{
+
+    color:#c4beb6;
+
+}
+
+/* ---------- 按钮 ---------- */
+
+.send-btn{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#202020;
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    letter-spacing:.06em;
+
+    cursor:pointer;
+
+    transition:
+
+    transform .15s,
+
+    opacity .15s;
+
+}
+
+.send-btn:active{
+
+    transform:scale(.97);
+
+    opacity:.82;
+
+}
+
+.send-btn:disabled{
+
+    opacity:.35;
+
+    transform:none;
+
+}
+
+/* ---------- 底部 ---------- */
+
+.hint{
+
+    text-align:center;
+
+    margin-top:16px;
+
+    font-size:12px;
+
+    color:#a39d95;
+
+}
+
+/* ---------- Face ID ---------- */
+
+.faceid-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:999;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-direction:column;
+
+    background:
+
+    rgba(247,245,242,.92);
+
+    backdrop-filter:blur(28px);
+
+    -webkit-backdrop-filter:blur(28px);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:
+
+    opacity .25s,
+
+    visibility .25s;
+
+}
+
+.faceid-overlay.show{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+.faceid-box{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.faceid-frame{
+
+    position:relative;
+
+    width:132px;
+
+    height:132px;
+
+}
+
+.faceid-frame svg{
+
+    width:100%;
+
+    height:100%;
+
+}
+
+.scan-line{
+
+    position:absolute;
+
+    left:18px;
+
+    right:18px;
+
+    top:18px;
+
+    height:2px;
+
+    background:
+
+    linear-gradient(
+
+    90deg,
+
+    transparent,
+
+    #222,
+
+    transparent);
+
+    border-radius:99px;
+
+    animation:
+
+    scanMove
+
+    1.4s
+
+    ease-in-out
+
+    infinite;
+
+}
+
+@keyframes scanMove{
+
+0%{
+
+top:18px;
+
+opacity:0;
+
+}
+
+15%{
+
+opacity:1;
+
+}
+
+85%{
+
+opacity:1;
+
+}
+
+100%{
+
+top:112px;
+
+opacity:0;
+
+}
+
+}
+
+.faceid-title{
+
+    margin-top:28px;
+
+    font-size:22px;
+
+    font-weight:600;
+
+    color:#222;
+
+}
+
+.faceid-sub{
+
+    margin-top:10px;
+
+    font-size:14px;
+
+    color:#8f8981;
+
+}
+.faceid-success{
+
+    display:none;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.success-circle{
+
+    width:82px;
+
+    height:82px;
+
+    border-radius:50%;
+
+    background:#222;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:42px;
+
+    animation:
+
+    successPop .35s cubic-bezier(.2,.8,.2,1);
+
+}
+
+@keyframes successPop{
+
+0%{
+
+transform:scale(.5);
+
+opacity:0;
+
+}
+
+100%{
+
+transform:scale(1);
+
+opacity:1;
+
+}
+
+}
+
+.success-text{
+
+    margin-top:24px;
+
+    font-size:22px;
+
+    font-weight:600;
+
+    color:#222;
+
+}
+
+.success-amount{
+
+    margin-top:10px;
+
+    font-size:15px;
+
+    color:#8d877f;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+
+        <button
+        class="back-btn"
+        id="backBtn">
+
+            ←
+
+        </button>
+
+        <div class="topbar-title">
+
+            发送红包
+
+        </div>
+
+        <div class="topbar-right"></div>
+
+    </div>
+
+    <div class="envelope">
+
+        <div class="icon-wrap">
+
+            <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+
+                <rect
+
+                x="5"
+
+                y="4"
+
+                width="14"
+
+                height="16"
+
+                rx="3"
+
+                stroke="#222"
+
+                stroke-width="1.6"/>
+
+                <path
+
+                d="M5 10H19"
+
+                stroke="#222"
+
+                stroke-width="1.6"/>
+
+                <circle
+
+                cx="12"
+
+                cy="10"
+
+                r="1.8"
+
+                fill="#222"/>
+
+            </svg>
+
+        </div>
+
+        <div class="subtitle">
+
+            Sending Red Packet
+
+        </div>
+
+        <div class="card">
+
+            <div class="label">
+
+                红包金额
+
+            </div>
+
+            <div class="amount-row">
+
+                <span class="cny">
+
+                    ¥
+
+                </span>
+
+                <input
+
+                id="amountInput"
+
+                class="amount-input"
+
+                type="number"
+
+                inputmode="decimal"
+
+                placeholder="0.00"
+
+                min="0.01"
+
+                max="200"
+
+                step="0.01">
+
+            </div>
+
+        </div>
+
+        <div class="wish-card">
+
+            <div class="wish-label">
+
+                留一句话
+
+            </div>
+
+            <input
+
+            id="wishInput"
+
+            class="wish-input"
+
+            type="text"
+
+            maxlength="32"
+
+            placeholder="写一句想说的话……">
+
+        </div>
+
+        <button
+
+        id="sendBtn"
+
+        class="send-btn">
+
+            塞入红包
+
+        </button>
+
+        <div class="hint">
+
+            单个红包限额 ¥200.00
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Face ID -->
+
+<div
+
+class="faceid-overlay"
+
+id="faceidOverlay">
+
+    <div
+
+    class="faceid-box"
+
+    id="faceidScanning">
+
+        <div class="faceid-frame">
+
+            <svg
+            viewBox="0 0 130 130"
+            fill="none">
+
+                <path
+                d="M18 40 L18 18 L40 18"
+
+                stroke="#222"
+
+                stroke-width="3"
+
+                stroke-linecap="round"/>
+
+                <path
+                d="M90 18 L112 18 L112 40"
+
+                stroke="#222"
+
+                stroke-width="3"
+
+                stroke-linecap="round"/>
+
+                <path
+                d="M112 90 L112 112 L90 112"
+
+                stroke="#222"
+
+                stroke-width="3"
+
+                stroke-linecap="round"/>
+
+                <path
+                d="M40 112 L18 112 L18 90"
+
+                stroke="#222"
+
+                stroke-width="3"
+
+                stroke-linecap="round"/>
+
+                <ellipse
+
+                cx="65"
+
+                cy="60"
+
+                rx="22"
+
+                ry="26"
+
+                stroke="#bbb"
+
+                stroke-width="1.5"/>
+
+                <circle
+
+                cx="55"
+
+                cy="54"
+
+                r="3"
+
+                fill="#bbb"/>
+
+                <circle
+
+                cx="75"
+
+                cy="54"
+
+                r="3"
+
+                fill="#bbb"/>
+
+                <path
+
+                d="M55 71 Q65 78 75 71"
+
+                stroke="#bbb"
+
+                stroke-width="1.5"
+
+                fill="none"/>
+
+            </svg>
+
+            <div class="scan-line"></div>
+
+        </div>
+
+        <div class="faceid-title">
+
+            Face ID
+
+        </div>
+
+        <div class="faceid-sub">
+
+            请将面容对准镜头
+
+        </div>
+
+    </div>
+        <div
+        class="faceid-success"
+        id="faceidSuccess">
+
+            <div class="success-circle">
+
+                ✓
+
+            </div>
+
+            <div class="success-text">
+
+                已发送
+
+            </div>
+
+            <div
+            class="success-amount"
+            id="successAmount">
+
+            </div>
+
+        </div>
+
+    </div>
+
+<script>
+
+(function(){
+
+const params=new URLSearchParams(window.location.search);
+
+const charId=params.get("id");
+
+/* 返回 */
+
+document
+
+.getElementById("backBtn")
+
+.addEventListener("click",()=>{
+
+    if(charId){
+
+        window.location.href=
+
+        "../chat/chat/chat.html?id="+charId;
+
+    }else{
+
+        history.back();
+
+    }
+
+});
+
+/* IndexedDB */
+
+const DB_NAME="FiN_DB";
+
+const DB_VER=1;
+
+const STORE="chat_messages";
+
+function openDB(){
+
+return new Promise((resolve,reject)=>{
+
+const req=indexedDB.open(
+
+DB_NAME,
+
+DB_VER
+
+);
+
+req.onupgradeneeded=e=>{
+
+const db=e.target.result;
+
+if(
+
+!db.objectStoreNames.contains(STORE)
+
+){
+
+db.createObjectStore(
+
+STORE,
+
+{
+
+keyPath:"id"
+
+}
+
+);
+
+}
+
+};
+
+req.onsuccess=e=>
+
+resolve(e.target.result);
+
+req.onerror=e=>
+
+reject(e.target.error);
+
+});
+
+}
+
+async function loadMessages(){
+
+try{
+
+const db=await openDB();
+
+return new Promise((resolve,reject)=>{
+
+const tx=db.transaction(
+
+STORE,
+
+"readonly"
+
+);
+
+const req=
+
+tx.objectStore(STORE)
+
+.get(
+
+"chat_msg_"+charId
+
+);
+
+req.onsuccess=()=>{
+
+resolve(
+
+req.result?.messages||[]
+
+);
+
+};
+
+req.onerror=()=>{
+
+reject(req.error);
+
+};
+
+tx.oncomplete=()=>db.close();
+
+});
+
+}catch{
+
+return[];
+
+}
+
+}
+
+async function saveMessages(messages){
+
+try{
+
+const db=await openDB();
+
+return new Promise((resolve,reject)=>{
+
+const tx=db.transaction(
+
+STORE,
+
+"readwrite"
+
+);
+
+tx.objectStore(STORE)
+
+.put({
+
+id:
+
+"chat_msg_"+charId,
+
+messages
+
+});
+
+tx.oncomplete=()=>{
+
+db.close();
+
+resolve();
+
+};
+
+tx.onerror=()=>{
+
+reject(tx.error);
+
+};
+
+});
+
+}catch{}
+
+}
+
+function updateCharLastMsg(text){
+
+try{
+
+const chars=
+
+JSON.parse(
+
+localStorage.getItem(
+
+"chat_characters"
+
+)
+
+)||[];
+
+const index=
+
+chars.findIndex(
+
+c=>String(c.id)===String(charId)
+
+);
+
+if(index!==-1){
+
+chars[index].lastMessage=text;
+
+const now=new Date();
+
+chars[index].time=
+
+String(now.getHours())
+
+.padStart(2,"0")
+
++
+
+":"
+
++
+
+String(now.getMinutes())
+
+.padStart(2,"0");
+
+localStorage.setItem(
+
+"chat_characters",
+
+JSON.stringify(chars)
+
+);
+
+}
+
+}catch{}
+
+}
+async function sendRedPacket(amount,wish){
+
+if(!charId)return;
+
+const messages=await loadMessages();
+
+const now=new Date();
+
+const time=
+
+String(now.getHours())
+
+.padStart(2,"0")
+
++
+
+":"
+
++
+
+String(now.getMinutes())
+
+.padStart(2,"0");
+
+messages.push({
+
+type:"red_packet",
+
+sender:"self",
+
+text:
+
+wish||
+
+"恭喜发财，大吉大利",
+
+wish:
+
+wish||
+
+"恭喜发财，大吉大利",
+
+amount:
+
+parseFloat(amount)
+
+.toFixed(2),
+
+timestamp:Date.now(),
+
+time
+
+});
+
+await saveMessages(messages);
+
+updateCharLastMsg("[红包]");
+
+}
+
+/* Face ID */
+
+const overlay=
+
+document.getElementById(
+
+"faceidOverlay"
+
+);
+
+const scanning=
+
+document.getElementById(
+
+"faceidScanning"
+
+);
+
+const success=
+
+document.getElementById(
+
+"faceidSuccess"
+
+);
+
+function showScanning(){
+
+scanning.style.display="flex";
+
+success.style.display="none";
+
+overlay.classList.add("show");
+
+}
+
+function showSuccess(amount){
+
+scanning.style.display="none";
+
+success.style.display="flex";
+
+document
+
+.getElementById(
+
+"successAmount"
+
+)
+
+.textContent=
+
+"¥ "
+
++
+
+parseFloat(amount)
+
+.toFixed(2)
+
++
+
+" 已发出";
+
+}
+
+/* 控件 */
+
+const amountInput=
+
+document.getElementById(
+
+"amountInput"
+
+);
+
+const wishInput=
+
+document.getElementById(
+
+"wishInput"
+
+);
+
+const sendBtn=
+
+document.getElementById(
+
+"sendBtn"
+
+);
+
+/* 金额格式化 */
+
+amountInput
+
+.addEventListener(
+
+"blur",
+
+()=>{
+
+const value=
+
+parseFloat(
+
+amountInput.value
+
+);
+
+if(
+
+!isNaN(value)
+
+&&
+
+value>0
+
+){
+
+amountInput.value=
+
+Math.min(
+
+value,
+
+200
+
+)
+
+.toFixed(2);
+
+}
+
+}
+
+);
+
+/* 输入动画 */
+
+amountInput
+
+.addEventListener(
+
+"focus",
+
+()=>{
+
+document
+
+.querySelector(".card")
+
+.style.transform=
+
+"translateY(-2px)";
+
+document
+
+.querySelector(".card")
+
+.style.transition=
+
+".25s";
+
+}
+
+);
+
+amountInput
+
+.addEventListener(
+
+"blur",
+
+()=>{
+
+document
+
+.querySelector(".card")
+
+.style.transform=
+
+"translateY(0)";
+
+}
+
+);
+
+wishInput
+
+.addEventListener(
+
+"focus",
+
+()=>{
+
+document
+
+.querySelector(".wish-card")
+
+.style.transform=
+
+"translateY(-2px)";
+
+document
+
+.querySelector(".wish-card")
+
+.style.transition=
+
+".25s";
+
+}
+
+);
+
+wishInput
+
+.addEventListener(
+
+"blur",
+
+()=>{
+
+document
+
+.querySelector(".wish-card")
+
+.style.transform=
+
+"translateY(0)";
+
+}
+
+);
+
+/* 点击发送 */
+
+sendBtn
+
+.addEventListener(
+
+"click",
+
+async()=>{
+
+const raw=
+
+amountInput.value.trim();
+
+const amount=
+
+parseFloat(raw);
+
+if(
+
+!raw||
+
+isNaN(amount)||
+
+amount<=0
+
+){
+
+amountInput.focus();
+
+amountInput.style.color=
+
+"#d95757";
+
+setTimeout(()=>{
+
+amountInput.style.color="#222";
+
+},700);
+
+return;
+
+}
+
+if(amount>200){
+
+alert(
+
+"单个红包限额 ¥200.00"
+
+);
+
+return;
+
+}
+
+if(!charId){
+
+alert(
+
+"找不到聊天对象"
+
+);
+
+return;
+
+}
+
+const wish=
+
+wishInput.value.trim();
+
+sendBtn.disabled=true;
+
+showScanning();
+try{
+
+await sendRedPacket(amount,wish);
+
+showSuccess(amount);
+
+setTimeout(()=>{
+
+overlay.classList.remove("show");
+
+if(charId){
+
+window.location.href=
+
+"../chat/chat/chat.html?id="+charId;
+
+}
+
+},1200);
+
+}catch(err){
+
+console.error(err);
+
+alert("发送失败");
+
+}finally{
+
+sendBtn.disabled=false;
+
+}
+
+});
+
+/* 点击遮罩不关闭（防止误触） */
+
+overlay.addEventListener("click",e=>{
+
+e.stopPropagation();
+
+});
+
+/* 初始化按钮状态 */
+
+function updateBtn(){
+
+const v=
+
+parseFloat(amountInput.value);
+
+sendBtn.disabled=
+
+!v||
+
+isNaN(v)||
+
+v<=0;
+
+}
+
+amountInput
+
+.addEventListener(
+
+"input",
+
+updateBtn
+
+);
+
+updateBtn();
+
+/* 页面进入动画 */
+
+window.addEventListener("load",()=>{
+
+document.querySelector(".page")
+
+.style.opacity="0";
+
+document.querySelector(".page")
+
+.style.transform="translateY(8px)";
+
+document.querySelector(".page")
+
+.style.transition="all .35s ease";
+
+requestAnimationFrame(()=>{
+
+document.querySelector(".page")
+
+.style.opacity="1";
+
+document.querySelector(".page")
+
+.style.transform="translateY(0)";
+
+});
+
+});
+
+})();
+
+</script>
+
+</body>
+
+</html>
