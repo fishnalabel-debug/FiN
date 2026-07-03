@@ -731,6 +731,9 @@
     });
   }
 
+  // ===== 增量保存：只追加新消息 =====
+  let lastSavedId = null;
+
   async function loadMessages() {
     try {
       const db = await openDB();
@@ -738,14 +741,46 @@
         const tx = db.transaction(STORE_NAME, 'readonly');
         const store = tx.objectStore(STORE_NAME);
         const request = store.get(`chat_msg_${charId}`);
-        request.onsuccess = () => resolve(request.result?.messages || []);
+        request.onsuccess = () => {
+          const data = request.result;
+          const msgs = data?.messages || [];
+          // 记录最后保存的id
+          if (msgs.length > 0) {
+            lastSavedId = msgs[msgs.length - 1].id || null;
+          }
+          resolve(msgs);
+        };
         request.onerror = () => reject(request.error);
         tx.oncomplete = () => db.close();
       });
     } catch(e) { return []; }
   }
 
-  async function saveMessages(msgs) {
+  async function saveMessageIncremental(msg) {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const getReq = store.get(`chat_msg_${charId}`);
+        getReq.onsuccess = () => {
+          const existing = getReq.result;
+          let messages = existing?.messages || [];
+          // 如果消息已经存在（比如重试），用id去重
+          if (!messages.some(m => m.id === msg.id)) {
+            messages.push(msg);
+          }
+          store.put({ id: `chat_msg_${charId}`, messages });
+          lastSavedId = msg.id;
+        };
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch(e) { console.warn('增量保存失败', e); }
+  }
+
+  // 全量保存（用于编辑、删除等操作）
+  async function saveMessagesFull(msgs) {
     try {
       const db = await openDB();
       return new Promise((resolve, reject) => {
@@ -769,23 +804,25 @@
     return (bytes / 1048576).toFixed(2) + ' MB';
   }
 
-const RENDER_COUNT = 50;
-let renderStart = 0;
+  // ===== DOM渲染：永远只渲染最近50条 =====
+  const RENDER_COUNT = 50;
 
   function renderMessages() {
     messageList.innerHTML = '';
-    const scrollToIndex = localStorage.getItem(`chat_scroll_to_${charId}`);
+    const start = Math.max(0, messages.length - RENDER_COUNT);
+    const visibleMessages = messages.slice(start);
 
-    messages.forEach((msg, index) => {
+    visibleMessages.forEach((msg, i) => {
+      const globalIndex = start + i;
       if (msg.type === 'system') {
         const wrapper = document.createElement('div');
         wrapper.style.position = 'relative'; wrapper.style.textAlign = 'center';
-        wrapper.setAttribute('data-search-index', index);
+        wrapper.setAttribute('data-search-index', globalIndex);
         const d = document.createElement('div'); d.className = 'system-msg'; d.textContent = msg.text;
         const actionBar = document.createElement('div'); actionBar.className = 'system-action-bar';
-        actionBar.innerHTML = `<button class="msg-action-btn" data-action="edit" data-index="${index}">编辑</button><button class="msg-action-btn danger" data-action="delete" data-index="${index}">删除</button>`;
+        actionBar.innerHTML = `<button class="msg-action-btn" data-action="edit" data-index="${globalIndex}">编辑</button><button class="msg-action-btn danger" data-action="delete" data-index="${globalIndex}">删除</button>`;
         actionBar.querySelectorAll('button').forEach(btn => {
-          btn.onclick = function(e) { e.stopPropagation(); const act=this.getAttribute('data-action'); const idx=parseInt(this.getAttribute('data-index')); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); if(act==='delete'){messages.splice(idx,1);saveMessages(messages);renderMessages();}else if(act==='edit'){openEditModal(idx,msg);} };
+          btn.onclick = function(e) { e.stopPropagation(); const act=this.getAttribute('data-action'); const idx=parseInt(this.getAttribute('data-index')); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); if(act==='delete'){messages.splice(idx,1);saveMessagesFull(messages);renderMessages();}else if(act==='edit'){openEditModal(idx,msg);} };
         });
         d.onclick = function(e) { e.stopPropagation(); const isShowing=actionBar.classList.contains('show'); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); document.querySelectorAll('.msg-action-bar.show').forEach(b=>b.classList.remove('show')); if(!isShowing)actionBar.classList.add('show'); };
         wrapper.appendChild(d); wrapper.appendChild(actionBar); messageList.appendChild(wrapper);
@@ -794,7 +831,7 @@ let renderStart = 0;
 
       const row = document.createElement('div');
       row.className = `message-row ${msg.sender === 'self' ? 'self' : 'other'}`;
-      row.setAttribute('data-search-index', index);
+      row.setAttribute('data-search-index', globalIndex);
       const wrapper = document.createElement('div');
       wrapper.className = 'bubble-wrapper'; wrapper.style.position = 'relative';
 
@@ -805,7 +842,7 @@ let renderStart = 0;
         const btn = document.createElement('button');
         btn.className = 'msg-action-btn' + (action==='删除'?' danger':'');
         btn.textContent = action;
-        btn.onclick = function(e) { e.stopPropagation(); handleMessageAction(action, index); };
+        btn.onclick = function(e) { e.stopPropagation(); handleMessageAction(action, globalIndex); };
         actionBar.appendChild(btn);
       });
       wrapper.appendChild(actionBar);
@@ -879,8 +916,12 @@ let renderStart = 0;
       row.appendChild(wrapper);
       messageList.appendChild(row);
     });
+
+    // 滚动到底部
     messageList.scrollTop = messageList.scrollHeight;
 
+    // 如果有搜索跳转标记，定位到对应消息
+    const scrollToIndex = localStorage.getItem(`chat_scroll_to_${charId}`);
     if (scrollToIndex !== null) {
       localStorage.removeItem(`chat_scroll_to_${charId}`);
       setTimeout(() => {
@@ -897,10 +938,10 @@ let renderStart = 0;
   function handleMessageAction(action, index) {
     const msg = messages[index]; if (!msg) return;
     document.querySelectorAll('.msg-action-bar.show').forEach(b => b.classList.remove('show'));
-    if (action === '删除') { messages.splice(index,1); saveMessages(messages); renderMessages(); }
+    if (action === '删除') { messages.splice(index,1); saveMessagesFull(messages); renderMessages(); }
     else if (action === '编辑') { openEditModal(index, msg); }
     else if (action === '重回') {
-      if (msg.sender === 'other') { messages.splice(index,1); saveMessages(messages); renderMessages(); triggerAIReply(); }
+      if (msg.sender === 'other') { messages.splice(index,1); saveMessagesFull(messages); renderMessages(); triggerAIReply(); }
       else { messageInput.value = msg.text; messageInput.focus(); }
     } else if (action === '引用') {
       quoteMessage = msg;
@@ -923,7 +964,7 @@ let renderStart = 0;
   function closeEditModal() { editModalOverlay.classList.remove('active'); editIndex=null; }
   document.getElementById('editCancelBtn').onclick = closeEditModal;
   editModalOverlay.onclick = e => { if(e.target===editModalOverlay) closeEditModal(); };
-  document.getElementById('editConfirmBtn').onclick = () => { const t=editTextarea.value.trim(); if(t&&editIndex!==null){ messages[editIndex].text=t; saveMessages(messages); renderMessages(); } closeEditModal(); };
+  document.getElementById('editConfirmBtn').onclick = () => { const t=editTextarea.value.trim(); if(t&&editIndex!==null){ messages[editIndex].text=t; saveMessagesFull(messages); renderMessages(); } closeEditModal(); };
 
   const MAX_RECENT_EVENTS = 20;
   function getRelatedCharacters() {
@@ -962,13 +1003,26 @@ let renderStart = 0;
     addSystemMessage(`已记入${ownerChar?ownerChar.name:'该角色'}的关系记忆`);
   };
 
+  function generateId() { return Date.now() + '_' + Math.random().toString(36).substr(2,6); }
+
+  // 使用增量保存
   async function addMessage(text, sender='self', type='text', extra={}) {
     if (!text.trim()) return;
-    messages.push({ text:text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra });
-    await saveMessages(messages); renderMessages();
+    const msg = { id: generateId(), text: text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra };
+    messages.push(msg);
+    await saveMessageIncremental(msg);
+    renderMessages();
     updateLastMessage(type==='image'?'[图片]':type==='file'?'[文件]':text);
   }
-  async function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); await saveMessages(messages); renderMessages(); }
+
+  // system消息也走增量保存
+  async function addSystemMessage(text) {
+    const msg = { id: generateId(), text, sender:'system', type:'system', timestamp:Date.now() };
+    messages.push(msg);
+    await saveMessageIncremental(msg);
+    renderMessages();
+  }
+
   function updateLastMessage(text) { const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId); if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); } }
 
   function getRelevantWorldbooks(userMessage) {
@@ -1014,7 +1068,14 @@ let renderStart = 0;
     let apiUrl = char.apiEndpoint.trim().replace(/\/+$/,'');
     if (!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1')?'/chat/completions':'/chat/completions');
     const sp = buildSystemPrompt(userMessage);
-    const ctx = messages.slice(-200).filter(m=>m.type!=='system').map(m=>({role:m.sender==='self'?'user':'assistant',content:m.type==='file'?`[文件:${m.fileName}]\n${m.fileContent}`:m.type==='image'?`[图片]${m.text}`:m.text}));
+
+    // ===== 聊天上下文改为100条 =====
+    const ctxMessages = messages.filter(m => m.type !== 'system').slice(-100);
+    const ctx = ctxMessages.map(m => ({
+      role: m.sender === 'self' ? 'user' : 'assistant',
+      content: m.type === 'file' ? `[文件:${m.fileName}]\n${m.fileContent}` : m.type === 'image' ? `[图片]${m.text}` : m.text
+    }));
+
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', apiUrl, true);
