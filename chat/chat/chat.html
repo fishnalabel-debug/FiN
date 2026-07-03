@@ -161,6 +161,38 @@
     .message-list::-webkit-scrollbar-track { background: transparent; }
     .message-list::-webkit-scrollbar-thumb { background: #c5cadc; border-radius: 2px; }
 
+    /* 加载更多提示条 */
+    .load-more-indicator {
+      text-align: center;
+      padding: 12px 0;
+      font-size: 12.5px;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      user-select: none;
+      display: none;
+      transition: opacity 0.2s;
+    }
+    .load-more-indicator.show {
+      display: block;
+    }
+    .load-more-indicator:hover {
+      color: var(--text-secondary);
+    }
+    .load-more-indicator .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .message-row {
       display: flex; align-items: flex-end; gap: 8px; max-width: 85%;
     }
@@ -569,7 +601,9 @@
     <button class="quote-cancel" id="quoteCancelBtn">✕</button>
   </div>
 
-  <div class="message-list" id="messageList"></div>
+  <div class="message-list" id="messageList">
+    <!-- 加载更多提示会由 JS 动态插入 -->
+  </div>
 
   <div class="input-bar">
     <button class="icon-btn" id="loveBtn" title="AI回复">♥︎</button>
@@ -651,6 +685,13 @@
   const charId = params.get('id');
   if (!charId) { window.location.href = 'phone.html'; return; }
 
+  // ---------- 配置 ----------
+  const PAGE_SIZE = 50;          // 每次加载的消息条数
+  let currentStart = 0;          // 当前已加载的消息起始索引（从最新往前数）
+  let totalMessages = 0;         // 总消息数
+  let isLoadingMore = false;
+  let hasMoreHistory = true;
+
   function getCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
   function saveCharacters(chars) { localStorage.setItem('chat_characters', JSON.stringify(chars)); }
   function getCurrentCharacter() { return getCharacters().find(c => c.id == charId) || null; }
@@ -731,9 +772,6 @@
     });
   }
 
-  // ===== 增量保存：只追加新消息 =====
-  let lastSavedId = null;
-
   async function loadMessages() {
     try {
       const db = await openDB();
@@ -741,46 +779,14 @@
         const tx = db.transaction(STORE_NAME, 'readonly');
         const store = tx.objectStore(STORE_NAME);
         const request = store.get(`chat_msg_${charId}`);
-        request.onsuccess = () => {
-          const data = request.result;
-          const msgs = data?.messages || [];
-          // 记录最后保存的id
-          if (msgs.length > 0) {
-            lastSavedId = msgs[msgs.length - 1].id || null;
-          }
-          resolve(msgs);
-        };
+        request.onsuccess = () => resolve(request.result?.messages || []);
         request.onerror = () => reject(request.error);
         tx.oncomplete = () => db.close();
       });
     } catch(e) { return []; }
   }
 
-  async function saveMessageIncremental(msg) {
-    try {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
-        const getReq = store.get(`chat_msg_${charId}`);
-        getReq.onsuccess = () => {
-          const existing = getReq.result;
-          let messages = existing?.messages || [];
-          // 如果消息已经存在（比如重试），用id去重
-          if (!messages.some(m => m.id === msg.id)) {
-            messages.push(msg);
-          }
-          store.put({ id: `chat_msg_${charId}`, messages });
-          lastSavedId = msg.id;
-        };
-        tx.oncomplete = () => { db.close(); resolve(); };
-        tx.onerror = () => reject(tx.error);
-      });
-    } catch(e) { console.warn('增量保存失败', e); }
-  }
-
-  // 全量保存（用于编辑、删除等操作）
-  async function saveMessagesFull(msgs) {
+  async function saveMessages(msgs) {
     try {
       const db = await openDB();
       return new Promise((resolve, reject) => {
@@ -796,6 +802,95 @@
   let messages = [];
   let quoteMessage = null;
 
+  // ---------- 加载更多相关 ----------
+  function createLoadMoreIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'load-more-indicator';
+    indicator.id = 'loadMoreIndicator';
+    indicator.innerHTML = `<span>⬆ 点击加载更早的消息</span>`;
+    indicator.addEventListener('click', loadMoreHistory);
+    return indicator;
+  }
+
+  let loadMoreIndicator = null;
+
+  function updateLoadMoreState() {
+    if (!loadMoreIndicator) {
+      loadMoreIndicator = createLoadMoreIndicator();
+      // 插入到消息列表最前面
+      messageList.prepend(loadMoreIndicator);
+    }
+    if (hasMoreHistory && currentStart < totalMessages) {
+      loadMoreIndicator.className = 'load-more-indicator show';
+      loadMoreIndicator.innerHTML = `<span>⬆ 点击加载更早的消息</span>`;
+    } else if (!hasMoreHistory || currentStart >= totalMessages) {
+      loadMoreIndicator.className = 'load-more-indicator show';
+      loadMoreIndicator.innerHTML = `<span style="opacity:0.5;">— 已加载全部历史消息 —</span>`;
+    }
+  }
+
+  function setLoadingMoreState(loading) {
+    if (!loadMoreIndicator) return;
+    if (loading) {
+      loadMoreIndicator.className = 'load-more-indicator show';
+      loadMoreIndicator.innerHTML = `<span class="spinner"></span>加载中...`;
+    } else {
+      updateLoadMoreState();
+    }
+  }
+
+  async function loadMoreHistory() {
+    if (isLoadingMore || !hasMoreHistory) return;
+    if (currentStart >= totalMessages) {
+      hasMoreHistory = false;
+      updateLoadMoreState();
+      return;
+    }
+
+    isLoadingMore = true;
+    setLoadingMoreState(true);
+
+    // 保存当前滚动高度，用于恢复位置
+    const oldScrollHeight = messageList.scrollHeight;
+    const oldScrollTop = messageList.scrollTop;
+
+    try {
+      // 计算要加载的范围
+      const endIndex = currentStart;
+      const startIndex = Math.max(0, currentStart - PAGE_SIZE);
+
+      // 从完整 messages 中取出这一段
+      const newMessages = messages.slice(startIndex, endIndex);
+
+      if (newMessages.length === 0) {
+        hasMoreHistory = false;
+        updateLoadMoreState();
+        isLoadingMore = false;
+        return;
+      }
+
+      // 更新 currentStart
+      currentStart = startIndex;
+
+      // 重新渲染（保留现有消息，在顶部插入新消息）
+      renderMessages(true);
+
+      // 恢复滚动位置（保持用户当前看到的位置不变）
+      const newScrollHeight = messageList.scrollHeight;
+      messageList.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
+
+      if (currentStart <= 0) {
+        hasMoreHistory = false;
+      }
+      updateLoadMoreState();
+    } catch (e) {
+      console.error('加载更多失败:', e);
+    } finally {
+      isLoadingMore = false;
+    }
+  }
+
+  // ---------- 渲染 ----------
   function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function getTimeStr() { const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
   function formatFileSize(bytes) {
@@ -804,16 +899,34 @@
     return (bytes / 1048576).toFixed(2) + ' MB';
   }
 
-  // ===== DOM渲染：永远只渲染最近50条 =====
-  const RENDER_COUNT = 50;
+  function renderMessages(keepExisting = false) {
+    // 如果不保留现有消息，清空列表
+    if (!keepExisting) {
+      messageList.innerHTML = '';
+      // 重新创建加载指示器
+      loadMoreIndicator = null;
+      loadMoreIndicator = createLoadMoreIndicator();
+      messageList.prepend(loadMoreIndicator);
+    } else {
+      // 保留现有消息，只移除旧的加载指示器
+      const oldIndicator = document.getElementById('loadMoreIndicator');
+      if (oldIndicator) oldIndicator.remove();
+      loadMoreIndicator = createLoadMoreIndicator();
+      messageList.prepend(loadMoreIndicator);
+    }
 
-  function renderMessages() {
-    messageList.innerHTML = '';
-    const start = Math.max(0, messages.length - RENDER_COUNT);
-    const visibleMessages = messages.slice(start);
+    // 计算需要渲染的消息范围
+    const total = messages.length;
+    const endIndex = Math.min(total, currentStart + PAGE_SIZE);
+    const displayMessages = messages.slice(currentStart, endIndex);
 
-    visibleMessages.forEach((msg, i) => {
-      const globalIndex = start + i;
+    // 更新 totalMessages
+    totalMessages = total;
+    hasMoreHistory = currentStart > 0;
+
+    // 渲染每条消息
+    displayMessages.forEach((msg, idx) => {
+      const globalIndex = currentStart + idx;
       if (msg.type === 'system') {
         const wrapper = document.createElement('div');
         wrapper.style.position = 'relative'; wrapper.style.textAlign = 'center';
@@ -822,7 +935,7 @@
         const actionBar = document.createElement('div'); actionBar.className = 'system-action-bar';
         actionBar.innerHTML = `<button class="msg-action-btn" data-action="edit" data-index="${globalIndex}">编辑</button><button class="msg-action-btn danger" data-action="delete" data-index="${globalIndex}">删除</button>`;
         actionBar.querySelectorAll('button').forEach(btn => {
-          btn.onclick = function(e) { e.stopPropagation(); const act=this.getAttribute('data-action'); const idx=parseInt(this.getAttribute('data-index')); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); if(act==='delete'){messages.splice(idx,1);saveMessagesFull(messages);renderMessages();}else if(act==='edit'){openEditModal(idx,msg);} };
+          btn.onclick = function(e) { e.stopPropagation(); const act=this.getAttribute('data-action'); const idx=parseInt(this.getAttribute('data-index')); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); if(act==='delete'){messages.splice(idx,1);saveMessages(messages);renderMessages();}else if(act==='edit'){openEditModal(idx,msg);} };
         });
         d.onclick = function(e) { e.stopPropagation(); const isShowing=actionBar.classList.contains('show'); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); document.querySelectorAll('.msg-action-bar.show').forEach(b=>b.classList.remove('show')); if(!isShowing)actionBar.classList.add('show'); };
         wrapper.appendChild(d); wrapper.appendChild(actionBar); messageList.appendChild(wrapper);
@@ -917,10 +1030,9 @@
       messageList.appendChild(row);
     });
 
-    // 滚动到底部
-    messageList.scrollTop = messageList.scrollHeight;
+    updateLoadMoreState();
 
-    // 如果有搜索跳转标记，定位到对应消息
+    // 如果有搜索跳转目标，滚动到对应位置
     const scrollToIndex = localStorage.getItem(`chat_scroll_to_${charId}`);
     if (scrollToIndex !== null) {
       localStorage.removeItem(`chat_scroll_to_${charId}`);
@@ -932,16 +1044,20 @@
           setTimeout(() => { target.classList.remove('search-highlight'); }, 2500);
         }
       }, 400);
+    } else if (!keepExisting) {
+      // 首次加载，滚动到底部
+      messageList.scrollTop = messageList.scrollHeight;
     }
   }
 
+  // ---------- 消息操作 ----------
   function handleMessageAction(action, index) {
     const msg = messages[index]; if (!msg) return;
     document.querySelectorAll('.msg-action-bar.show').forEach(b => b.classList.remove('show'));
-    if (action === '删除') { messages.splice(index,1); saveMessagesFull(messages); renderMessages(); }
+    if (action === '删除') { messages.splice(index,1); saveMessages(messages); renderMessages(); }
     else if (action === '编辑') { openEditModal(index, msg); }
     else if (action === '重回') {
-      if (msg.sender === 'other') { messages.splice(index,1); saveMessagesFull(messages); renderMessages(); triggerAIReply(); }
+      if (msg.sender === 'other') { messages.splice(index,1); saveMessages(messages); renderMessages(); triggerAIReply(); }
       else { messageInput.value = msg.text; messageInput.focus(); }
     } else if (action === '引用') {
       quoteMessage = msg;
@@ -957,6 +1073,7 @@
     }
   });
 
+  // ---------- 编辑模态框 ----------
   const editModalOverlay = document.getElementById('editModalOverlay');
   const editTextarea = document.getElementById('editTextarea');
   let editIndex = null;
@@ -964,8 +1081,9 @@
   function closeEditModal() { editModalOverlay.classList.remove('active'); editIndex=null; }
   document.getElementById('editCancelBtn').onclick = closeEditModal;
   editModalOverlay.onclick = e => { if(e.target===editModalOverlay) closeEditModal(); };
-  document.getElementById('editConfirmBtn').onclick = () => { const t=editTextarea.value.trim(); if(t&&editIndex!==null){ messages[editIndex].text=t; saveMessagesFull(messages); renderMessages(); } closeEditModal(); };
+  document.getElementById('editConfirmBtn').onclick = () => { const t=editTextarea.value.trim(); if(t&&editIndex!==null){ messages[editIndex].text=t; saveMessages(messages); renderMessages(); } closeEditModal(); };
 
+  // ---------- 事件模态框 ----------
   const MAX_RECENT_EVENTS = 20;
   function getRelatedCharacters() {
     const chars = getCharacters(); const me = chars.find(c => c.id == charId);
@@ -1003,28 +1121,38 @@
     addSystemMessage(`已记入${ownerChar?ownerChar.name:'该角色'}的关系记忆`);
   };
 
-  function generateId() { return Date.now() + '_' + Math.random().toString(36).substr(2,6); }
-
-  // 使用增量保存
+  // ---------- 消息增删改 ----------
   async function addMessage(text, sender='self', type='text', extra={}) {
     if (!text.trim()) return;
-    const msg = { id: generateId(), text: text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra };
-    messages.push(msg);
-    await saveMessageIncremental(msg);
+    messages.push({ text:text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra });
+    await saveMessages(messages);
+    // 更新 currentStart 确保新消息可见
+    const total = messages.length;
+    if (total - currentStart > PAGE_SIZE) {
+      currentStart = total - PAGE_SIZE;
+    }
     renderMessages();
     updateLastMessage(type==='image'?'[图片]':type==='file'?'[文件]':text);
+    // 滚动到底部
+    setTimeout(() => { messageList.scrollTop = messageList.scrollHeight; }, 50);
   }
 
-  // system消息也走增量保存
   async function addSystemMessage(text) {
-    const msg = { id: generateId(), text, sender:'system', type:'system', timestamp:Date.now() };
-    messages.push(msg);
-    await saveMessageIncremental(msg);
+    messages.push({ text, sender:'system', type:'system', timestamp:Date.now() });
+    await saveMessages(messages);
+    const total = messages.length;
+    if (total - currentStart > PAGE_SIZE) {
+      currentStart = total - PAGE_SIZE;
+    }
     renderMessages();
   }
 
-  function updateLastMessage(text) { const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId); if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); } }
+  function updateLastMessage(text) {
+    const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId);
+    if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); }
+  }
 
+  // ---------- AI 相关 ----------
   function getRelevantWorldbooks(userMessage) {
     const allBooks = loadWorldbooks(); const relevant = [];
     allBooks.forEach(book => {
@@ -1068,14 +1196,7 @@
     let apiUrl = char.apiEndpoint.trim().replace(/\/+$/,'');
     if (!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1')?'/chat/completions':'/chat/completions');
     const sp = buildSystemPrompt(userMessage);
-
-    // ===== 聊天上下文改为100条 =====
-    const ctxMessages = messages.filter(m => m.type !== 'system').slice(-100);
-    const ctx = ctxMessages.map(m => ({
-      role: m.sender === 'self' ? 'user' : 'assistant',
-      content: m.type === 'file' ? `[文件:${m.fileName}]\n${m.fileContent}` : m.type === 'image' ? `[图片]${m.text}` : m.text
-    }));
-
+    const ctx = messages.slice(-100).filter(m=>m.type!=='system').map(m=>({role:m.sender==='self'?'user':'assistant',content:m.type==='file'?`[文件:${m.fileName}]\n${m.fileContent}`:m.type==='image'?`[图片]${m.text}`:m.text}));
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', apiUrl, true);
@@ -1122,11 +1243,51 @@
 
   function formatDuration(s) { const m=Math.floor(s/60); return m+':'+(s%60).toString().padStart(2,'0'); }
 
-  async function triggerAIReply() { const lum=[...messages].reverse().find(m=>m.sender==='self'); if(!lum)return; setSignatureTyping(); try{const reply=await callAIAPI(lum.text); const parsed=parseAIResponse(reply); for(let i=0;i<parsed.length;i++){await new Promise(r=>setTimeout(r,300));await addMessage(parsed[i].text,'other',parsed[i].type,parsed[i]);}}catch(err){addMessage('❌ '+err.message,'other');}finally{restoreSignature();} }
-  async function sendMessage() { const text=messageInput.value; if(!text.trim())return; if(quoteMessage){await addMessage(text,'self','text',{quote:quoteMessage.text});quoteMessage=null;quoteBar.style.display='none';}else await addMessage(text,'self'); messageInput.value=''; }
-  messageInput.addEventListener('keypress', e => { if(e.key==='Enter'){ e.preventDefault(); sendMessage(); } });
-  document.getElementById('loveBtn').onclick = async () => { if(messages.length===0||messages.every(m=>m.sender==='other')) await addMessage('你好','self'); triggerAIReply(); };
+  async function triggerAIReply() {
+    const lum=[...messages].reverse().find(m=>m.sender==='self');
+    if(!lum)return;
+    setSignatureTyping();
+    try{
+      const reply=await callAIAPI(lum.text);
+      const parsed=parseAIResponse(reply);
+      for(let i=0;i<parsed.length;i++){
+        await new Promise(r=>setTimeout(r,300));
+        await addMessage(parsed[i].text,'other',parsed[i].type,parsed[i]);
+      }
+    }catch(err){
+      addMessage('❌ '+err.message,'other');
+    }finally{
+      restoreSignature();
+    }
+  }
 
+  // ---------- 发送消息 ----------
+  async function sendMessage() {
+    const text=messageInput.value;
+    if(!text.trim())return;
+    if(quoteMessage){
+      await addMessage(text,'self','text',{quote:quoteMessage.text});
+      quoteMessage=null;
+      quoteBar.style.display='none';
+    } else {
+      await addMessage(text,'self');
+    }
+    messageInput.value='';
+  }
+
+  messageInput.addEventListener('keypress', e => {
+    if(e.key==='Enter'){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  document.getElementById('loveBtn').onclick = async () => {
+    if(messages.length===0||messages.every(m=>m.sender==='other')) await addMessage('你好','self');
+    triggerAIReply();
+  };
+
+  // ---------- 图片 ----------
   const imageModalOverlay = document.getElementById('imageModalOverlay');
   const imagePromptInput = document.getElementById('imagePromptInput');
   let imageCb = null;
@@ -1136,14 +1297,26 @@
   imageModalOverlay.onclick = e => { if(e.target===imageModalOverlay) closeImageModal(); };
   document.getElementById('imageSendBtn').onclick = () => { const p=imagePromptInput.value.trim(); if(!p){alert('请输入描述');return;} if(imageCb)imageCb(p); closeImageModal(); };
   document.getElementById('cameraBtn').onclick = () => openImageModal(p => addMessage(p,'self','image'));
-  document.querySelectorAll('.plus-item[data-page="photo"], .plus-item[data-page="take"]').forEach(item => { item.onclick = e => { e.stopPropagation(); plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); openImageModal(p => addMessage(p,'self','image')); }; });
+  document.querySelectorAll('.plus-item[data-page="photo"], .plus-item[data-page="take"]').forEach(item => {
+    item.onclick = e => { e.stopPropagation(); plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); openImageModal(p => addMessage(p,'self','image')); };
+  });
 
+  // ---------- plus 面板 ----------
   const plusPanel = document.getElementById('plusPanel');
   const overlayBg = document.getElementById('overlayBg');
   document.getElementById('plusBtn').onclick = e => { e.stopPropagation(); plusPanel.classList.toggle('active'); overlayBg.classList.toggle('active'); };
   overlayBg.onclick = () => { plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); };
 
-  const plusRoutes = { 'video_call':'../../chat_more/video call.html','voice_call':'../../chat_more/voice call.html','locate':'../../chat_more/locate.html','red_bag':'../../chat_more/red bag.html','gift':'../../chat_more/gift.html','account':'../../chat_more/account.html','collect':'../../chat_more/collect.html','file':null };
+  const plusRoutes = {
+    'video_call':'../../chat_more/video call.html',
+    'voice_call':'../../chat_more/voice call.html',
+    'locate':'../../chat_more/locate.html',
+    'red_bag':'../../chat_more/red bag.html',
+    'gift':'../../chat_more/gift.html',
+    'account':'../../chat_more/account.html',
+    'collect':'../../chat_more/collect.html',
+    'file':null
+  };
   document.querySelectorAll('.plus-item').forEach(item => {
     const page = item.getAttribute('data-page');
     item.addEventListener('click', () => {
@@ -1161,8 +1334,10 @@
     reader.readAsText(file); e.target.value = '';
   });
 
+  // ---------- 引用取消 ----------
   document.getElementById('quoteCancelBtn').onclick = () => { quoteMessage=null; quoteBar.style.display='none'; };
 
+  // ---------- 拍一拍 ----------
   let avatarTimer = null;
   function handleAvatarClick(type) {
     if(avatarTimer){ clearTimeout(avatarTimer); avatarTimer=null; const rn=getCharRealName(); if(type==='char') addSystemMessage(`${userName}拍了拍${rn}`); else addSystemMessage(`${rn}拍了拍${userName}`); }
@@ -1171,8 +1346,19 @@
   document.querySelectorAll('.avatar-circle').forEach(av => { av.onclick = () => handleAvatarClick(av.getAttribute('data-avatar-type')); });
   document.querySelectorAll('.header-avatar').forEach(av => { av.onclick = () => handleAvatarClick(av.getAttribute('data-avatar-type')); });
 
+  // ---------- 存储监听 ----------
   window.addEventListener('storage', () => updateAllDisplay());
-  (async function init() { messages = await loadMessages(); renderMessages(); })();
+
+  // ---------- 初始化 ----------
+  (async function init() {
+    messages = await loadMessages();
+    totalMessages = messages.length;
+    // 初始只加载最新的 PAGE_SIZE 条
+    currentStart = Math.max(0, totalMessages - PAGE_SIZE);
+    hasMoreHistory = currentStart > 0;
+    renderMessages();
+  })();
+
 })();
 </script>
 </body>
