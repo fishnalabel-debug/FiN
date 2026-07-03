@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -184,6 +183,11 @@
       border-bottom-right-radius: 5px;
       box-shadow: 0 2px 12px rgba(27,45,91,0.28);
     }
+    .bubble-time {
+      font-size: 10px; color: var(--text-tertiary);
+      white-space: nowrap; margin-bottom: 2px;
+    }
+    .self .bubble-time { color: #9fa4b8; }
 
     .quote-bubble {
       border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
@@ -734,9 +738,7 @@
         const tx = db.transaction(STORE_NAME, 'readonly');
         const store = tx.objectStore(STORE_NAME);
         const request = store.get(`chat_msg_${charId}`);
-        request.onsuccess = () => {
-          resolve(request.result?.messages || []);
-        };
+        request.onsuccess = () => resolve(request.result?.messages || []);
         request.onerror = () => reject(request.error);
         tx.oncomplete = () => db.close();
       });
@@ -767,6 +769,9 @@
     return (bytes / 1048576).toFixed(2) + ' MB';
   }
 
+const RENDER_COUNT = 50;
+let renderStart = 0;
+
   function renderMessages() {
     messageList.innerHTML = '';
     const scrollToIndex = localStorage.getItem(`chat_scroll_to_${charId}`);
@@ -774,23 +779,16 @@
     messages.forEach((msg, index) => {
       if (msg.type === 'system') {
         const wrapper = document.createElement('div');
-        wrapper.style.position = 'relative';
-        wrapper.style.textAlign = 'center';
+        wrapper.style.position = 'relative'; wrapper.style.textAlign = 'center';
         wrapper.setAttribute('data-search-index', index);
-
-        const d = document.createElement('div');
-        d.className = 'system-msg';
-        d.textContent = msg.text;
-
-        const actionBar = document.createElement('div');
-        actionBar.className = 'system-action-bar';
+        const d = document.createElement('div'); d.className = 'system-msg'; d.textContent = msg.text;
+        const actionBar = document.createElement('div'); actionBar.className = 'system-action-bar';
         actionBar.innerHTML = `<button class="msg-action-btn" data-action="edit" data-index="${index}">编辑</button><button class="msg-action-btn danger" data-action="delete" data-index="${index}">删除</button>`;
         actionBar.querySelectorAll('button').forEach(btn => {
           btn.onclick = function(e) { e.stopPropagation(); const act=this.getAttribute('data-action'); const idx=parseInt(this.getAttribute('data-index')); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); if(act==='delete'){messages.splice(idx,1);saveMessages(messages);renderMessages();}else if(act==='edit'){openEditModal(idx,msg);} };
         });
         d.onclick = function(e) { e.stopPropagation(); const isShowing=actionBar.classList.contains('show'); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); document.querySelectorAll('.msg-action-bar.show').forEach(b=>b.classList.remove('show')); if(!isShowing)actionBar.classList.add('show'); };
-        wrapper.appendChild(d); wrapper.appendChild(actionBar);
-        messageList.appendChild(wrapper);
+        wrapper.appendChild(d); wrapper.appendChild(actionBar); messageList.appendChild(wrapper);
         return;
       }
 
@@ -818,57 +816,57 @@
         const icon = icons[ext] || '📎';
         const fb = document.createElement('div'); fb.className = 'file-bubble';
         fb.innerHTML = `<div class="file-icon">${icon}</div><div class="file-info"><div class="file-name">${escapeHtml(msg.fileName || msg.text)}</div><div class="file-size">${formatFileSize(msg.fileSize||0)} · 点击查看</div></div>`;
-        const preview = document.createElement('div');
-        preview.className = 'file-preview';
-        preview.textContent = msg.fileContent || '';
+        const preview = document.createElement('div'); preview.className = 'file-preview'; preview.textContent = msg.fileContent || '';
         fb.onclick = () => preview.classList.toggle('show');
-        const wrap = document.createElement('div');
-        wrap.appendChild(fb); wrap.appendChild(preview);
+        const wrap = document.createElement('div'); wrap.appendChild(fb); wrap.appendChild(preview);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrap.appendChild(t); }
         wrapper.appendChild(wrap);
       } else if (msg.type === 'image') {
         const ib = document.createElement('div'); ib.className = 'image-bubble';
         ib.innerHTML = `<div class="image-img-area"><div class="image-badge">IMAGE</div><div class="img-placeholder-icon">🖼️</div></div><div class="image-bubble-body"><div class="image-bubble-text">${escapeHtml(msg.text)}</div><div class="image-bubble-meta"><div class="meta-label"><div class="meta-dot"></div>图片描述</div><div class="meta-time">${msg.time||''}</div></div></div>`;
         wrapper.appendChild(ib);
-      } else if (msg.type === 'video_call') {
+      } else if (msg.type === 'video_call' || msg.type === 'voice_call') {
         const cb = document.createElement('div'); cb.className = 'call-bubble';
         const status = msg.status || (msg.missed ? '未接听' : '通话时长 ' + (msg.duration || '00:00'));
-        cb.innerHTML = `<div class="call-icon-wrap">📹</div><div class="call-info"><div class="call-title">视频通话</div><div class="call-sub">${escapeHtml(status)}</div></div><div class="call-arrow">›</div>`;
+        cb.innerHTML = `<div class="call-icon-wrap">${msg.type==='video_call'?'📹':'📞'}</div><div class="call-info"><div class="call-title">${msg.type==='video_call'?'视频通话':'语音通话'}</div><div class="call-sub">${escapeHtml(status)}</div></div><div class="call-arrow">›</div>`;
         wrapper.appendChild(cb);
-      } else if (msg.type === 'voice_call') {
-        const cb = document.createElement('div'); cb.className = 'call-bubble';
-        const status = msg.status || (msg.missed ? '未接听' : '通话时长 ' + (msg.duration || '00:00'));
-        cb.innerHTML = `<div class="call-icon-wrap">📞</div><div class="call-info"><div class="call-title">语音通话</div><div class="call-sub">${escapeHtml(status)}</div></div><div class="call-arrow">›</div>`;
-        wrapper.appendChild(cb);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrapper.appendChild(t); }
       } else if (msg.type === 'location') {
         const lb = document.createElement('div'); lb.className = 'location-bubble';
-        const name = msg.locationName || msg.text || '共享位置';
-        const addr = msg.locationAddr || msg.address || '';
-        lb.innerHTML = `<div class="location-map"><div class="location-pin">📍</div></div><div class="location-info"><div class="location-name">${escapeHtml(name)}</div>${addr ? `<div class="location-addr">${escapeHtml(addr)}</div>` : ''}</div>`;
+        lb.innerHTML = `<div class="location-map"><div class="location-pin">📍</div></div><div class="location-info"><div class="location-name">${escapeHtml(msg.locationName||msg.text||'共享位置')}</div>${msg.locationAddr||msg.address?`<div class="location-addr">${escapeHtml(msg.locationAddr||msg.address)}</div>`:''}</div>`;
         wrapper.appendChild(lb);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrapper.appendChild(t); }
       } else if (msg.type === 'red_packet' || msg.type === 'redpacket') {
         const rp = document.createElement('div'); rp.className = 'redpacket-bubble';
-        const wish = msg.wish || msg.text || '恭喜发财，大吉大利';
-        rp.innerHTML = `<div class="rp-icon">🧧</div><div class="rp-info"><div class="rp-title">红包</div><div class="rp-sub">${escapeHtml(wish)}</div></div><div class="rp-tag">微信红包</div>`;
+        rp.innerHTML = `<div class="rp-icon">🧧</div><div class="rp-info"><div class="rp-title">红包</div><div class="rp-sub">${escapeHtml(msg.wish||msg.text||'恭喜发财')}</div></div><div class="rp-tag">微信红包</div>`;
         wrapper.appendChild(rp);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrapper.appendChild(t); }
       } else if (msg.type === 'transfer') {
         const tb = document.createElement('div'); tb.className = 'transfer-bubble';
-        const amount = msg.amount || msg.text || '0.00';
-        const note = msg.note || '转账';
-        tb.innerHTML = `<div class="transfer-main" style="display:flex;align-items:center;gap:12px;flex:1;"><div class="transfer-amount-wrap"><div class="transfer-label">转账</div><div class="transfer-amount">¥${escapeHtml(String(amount))}</div><div class="transfer-note">${escapeHtml(note)}</div></div><div class="transfer-icon-wrap">💳</div></div><div class="transfer-divider">点击确认收款</div>`;
+        tb.innerHTML = `<div class="transfer-main" style="display:flex;align-items:center;gap:12px;flex:1;"><div class="transfer-amount-wrap"><div class="transfer-label">转账</div><div class="transfer-amount">¥${escapeHtml(String(msg.amount||msg.text||'0.00'))}</div><div class="transfer-note">${escapeHtml(msg.note||'转账')}</div></div><div class="transfer-icon-wrap">💳</div></div><div class="transfer-divider">点击确认收款</div>`;
         wrapper.appendChild(tb);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrapper.appendChild(t); }
       } else if (msg.type === 'collect') {
         const col = document.createElement('div'); col.className = 'collect-bubble';
-        const title = msg.collectTitle || msg.text || '收藏内容';
-        const meta = msg.collectType || '笔记';
-        col.innerHTML = `<div class="collect-thumb">${msg.thumb ? `<img src="${escapeHtml(msg.thumb)}">` : '⭐'}</div><div class="collect-info"><div class="collect-title">${escapeHtml(title)}</div><div class="collect-meta"><span>收藏</span><div class="collect-dot"></div><span>${escapeHtml(meta)}</span></div></div>`;
+        col.innerHTML = `<div class="collect-thumb">${msg.thumb?`<img src="${escapeHtml(msg.thumb)}">`:'⭐'}</div><div class="collect-info"><div class="collect-title">${escapeHtml(msg.collectTitle||msg.text||'收藏')}</div><div class="collect-meta"><span>收藏</span><div class="collect-dot"></div><span>${escapeHtml(msg.collectType||'笔记')}</span></div></div>`;
         wrapper.appendChild(col);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrapper.appendChild(t); }
       } else if (msg.quote) {
         const qb = document.createElement('div'); qb.className = 'quote-bubble';
         qb.innerHTML = `<div class="quote-ref">${escapeHtml(msg.quote)}</div><div class="quote-content">${escapeHtml(msg.text)}</div>`;
         wrapper.appendChild(qb);
+        if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrapper.appendChild(t); }
       } else {
+        const bubbleRow = document.createElement('div');
+        bubbleRow.style.cssText = 'display:flex;align-items:flex-end;gap:4px;';
+        if (msg.sender === 'self') bubbleRow.style.flexDirection = 'row-reverse';
         const b = document.createElement('div'); b.className = 'bubble'; b.textContent = msg.text;
-        wrapper.appendChild(b);
+        bubbleRow.appendChild(b);
+        if (msg.time) {
+          const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time;
+          bubbleRow.appendChild(t);
+        }
+        wrapper.appendChild(bubbleRow);
       }
 
       wrapper.onclick = function(e) {
@@ -992,11 +990,8 @@
     return lines.length?('【你的关系网络与共享记忆】\n'+lines.join('\n\n')):'';
   }
 
-  // ★ 修改后的 buildSystemPrompt
   function buildSystemPrompt(userMessage) {
     const char = getCurrentCharacter(), user = loadUserData(), parts = [];
-    
-    // 核心：强制手机聊天格式
     parts.push('【场景】手机微信聊天，你和对方正在用文字聊天。');
     parts.push('【格式规则】1. 不要写任何动作描写，如 "微笑" "点头" "叹气" 等，只发纯对话内容。');
     parts.push('2. 不要写 "：" 和角色名，直接发聊天内容。');
@@ -1004,30 +999,12 @@
     parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
     parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
     parts.push('6. 语气口语化，不要像写小说。');
-    
     if (char?.aiPrompt) parts.push('【你的角色设定】' + char.aiPrompt);
-    
-    const rb = buildRelationContext(char);
-    if (rb) parts.push(rb);
-    
-    const ui = [];
-    if (user.name) ui.push('姓名：' + user.name);
-    if (user.gender) ui.push('性别：' + user.gender);
-    if (user.region) ui.push('地区：' + user.region);
-    if (user.signature) ui.push('签名：' + user.signature);
-    if (user.persona) ui.push('用户自述：' + user.persona);
+    const rb = buildRelationContext(char); if (rb) parts.push(rb);
+    const ui = []; if (user.name) ui.push('姓名：' + user.name); if (user.gender) ui.push('性别：' + user.gender); if (user.region) ui.push('地区：' + user.region); if (user.signature) ui.push('签名：' + user.signature); if (user.persona) ui.push('用户自述：' + user.persona);
     if (ui.length) parts.push('【关于和你聊天的这个人】' + ui.join('；'));
-    
     const rbs = getRelevantWorldbooks(userMessage);
-    if (rbs.length) {
-      const f = rbs.filter(b => b.force),
-        m = rbs.filter(b => !b.force && !b.optional),
-        o = rbs.filter(b => b.optional);
-      if (f.length) parts.push('【必须记住】' + f.map(b => `《${b.name}》：${b.content}`).join('\n'));
-      if (m.length) parts.push('【当前相关】' + m.map(b => `《${b.name}》：${b.content}`).join('\n'));
-      if (o.length) parts.push('【可选参考】' + o.map(b => `《${b.name}》：${b.content}`).join('\n'));
-    }
-    
+    if (rbs.length) { const f=rbs.filter(b=>b.force),m=rbs.filter(b=>!b.force&&!b.optional),o=rbs.filter(b=>b.optional); if(f.length)parts.push('【必须记住】'+f.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(m.length)parts.push('【当前相关】'+m.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(o.length)parts.push('【可选参考】'+o.map(b=>`《${b.name}》：${b.content}`).join('\n')); }
     return parts.join('\n\n');
   }
 
@@ -1051,32 +1028,19 @@
     });
   }
 
-  // ★ 修改后的 parseAIResponse（更宽容，支持自动拆分）
   function parseAIResponse(text) {
-    const msgs = [];
-    text = text.trim();
-    
-    // 先按分隔符拆分
+    const msgs = []; text = text.trim();
     const parts = text.split('\n---\n').filter(p => p.trim());
-    
-    // 如果没有分隔符，尝试按句号、换行拆分（兜底）
     if (parts.length === 0) {
       const lines = text.split(/\n+/).filter(l => l.trim());
-      // 如果内容太长，手动切分
       if (lines.length > 1) {
         lines.forEach(line => {
           const trimmed = line.trim();
           if (trimmed) {
             const vm = trimmed.match(/\[voice:(\d+)\]([\s\S]*)/);
-            if (vm) {
-              msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() });
-              return;
-            }
+            if (vm) { msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() }); return; }
             const im = trimmed.match(/\[image\]([\s\S]*)/);
-            if (im) {
-              msgs.push({ type: 'image', text: im[1].trim() });
-              return;
-            }
+            if (im) { msgs.push({ type: 'image', text: im[1].trim() }); return; }
             msgs.push({ type: 'text', text: trimmed });
           }
         });
@@ -1084,23 +1048,14 @@
       }
       return [{ type: 'text', text: text }];
     }
-    
-    // 按分隔符处理
     parts.forEach(part => {
       part = part.trim();
       const vm = part.match(/\[voice:(\d+)\]([\s\S]*)/);
-      if (vm) {
-        msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() });
-        return;
-      }
+      if (vm) { msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() }); return; }
       const im = part.match(/\[image\]([\s\S]*)/);
-      if (im) {
-        msgs.push({ type: 'image', text: im[1].trim() });
-        return;
-      }
+      if (im) { msgs.push({ type: 'image', text: im[1].trim() }); return; }
       msgs.push({ type: 'text', text: part });
     });
-    
     return msgs.length ? msgs : [{ type: 'text', text: text }];
   }
 
@@ -1128,7 +1083,6 @@
   overlayBg.onclick = () => { plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); };
 
   const plusRoutes = { 'video_call':'../../chat_more/video call.html','voice_call':'../../chat_more/voice call.html','locate':'../../chat_more/locate.html','red_bag':'../../chat_more/red bag.html','gift':'../../chat_more/gift.html','account':'../../chat_more/account.html','collect':'../../chat_more/collect.html','file':null };
-
   document.querySelectorAll('.plus-item').forEach(item => {
     const page = item.getAttribute('data-page');
     item.addEventListener('click', () => {
@@ -1160,6 +1114,5 @@
   (async function init() { messages = await loadMessages(); renderMessages(); })();
 })();
 </script>
-
 </body>
 </html>
