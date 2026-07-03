@@ -161,38 +161,6 @@
     .message-list::-webkit-scrollbar-track { background: transparent; }
     .message-list::-webkit-scrollbar-thumb { background: #c5cadc; border-radius: 2px; }
 
-    /* 加载更多提示条 */
-    .load-more-indicator {
-      text-align: center;
-      padding: 12px 0;
-      font-size: 12.5px;
-      color: var(--text-tertiary);
-      cursor: pointer;
-      user-select: none;
-      display: none;
-      transition: opacity 0.2s;
-    }
-    .load-more-indicator.show {
-      display: block;
-    }
-    .load-more-indicator:hover {
-      color: var(--text-secondary);
-    }
-    .load-more-indicator .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border);
-      border-top-color: var(--navy);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
     .message-row {
       display: flex; align-items: flex-end; gap: 8px; max-width: 85%;
     }
@@ -601,9 +569,7 @@
     <button class="quote-cancel" id="quoteCancelBtn">✕</button>
   </div>
 
-  <div class="message-list" id="messageList">
-    <!-- 加载更多提示会由 JS 动态插入 -->
-  </div>
+  <div class="message-list" id="messageList"></div>
 
   <div class="input-bar">
     <button class="icon-btn" id="loveBtn" title="AI回复">♥︎</button>
@@ -684,13 +650,6 @@
   const params = new URLSearchParams(window.location.search);
   const charId = params.get('id');
   if (!charId) { window.location.href = 'phone.html'; return; }
-
-  // ---------- 配置 ----------
-  const PAGE_SIZE = 50;          // 每次加载的消息条数
-  let currentStart = 0;          // 当前已加载的消息起始索引（从最新往前数）
-  let totalMessages = 0;         // 总消息数
-  let isLoadingMore = false;
-  let hasMoreHistory = true;
 
   function getCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
   function saveCharacters(chars) { localStorage.setItem('chat_characters', JSON.stringify(chars)); }
@@ -801,96 +760,10 @@
 
   let messages = [];
   let quoteMessage = null;
+  function updateRenderStart() {
+    renderStart = Math.max(0, messages.length - RENDER_COUNT);
+}
 
-  // ---------- 加载更多相关 ----------
-  function createLoadMoreIndicator() {
-    const indicator = document.createElement('div');
-    indicator.className = 'load-more-indicator';
-    indicator.id = 'loadMoreIndicator';
-    indicator.innerHTML = `<span>⬆ 点击加载更早的消息</span>`;
-    indicator.addEventListener('click', loadMoreHistory);
-    return indicator;
-  }
-
-  let loadMoreIndicator = null;
-
-  function updateLoadMoreState() {
-    if (!loadMoreIndicator) {
-      loadMoreIndicator = createLoadMoreIndicator();
-      // 插入到消息列表最前面
-      messageList.prepend(loadMoreIndicator);
-    }
-    if (hasMoreHistory && currentStart < totalMessages) {
-      loadMoreIndicator.className = 'load-more-indicator show';
-      loadMoreIndicator.innerHTML = `<span>⬆ 点击加载更早的消息</span>`;
-    } else if (!hasMoreHistory || currentStart >= totalMessages) {
-      loadMoreIndicator.className = 'load-more-indicator show';
-      loadMoreIndicator.innerHTML = `<span style="opacity:0.5;">— 已加载全部历史消息 —</span>`;
-    }
-  }
-
-  function setLoadingMoreState(loading) {
-    if (!loadMoreIndicator) return;
-    if (loading) {
-      loadMoreIndicator.className = 'load-more-indicator show';
-      loadMoreIndicator.innerHTML = `<span class="spinner"></span>加载中...`;
-    } else {
-      updateLoadMoreState();
-    }
-  }
-
-  async function loadMoreHistory() {
-    if (isLoadingMore || !hasMoreHistory) return;
-    if (currentStart >= totalMessages) {
-      hasMoreHistory = false;
-      updateLoadMoreState();
-      return;
-    }
-
-    isLoadingMore = true;
-    setLoadingMoreState(true);
-
-    // 保存当前滚动高度，用于恢复位置
-    const oldScrollHeight = messageList.scrollHeight;
-    const oldScrollTop = messageList.scrollTop;
-
-    try {
-      // 计算要加载的范围
-      const endIndex = currentStart;
-      const startIndex = Math.max(0, currentStart - PAGE_SIZE);
-
-      // 从完整 messages 中取出这一段
-      const newMessages = messages.slice(startIndex, endIndex);
-
-      if (newMessages.length === 0) {
-        hasMoreHistory = false;
-        updateLoadMoreState();
-        isLoadingMore = false;
-        return;
-      }
-
-      // 更新 currentStart
-      currentStart = startIndex;
-
-      // 重新渲染（保留现有消息，在顶部插入新消息）
-      renderMessages(true);
-
-      // 恢复滚动位置（保持用户当前看到的位置不变）
-      const newScrollHeight = messageList.scrollHeight;
-      messageList.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
-
-      if (currentStart <= 0) {
-        hasMoreHistory = false;
-      }
-      updateLoadMoreState();
-    } catch (e) {
-      console.error('加载更多失败:', e);
-    } finally {
-      isLoadingMore = false;
-    }
-  }
-
-  // ---------- 渲染 ----------
   function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function getTimeStr() { const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
   function formatFileSize(bytes) {
@@ -899,41 +772,26 @@
     return (bytes / 1048576).toFixed(2) + ' MB';
   }
 
-  function renderMessages(keepExisting = false) {
-    // 如果不保留现有消息，清空列表
-    if (!keepExisting) {
-      messageList.innerHTML = '';
-      // 重新创建加载指示器
-      loadMoreIndicator = null;
-      loadMoreIndicator = createLoadMoreIndicator();
-      messageList.prepend(loadMoreIndicator);
-    } else {
-      // 保留现有消息，只移除旧的加载指示器
-      const oldIndicator = document.getElementById('loadMoreIndicator');
-      if (oldIndicator) oldIndicator.remove();
-      loadMoreIndicator = createLoadMoreIndicator();
-      messageList.prepend(loadMoreIndicator);
-    }
+const RENDER_COUNT = 50;
+let renderStart = 0;
 
-    // 计算需要渲染的消息范围
-    const total = messages.length;
-    const endIndex = Math.min(total, currentStart + PAGE_SIZE);
-    const displayMessages = messages.slice(currentStart, endIndex);
+  function renderMessages() {
+    messageList.innerHTML = '';
+    updateRenderStart();
+    const scrollToIndex = localStorage.getItem(`chat_scroll_to_${charId}`);
 
-    // 更新 totalMessages
-    totalMessages = total;
-    hasMoreHistory = currentStart > 0;
+    const visibleMessages = messages.slice(renderStart);
 
-    // 渲染每条消息
-    displayMessages.forEach((msg, idx) => {
-      const globalIndex = currentStart + idx;
+visibleMessages.forEach((msg, i) => {
+
+    const index = renderStart + i;
       if (msg.type === 'system') {
         const wrapper = document.createElement('div');
         wrapper.style.position = 'relative'; wrapper.style.textAlign = 'center';
-        wrapper.setAttribute('data-search-index', globalIndex);
+        wrapper.setAttribute('data-search-index', index);
         const d = document.createElement('div'); d.className = 'system-msg'; d.textContent = msg.text;
         const actionBar = document.createElement('div'); actionBar.className = 'system-action-bar';
-        actionBar.innerHTML = `<button class="msg-action-btn" data-action="edit" data-index="${globalIndex}">编辑</button><button class="msg-action-btn danger" data-action="delete" data-index="${globalIndex}">删除</button>`;
+        actionBar.innerHTML = `<button class="msg-action-btn" data-action="edit" data-index="${index}">编辑</button><button class="msg-action-btn danger" data-action="delete" data-index="${index}">删除</button>`;
         actionBar.querySelectorAll('button').forEach(btn => {
           btn.onclick = function(e) { e.stopPropagation(); const act=this.getAttribute('data-action'); const idx=parseInt(this.getAttribute('data-index')); document.querySelectorAll('.system-action-bar.show').forEach(b=>b.classList.remove('show')); if(act==='delete'){messages.splice(idx,1);saveMessages(messages);renderMessages();}else if(act==='edit'){openEditModal(idx,msg);} };
         });
@@ -944,7 +802,7 @@
 
       const row = document.createElement('div');
       row.className = `message-row ${msg.sender === 'self' ? 'self' : 'other'}`;
-      row.setAttribute('data-search-index', globalIndex);
+      row.setAttribute('data-search-index', index);
       const wrapper = document.createElement('div');
       wrapper.className = 'bubble-wrapper'; wrapper.style.position = 'relative';
 
@@ -955,7 +813,7 @@
         const btn = document.createElement('button');
         btn.className = 'msg-action-btn' + (action==='删除'?' danger':'');
         btn.textContent = action;
-        btn.onclick = function(e) { e.stopPropagation(); handleMessageAction(action, globalIndex); };
+        btn.onclick = function(e) { e.stopPropagation(); handleMessageAction(action, index); };
         actionBar.appendChild(btn);
       });
       wrapper.appendChild(actionBar);
@@ -1029,11 +887,8 @@
       row.appendChild(wrapper);
       messageList.appendChild(row);
     });
+    messageList.scrollTop = messageList.scrollHeight;
 
-    updateLoadMoreState();
-
-    // 如果有搜索跳转目标，滚动到对应位置
-    const scrollToIndex = localStorage.getItem(`chat_scroll_to_${charId}`);
     if (scrollToIndex !== null) {
       localStorage.removeItem(`chat_scroll_to_${charId}`);
       setTimeout(() => {
@@ -1044,13 +899,9 @@
           setTimeout(() => { target.classList.remove('search-highlight'); }, 2500);
         }
       }, 400);
-    } else if (!keepExisting) {
-      // 首次加载，滚动到底部
-      messageList.scrollTop = messageList.scrollHeight;
     }
   }
 
-  // ---------- 消息操作 ----------
   function handleMessageAction(action, index) {
     const msg = messages[index]; if (!msg) return;
     document.querySelectorAll('.msg-action-bar.show').forEach(b => b.classList.remove('show'));
@@ -1073,7 +924,6 @@
     }
   });
 
-  // ---------- 编辑模态框 ----------
   const editModalOverlay = document.getElementById('editModalOverlay');
   const editTextarea = document.getElementById('editTextarea');
   let editIndex = null;
@@ -1083,7 +933,6 @@
   editModalOverlay.onclick = e => { if(e.target===editModalOverlay) closeEditModal(); };
   document.getElementById('editConfirmBtn').onclick = () => { const t=editTextarea.value.trim(); if(t&&editIndex!==null){ messages[editIndex].text=t; saveMessages(messages); renderMessages(); } closeEditModal(); };
 
-  // ---------- 事件模态框 ----------
   const MAX_RECENT_EVENTS = 20;
   function getRelatedCharacters() {
     const chars = getCharacters(); const me = chars.find(c => c.id == charId);
@@ -1121,38 +970,15 @@
     addSystemMessage(`已记入${ownerChar?ownerChar.name:'该角色'}的关系记忆`);
   };
 
-  // ---------- 消息增删改 ----------
   async function addMessage(text, sender='self', type='text', extra={}) {
     if (!text.trim()) return;
     messages.push({ text:text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra });
-    await saveMessages(messages);
-    // 更新 currentStart 确保新消息可见
-    const total = messages.length;
-    if (total - currentStart > PAGE_SIZE) {
-      currentStart = total - PAGE_SIZE;
-    }
-    renderMessages();
+    await saveMessages(messages); renderMessages();
     updateLastMessage(type==='image'?'[图片]':type==='file'?'[文件]':text);
-    // 滚动到底部
-    setTimeout(() => { messageList.scrollTop = messageList.scrollHeight; }, 50);
   }
+  async function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); await saveMessages(messages); renderMessages(); }
+  function updateLastMessage(text) { const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId); if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); } }
 
-  async function addSystemMessage(text) {
-    messages.push({ text, sender:'system', type:'system', timestamp:Date.now() });
-    await saveMessages(messages);
-    const total = messages.length;
-    if (total - currentStart > PAGE_SIZE) {
-      currentStart = total - PAGE_SIZE;
-    }
-    renderMessages();
-  }
-
-  function updateLastMessage(text) {
-    const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId);
-    if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); }
-  }
-
-  // ---------- AI 相关 ----------
   function getRelevantWorldbooks(userMessage) {
     const allBooks = loadWorldbooks(); const relevant = [];
     allBooks.forEach(book => {
@@ -1173,9 +999,41 @@
   }
 
   function buildSystemPrompt(userMessage) {
-    const char = getCurrentCharacter(), user = loadUserData(), parts = [];
+  const char = getCurrentCharacter(), user = loadUserData(), parts = [];
+  
+  // ===== 加这里：注入当前时间 =====
+  const now = new Date();
+  const timeStr = now.getFullYear() + '年' + 
+                  (now.getMonth()+1).toString().padStart(2,'0') + '月' + 
+                  now.getDate().toString().padStart(2,'0') + '日 ' + 
+                  now.getHours().toString().padStart(2,'0') + ':' + 
+                  now.getMinutes().toString().padStart(2,'0');
+  parts.push('【当前时间】' + timeStr);
+  parts.push('【星期】' + ['日','一','二','三','四','五','六'][now.getDay()] + '曜日');
+  // 在 parts.push('【当前时间】' + timeStr); 后面加
+
+// 1. 告诉 AI 现在是第几季度/季节
+const month = now.getMonth() + 1;
+let season = '';
+if (month >= 3 && month <= 5) season = '春季';
+else if (month >= 6 && month <= 8) season = '夏季';
+else if (month >= 9 && month <= 11) season = '秋季';
+else season = '冬季';
+parts.push('【季节】' + season);
+
+// 2. 时间段（方便 AI 判断"早上好""晚安"）
+const hour = now.getHours();
+let timeOfDay = '';
+if (hour >= 5 && hour < 9) timeOfDay = '清晨/早晨';
+else if (hour >= 9 && hour < 12) timeOfDay = '上午';
+else if (hour >= 12 && hour < 14) timeOfDay = '中午';
+else if (hour >= 14 && hour < 18) timeOfDay = '下午';
+else if (hour >= 18 && hour < 21) timeOfDay = '傍晚/晚上';
+else timeOfDay = '深夜/夜间';
+parts.push('【时段】' + timeOfDay);
     parts.push('【场景】手机微信聊天，你和对方正在用文字聊天。');
     parts.push('【格式规则】1. 不要写任何动作描写，如 "微笑" "点头" "叹气" 等，只发纯对话内容。');
+    parts.push('【时间规则】聊天中的时间以系统提供的【当前时间】为准，如果用户提到"今天""现在""几点"等，请基于这个时间回答。');
     parts.push('2. 不要写 "：" 和角色名，直接发聊天内容。');
     parts.push('3. 多条消息用 "\\n---\\n" 分隔，每条消息独立发送。');
     parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
@@ -1243,51 +1101,11 @@
 
   function formatDuration(s) { const m=Math.floor(s/60); return m+':'+(s%60).toString().padStart(2,'0'); }
 
-  async function triggerAIReply() {
-    const lum=[...messages].reverse().find(m=>m.sender==='self');
-    if(!lum)return;
-    setSignatureTyping();
-    try{
-      const reply=await callAIAPI(lum.text);
-      const parsed=parseAIResponse(reply);
-      for(let i=0;i<parsed.length;i++){
-        await new Promise(r=>setTimeout(r,300));
-        await addMessage(parsed[i].text,'other',parsed[i].type,parsed[i]);
-      }
-    }catch(err){
-      addMessage('❌ '+err.message,'other');
-    }finally{
-      restoreSignature();
-    }
-  }
+  async function triggerAIReply() { const lum=[...messages].reverse().find(m=>m.sender==='self'); if(!lum)return; setSignatureTyping(); try{const reply=await callAIAPI(lum.text); const parsed=parseAIResponse(reply); for(let i=0;i<parsed.length;i++){await new Promise(r=>setTimeout(r,300));await addMessage(parsed[i].text,'other',parsed[i].type,parsed[i]);}}catch(err){addMessage('❌ '+err.message,'other');}finally{restoreSignature();} }
+  async function sendMessage() { const text=messageInput.value; if(!text.trim())return; if(quoteMessage){await addMessage(text,'self','text',{quote:quoteMessage.text});quoteMessage=null;quoteBar.style.display='none';}else await addMessage(text,'self'); messageInput.value=''; }
+  messageInput.addEventListener('keypress', e => { if(e.key==='Enter'){ e.preventDefault(); sendMessage(); } });
+  document.getElementById('loveBtn').onclick = async () => { if(messages.length===0||messages.every(m=>m.sender==='other')) await addMessage('你好','self'); triggerAIReply(); };
 
-  // ---------- 发送消息 ----------
-  async function sendMessage() {
-    const text=messageInput.value;
-    if(!text.trim())return;
-    if(quoteMessage){
-      await addMessage(text,'self','text',{quote:quoteMessage.text});
-      quoteMessage=null;
-      quoteBar.style.display='none';
-    } else {
-      await addMessage(text,'self');
-    }
-    messageInput.value='';
-  }
-
-  messageInput.addEventListener('keypress', e => {
-    if(e.key==='Enter'){
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  document.getElementById('loveBtn').onclick = async () => {
-    if(messages.length===0||messages.every(m=>m.sender==='other')) await addMessage('你好','self');
-    triggerAIReply();
-  };
-
-  // ---------- 图片 ----------
   const imageModalOverlay = document.getElementById('imageModalOverlay');
   const imagePromptInput = document.getElementById('imagePromptInput');
   let imageCb = null;
@@ -1297,26 +1115,14 @@
   imageModalOverlay.onclick = e => { if(e.target===imageModalOverlay) closeImageModal(); };
   document.getElementById('imageSendBtn').onclick = () => { const p=imagePromptInput.value.trim(); if(!p){alert('请输入描述');return;} if(imageCb)imageCb(p); closeImageModal(); };
   document.getElementById('cameraBtn').onclick = () => openImageModal(p => addMessage(p,'self','image'));
-  document.querySelectorAll('.plus-item[data-page="photo"], .plus-item[data-page="take"]').forEach(item => {
-    item.onclick = e => { e.stopPropagation(); plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); openImageModal(p => addMessage(p,'self','image')); };
-  });
+  document.querySelectorAll('.plus-item[data-page="photo"], .plus-item[data-page="take"]').forEach(item => { item.onclick = e => { e.stopPropagation(); plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); openImageModal(p => addMessage(p,'self','image')); }; });
 
-  // ---------- plus 面板 ----------
   const plusPanel = document.getElementById('plusPanel');
   const overlayBg = document.getElementById('overlayBg');
   document.getElementById('plusBtn').onclick = e => { e.stopPropagation(); plusPanel.classList.toggle('active'); overlayBg.classList.toggle('active'); };
   overlayBg.onclick = () => { plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); };
 
-  const plusRoutes = {
-    'video_call':'../../chat_more/video call.html',
-    'voice_call':'../../chat_more/voice call.html',
-    'locate':'../../chat_more/locate.html',
-    'red_bag':'../../chat_more/red bag.html',
-    'gift':'../../chat_more/gift.html',
-    'account':'../../chat_more/account.html',
-    'collect':'../../chat_more/collect.html',
-    'file':null
-  };
+  const plusRoutes = { 'video_call':'../../chat_more/video call.html','voice_call':'../../chat_more/voice call.html','locate':'../../chat_more/locate.html','red_bag':'../../chat_more/red bag.html','gift':'../../chat_more/gift.html','account':'../../chat_more/account.html','collect':'../../chat_more/collect.html','file':null };
   document.querySelectorAll('.plus-item').forEach(item => {
     const page = item.getAttribute('data-page');
     item.addEventListener('click', () => {
@@ -1334,10 +1140,8 @@
     reader.readAsText(file); e.target.value = '';
   });
 
-  // ---------- 引用取消 ----------
   document.getElementById('quoteCancelBtn').onclick = () => { quoteMessage=null; quoteBar.style.display='none'; };
 
-  // ---------- 拍一拍 ----------
   let avatarTimer = null;
   function handleAvatarClick(type) {
     if(avatarTimer){ clearTimeout(avatarTimer); avatarTimer=null; const rn=getCharRealName(); if(type==='char') addSystemMessage(`${userName}拍了拍${rn}`); else addSystemMessage(`${rn}拍了拍${userName}`); }
@@ -1346,19 +1150,8 @@
   document.querySelectorAll('.avatar-circle').forEach(av => { av.onclick = () => handleAvatarClick(av.getAttribute('data-avatar-type')); });
   document.querySelectorAll('.header-avatar').forEach(av => { av.onclick = () => handleAvatarClick(av.getAttribute('data-avatar-type')); });
 
-  // ---------- 存储监听 ----------
   window.addEventListener('storage', () => updateAllDisplay());
-
-  // ---------- 初始化 ----------
-  (async function init() {
-    messages = await loadMessages();
-    totalMessages = messages.length;
-    // 初始只加载最新的 PAGE_SIZE 条
-    currentStart = Math.max(0, totalMessages - PAGE_SIZE);
-    hasMoreHistory = currentStart > 0;
-    renderMessages();
-  })();
-
+  (async function init() { messages = await loadMessages(); renderMessages(); })();
 })();
 </script>
 </body>
