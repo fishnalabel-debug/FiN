@@ -1211,6 +1211,9 @@
   // ----- AI 相关函数 - 支持图片识别 -----
   function buildSystemPrompt(userMessage) {
     const char = getCurrentCharacter(), user = loadUserData(), parts = [];
+    parts.unshift('【最高优先级指令】⚠️ 绝对不要输出你的思考过程、推理步骤或内部思维链。');
+  parts.unshift('【输出规则】只输出最终回复内容，不要包含任何 "分析："、"思考："、"我考虑了一下" 等元描述。');
+  parts.unshift('【角色扮演规则】你是在扮演角色直接对话，不是 AI 助手。不要解释你是怎么想的，直接说角色该说的话。');
     const now = new Date();
     const timeStr = now.getFullYear() + '年' + 
                     (now.getMonth()+1).toString().padStart(2,'0') + '月' + 
