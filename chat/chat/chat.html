@@ -912,9 +912,9 @@
       const reply = await callAIAPI(userMsg);
       const parsed = parseAIResponse(reply);
       for (let i = 0; i < parsed.length; i++) {
-        await new Promise(r => setTimeout(r, 300));
-        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
-      }
+  await new Promise(r => setTimeout(r, 300 + i * 150));
+  await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
+}
     } catch(err) {
       await addMessage('❌ ' + err.message, 'other');
     } finally {
@@ -1272,9 +1272,9 @@
     parts.push('【格式规则】1. 不要写任何动作描写，如 "微笑" "点头" "叹气" 等，只发纯对话内容。');
     parts.push('【时间规则】聊天中的时间以系统提供的【当前时间】为准。如果用户提到时间相关的词（如"现在""几点""今天""什么时候""隔了多久"等），请基于【当前时间】和【距离上一条消息的时间间隔】来计算和回答。');
     parts.push('2. 不要写 "：" 和角色名，直接发聊天内容。');
-    parts.push('3. 多条消息用 "\\n---\\n" 分隔，每条消息独立发送。');
-    parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
-    parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
+    parts.push('3. 多条消息用换行分隔，每一行独立发送。');
+parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
+parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
     parts.push('6. 语气口语化，不要像写小说。');
     if (char?.aiPrompt) parts.push('【你的角色设定】' + char.aiPrompt);
     const rb = buildRelationContext(char); if (rb) parts.push(rb);
@@ -1456,35 +1456,44 @@
   }
 
   function parseAIResponse(text) {
-    const msgs = []; text = text.trim();
-    const parts = text.split('\n---\n').filter(p => p.trim());
-    if (parts.length === 0) {
-      const lines = text.split(/\n+/).filter(l => l.trim());
-      if (lines.length > 1) {
-        lines.forEach(line => {
-          const trimmed = line.trim();
-          if (trimmed) {
-            const vm = trimmed.match(/\[voice:(\d+)\]([\s\S]*)/);
-            if (vm) { msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() }); return; }
-            const im = trimmed.match(/\[image\]([\s\S]*)/);
-            if (im) { msgs.push({ type: 'image_prompt', text: im[1].trim() }); return; }
-            msgs.push({ type: 'text', text: trimmed });
-          }
-        });
-        return msgs.length ? msgs : [{ type: 'text', text: text }];
-      }
-      return [{ type: 'text', text: text }];
-    }
-    parts.forEach(part => {
-      part = part.trim();
-      const vm = part.match(/\[voice:(\d+)\]([\s\S]*)/);
-      if (vm) { msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() }); return; }
-      const im = part.match(/\[image\]([\s\S]*)/);
-      if (im) { msgs.push({ type: 'image_prompt', text: im[1].trim() }); return; }
-      msgs.push({ type: 'text', text: part });
-    });
-    return msgs.length ? msgs : [{ type: 'text', text: text }];
+  const msgs = [];
+  text = text.trim();
+  
+  // 按换行符分割，每个段落作为独立消息
+  const lines = text.split(/\n+/).filter(line => line.trim());
+  
+  if (lines.length === 0) {
+    return [{ type: 'text', text: text }];
   }
+  
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    
+    // 检查是否是语音标记
+    const vm = trimmed.match(/\[voice:(\d+)\]([\s\S]*)/);
+    if (vm) {
+      msgs.push({ 
+        type: 'voice', 
+        text: vm[2].trim(), 
+        duration: formatDuration(parseInt(vm[1])), 
+        transcript: vm[2].trim() 
+      });
+      return;
+    }
+    
+    // 检查是否是图片标记
+    const im = trimmed.match(/\[image\]([\s\S]*)/);
+    if (im) {
+      msgs.push({ type: 'image_prompt', text: im[1].trim() });
+      return;
+    }
+    
+    msgs.push({ type: 'text', text: trimmed });
+  });
+  
+  return msgs.length ? msgs : [{ type: 'text', text: text }];
+}
 
   function formatDuration(s) { const m=Math.floor(s/60); return m+':'+(s%60).toString().padStart(2,'0'); }
 
