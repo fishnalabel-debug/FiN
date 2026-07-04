@@ -1158,7 +1158,34 @@
   function closeEditModal() { editModalOverlay.classList.remove('active'); editIndex=null; }
   document.getElementById('editCancelBtn').onclick = closeEditModal;
   editModalOverlay.onclick = e => { if(e.target===editModalOverlay) closeEditModal(); };
-  document.getElementById('editConfirmBtn').onclick = () => { const t=editTextarea.value.trim(); if(t&&editIndex!==null){ messages[editIndex].text=t; saveMessages(messages); renderMessages(); } closeEditModal(); };
+  document.getElementById('editConfirmBtn').onclick = () => {
+  const t = editTextarea.value.trim();
+  if (!t || editIndex === null) { closeEditModal(); return; }
+  
+  const originalMsg = messages[editIndex];
+  
+  // 按换行分割，过滤空行
+  const lines = t.split(/\n+/).filter(line => line.trim());
+  
+  if (lines.length === 1) {
+    // 只有一行，直接更新
+    messages[editIndex].text = t;
+  } else {
+    // 多行：删除原消息，插入多条新消息
+    messages.splice(editIndex, 1);
+    const newMessages = lines.map((line, i) => ({
+      ...originalMsg,
+      text: line.trim(),
+      timestamp: Date.now() + i,  // 加微小偏移保证顺序
+      time: getTimeStr()
+    }));
+    messages.splice(editIndex, 0, ...newMessages);
+  }
+  
+  saveMessages(messages);
+  renderMessages();
+  closeEditModal();
+};
 
   const MAX_RECENT_EVENTS = 20;
   function getRelatedCharacters() {
