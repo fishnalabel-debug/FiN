@@ -29,6 +29,22 @@ body {
   font-family: 'Noto Serif SC', serif;
   min-height: 100vh;
   padding: 0 0 80px;
+  margin: 0;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Fixed Header ── */
+.fixed-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg);
+  padding: env(safe-area-inset-top, 12px) 0 0 0;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--rule);
 }
 
 /* ── Top nav ── */
@@ -36,7 +52,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px 12px;
+  padding: 8px 24px 8px 24px;
 }
 
 .back-link {
@@ -78,8 +94,7 @@ body {
 
 /* ── Hero header ── */
 .hero {
-  padding: 8px 24px 24px;
-  border-bottom: 1px solid var(--rule);
+  padding: 4px 24px 12px 24px;
 }
 
 .hero-date {
@@ -89,24 +104,24 @@ body {
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .page-title {
   font-family: 'Noto Serif SC', serif;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--ink);
   line-height: 1.2;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 /* ── Meta info pills ── */
 .meta-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .meta-row {
@@ -135,14 +150,16 @@ body {
 .tab-bar {
   display: flex;
   gap: 0;
-  padding: 16px 24px 0;
+  padding: 6px 24px 0;
   border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+  background: var(--bg);
 }
 
 .tab-button {
   border: none;
   background: none;
-  padding: 10px 16px 12px;
+  padding: 8px 16px 10px;
   font-family: 'IM Fell English', serif;
   font-style: italic;
   font-size: 14px;
@@ -159,10 +176,18 @@ body {
   border-bottom-color: var(--ink);
 }
 
+/* ── Scrollable content ── */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0 20px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* ── Tab content ── */
 .tab-content {
   display: none;
-  padding: 28px 24px;
+  padding: 20px 24px 28px;
   animation: fadeIn 0.3s ease;
 }
 .tab-content.active { display: block; }
@@ -185,6 +210,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 26px;
+  padding-bottom: 10px;
 }
 
 .story-block { animation: fadeIn 0.35s ease; }
@@ -333,7 +359,7 @@ body {
 .composer-send svg { width: 14px; height: 14px; }
 
 /* spacing so fixed composer doesn't cover content */
-#test.tab-content.active { padding-bottom: 130px; }
+.scroll-area { padding-bottom: 90px; }
 
 /* ── Observe tab (memory summary) ── */
 .observe-box {
@@ -351,6 +377,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .regen-btn {
@@ -646,55 +674,64 @@ body.dark .summary-preset-textarea:focus { background: #222; }
 
 <div id="effect-layer"></div>
 
-<div class="topbar">
-  <button class="back-link" id="backBtn">← 返回线上</button>
-  <div class="effect-buttons">
-    <button onclick="toggleRain()">💧</button>
-    <button onclick="toggleSnow()">❄️</button>
-    <button onclick="toggleNight()">🌙</button>
-    <button onclick="togglePaper()">📜</button>
+<!-- ─── Fixed Header ─── -->
+<div class="fixed-header">
+  <div class="topbar">
+    <button class="back-link" id="backBtn">← 返回线上</button>
+    <div class="effect-buttons">
+      <button onclick="toggleRain()">💧</button>
+      <button onclick="toggleSnow()">❄️</button>
+      <button onclick="toggleNight()">🌙</button>
+      <button onclick="togglePaper()">📜</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-date" id="heroDate">✦ 此刻相遇</div>
+    <div class="page-title">我 想 世界只有u&me。</div>
+    <div class="meta-grid" id="metaGrid"></div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-button active" onclick="showTab('test', this)">test</button>
+    <button class="tab-button" onclick="showTab('observe', this)">observe</button>
+    <button class="tab-button" onclick="showTab('heartbeat', this)">heartbeat</button>
   </div>
 </div>
 
-<div class="hero">
-  <div class="hero-date" id="heroDate">✦ 此刻相遇</div>
-  <div class="page-title">我 想 世界只有u&me。</div>
-  <div class="meta-grid" id="metaGrid"></div>
-</div>
-
-<div class="tab-bar">
-  <button class="tab-button active" onclick="showTab('test', this)">test</button>
-  <button class="tab-button" onclick="showTab('observe', this)">observe</button>
-  <button class="tab-button" onclick="showTab('heartbeat', this)">heartbeat</button>
-</div>
-
-<div id="test" class="tab-content active">
-  <div class="page-content">
-    <div class="story-feed" id="storyFeed"></div>
-  </div>
-</div>
-
-<div id="observe" class="tab-content">
-  <div class="observe-box">
-    <div class="observe-label">
-      <span>observe · 记忆摘要</span>
-      <button class="regen-btn" id="regenObserveBtn">重新生成</button>
-    </div>
-    <div id="observeContent">
-      <p class="empty-hint" style="text-align:left;padding:0;">尚无记忆摘要。互动若干轮后点击「重新生成」，AI 会读取故事进展并在此整理要点，供后续互动参考。</p>
+<!-- ─── Scrollable Content ─── -->
+<div class="scroll-area" id="scrollArea">
+  <div id="test" class="tab-content active">
+    <div class="page-content">
+      <div class="story-feed" id="storyFeed"></div>
     </div>
   </div>
-</div>
 
-<div id="heartbeat" class="tab-content">
-  <div class="heartbeat-box">
-    <div class="heartbeat-label">
-      <span>♥︎ heartbeat</span>
-      <button class="regen-btn" id="regenHeartbeatBtn">重新生成</button>
+  <div id="observe" class="tab-content">
+    <div class="observe-box">
+      <div class="observe-label">
+        <span>observe · 记忆摘要</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="regen-btn" id="regenObserveBtn">重新生成</button>
+          <button class="regen-btn" id="summaryTriggerBtn">📝 记忆总结</button>
+        </div>
+      </div>
+      <div id="observeContent">
+        <p class="empty-hint" style="text-align:left;padding:0;">尚无记忆摘要。互动若干轮后点击「重新生成」，AI 会读取故事进展并在此整理要点，供后续互动参考。</p>
+      </div>
     </div>
-    <div class="heartbeat-list" id="heartbeatContent">
-      <div class="heartbeat-card">
-        <p class="empty-hint">尚无高光摘录。<br>故事推进后，点击「重新生成」提炼关键情感片段。</p>
+  </div>
+
+  <div id="heartbeat" class="tab-content">
+    <div class="heartbeat-box">
+      <div class="heartbeat-label">
+        <span>♥︎ heartbeat</span>
+        <button class="regen-btn" id="regenHeartbeatBtn">重新生成</button>
+      </div>
+      <div class="heartbeat-list" id="heartbeatContent">
+        <div class="heartbeat-card">
+          <p class="empty-hint">尚无高光摘录。<br>故事推进后，点击「重新生成」提炼关键情感片段。</p>
+        </div>
       </div>
     </div>
   </div>
@@ -918,7 +955,11 @@ body.dark .summary-preset-textarea:focus { background: #222; }
       });
     });
 
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    // 滚动到底部
+    const scrollArea = document.getElementById('scrollArea');
+    setTimeout(() => {
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }, 50);
   }
 
   function addMessage(role, content, by) {
@@ -934,7 +975,10 @@ body.dark .summary-preset-textarea:focus { background: #222; }
     block.id = 'thinkingBlock';
     block.innerHTML = `<div class="story-text"><span class="think-dot"></span><span class="think-dot"></span><span class="think-dot"></span></div>`;
     feed.appendChild(block);
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    const scrollArea = document.getElementById('scrollArea');
+    setTimeout(() => {
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }, 50);
   }
   function hideThinking() {
     const el = document.getElementById('thinkingBlock');
@@ -1091,9 +1135,9 @@ body.dark .summary-preset-textarea:focus { background: #222; }
       xhr.onerror = () => reject(new Error('网络错误'));
       xhr.ontimeout = () => reject(new Error('请求超时'));
       xhr.send(JSON.stringify({
-  model: cfg.model,
-  messages: [{ role: 'system', content: systemPrompt }, ...messages]
-}));
+        model: cfg.model,
+        messages: [{ role: 'system', content: systemPrompt }, ...messages]
+      }));
     });
   }
 
@@ -1255,7 +1299,7 @@ ${contextInfo}
     }
   });
 
-  // ── 记忆总结弹窗（和 more 一样） ──
+  // ── 记忆总结弹窗 ──
   const summaryModal = document.getElementById('summaryModal');
   const summaryList = document.getElementById('summaryList');
   const summaryRangeInfo = document.getElementById('summaryRangeInfo');
@@ -1266,17 +1310,8 @@ ${contextInfo}
   let summaryAllMessages = [];
   let summarySelectedIndices = new Set();
 
-  // 点击 observe 的重新生成按钮附近加一个"记忆总结"入口
-  // 我们在 observe 的 label 里加一个按钮
-  const observeLabel = document.querySelector('.observe-label');
-  const summaryTriggerBtn = document.createElement('button');
-  summaryTriggerBtn.className = 'regen-btn';
-  summaryTriggerBtn.textContent = '📝 记忆总结';
-  summaryTriggerBtn.style.marginLeft = '8px';
-  observeLabel.appendChild(summaryTriggerBtn);
-
-  summaryTriggerBtn.addEventListener('click', async () => {
-    // 用 storyMessages 作为可选消息
+  // 绑定点我
+  document.getElementById('summaryTriggerBtn').addEventListener('click', async () => {
     summaryAllMessages = storyMessages.map((m, idx) => ({ ...m, index: idx }));
     summarySelectedIndices = new Set();
     renderSummaryList();
@@ -1367,7 +1402,6 @@ ${contextInfo}
 
     try {
       const resp = await callChatAPI(fullPrompt, [{ role: 'user', content: '请总结以上对话。' }]);
-      // 直接更新 observe
       meetData.memorySummary = resp.trim();
       saveMeetStorage(meetData);
       renderObserve();
@@ -1379,8 +1413,6 @@ ${contextInfo}
 
   // ── 返回按钮 ──
   document.getElementById('backBtn').addEventListener('click', () => {
-    // 把见面消息存回 chat 的聊天记录（作为系统消息？或者作为普通消息？）
-    // 我们存为 AI 消息，这样回到 chat 能看到
     saveMeetToChat();
     window.location.href = '../chat/chat/chat.html?id=' + charId;
   });
@@ -1388,9 +1420,7 @@ ${contextInfo}
   async function saveMeetToChat() {
     if (storyMessages.length === 0) return;
     const existing = await loadMessages();
-    // 过滤掉系统消息
     const filtered = existing.filter(m => m.type !== 'system');
-    // 把 storyMessages 转换成 chat 消息格式
     const newMessages = storyMessages.map(m => ({
       text: m.content,
       sender: m.role === 'user' ? 'self' : 'other',
@@ -1398,7 +1428,6 @@ ${contextInfo}
       timestamp: m.time || Date.now(),
       time: new Date(m.time || Date.now()).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
     }));
-    // 合并，取最新的50条
     const merged = [...filtered, ...newMessages];
     const last50 = merged.slice(-50);
     await saveMessages(last50);
@@ -1406,11 +1435,9 @@ ${contextInfo}
 
   // ── 初始化 ──
   (async function init() {
-    // 加载初始聊天记录到 storyMessages（如果是空的）
     if (storyMessages.length === 0) {
       const initialMsgs = await loadInitialMessages();
       if (initialMsgs.length) {
-        // 转换为 meet 格式
         storyMessages = initialMsgs.map(m => ({
           role: m.sender === 'self' ? 'user' : 'ai',
           content: m.text,
