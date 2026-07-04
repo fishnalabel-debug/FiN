@@ -164,9 +164,9 @@
     .modal-overlay.active { visibility: visible; opacity: 1; }
     .modal-card {
       background: #ffffff; border-radius: 24px; padding: 24px 20px;
-      width: 300px; display: flex; flex-direction: column; gap: 16px;
+      width: 320px; display: flex; flex-direction: column; gap: 16px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      max-height: 70vh; overflow-y: auto;
+      max-height: 80vh; overflow-y: auto;
       margin-bottom: env(safe-area-inset-bottom);
     }
     .modal-card h3 { font-size: 17px; font-weight: 620; color: #1d1d1f; text-align: center; }
@@ -178,6 +178,8 @@
     }
     .btn-cancel { background: #f2f2f6; color: #1d1d1f; }
     .btn-danger { background: #ff3b30; color: white; }
+    .btn-primary { background: #1d1d1f; color: white; }
+    .btn-success { background: #34c759; color: white; }
 
     .search-results {
       display: flex; flex-direction: column; gap: 8px;
@@ -201,6 +203,155 @@
     .import-option-row label {
       font-size: 13px; color: #6c6c70; display: flex; align-items: center; gap: 4px; cursor: pointer;
     }
+
+    /* 记忆总结相关样式 */
+    .summary-msg-item {
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #f9f9fb;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 2px solid transparent;
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .summary-msg-item:hover { background: #f0f0f4; }
+    .summary-msg-item.selected {
+      border-color: #34c759;
+      background: #f0faf0;
+    }
+    .summary-msg-item .msg-check {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #d8d8dc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: transparent;
+      transition: all 0.15s;
+      margin-top: 1px;
+    }
+    .summary-msg-item.selected .msg-check {
+      background: #34c759;
+      border-color: #34c759;
+      color: white;
+    }
+    .summary-msg-item .msg-sender {
+      font-weight: 600;
+      font-size: 11px;
+      color: #8e8e93;
+      margin-right: 4px;
+    }
+    .summary-msg-item .msg-text { flex: 1; word-break: break-word; }
+    .summary-msg-item .msg-time {
+      font-size: 10px;
+      color: #c7c7cc;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .summary-list {
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+    .summary-list::-webkit-scrollbar { width: 3px; }
+    .summary-list::-webkit-scrollbar-thumb { background: #d8d8dc; border-radius: 2px; }
+
+    .summary-range-info {
+      font-size: 12px;
+      color: #8e8e93;
+      text-align: center;
+      padding: 6px 0;
+      background: #f5f5f7;
+      border-radius: 10px;
+    }
+
+    .summary-preset-textarea {
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      background: #f9f9fb;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+    .summary-preset-textarea:focus { border-color: #1d1d1f; background: #ffffff; }
+
+    .summary-result-box {
+      background: #f9f9fb;
+      border-radius: 14px;
+      padding: 16px;
+      max-height: 250px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #e5e5ea;
+    }
+    .summary-result-box::-webkit-scrollbar { width: 3px; }
+    .summary-result-box::-webkit-scrollbar-thumb { background: #d8d8dc; border-radius: 2px; }
+
+    .summary-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .summary-actions .btn { flex: 1; }
+
+    .summary-select-all {
+      font-size: 13px;
+      color: #1d1d1f;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .summary-select-all input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #34c759;
+      cursor: pointer;
+    }
+
+    .summary-empty {
+      text-align: center;
+      color: #c7c7cc;
+      font-size: 14px;
+      padding: 30px 0;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 14px;
+      font-size: 14px;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+    }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -268,6 +419,11 @@
         <span class="menu-label">导入聊天记录</span>
         <span class="menu-arrow">›</span>
       </div>
+      <div class="divider"></div>
+      <div class="menu-item" id="summaryItem">
+        <span class="menu-label">🧠 记忆总结</span>
+        <span class="menu-arrow">›</span>
+      </div>
     </div>
 
     <div class="menu-section">
@@ -303,6 +459,7 @@
     </div>
   </div>
 
+  <!-- 确认删除弹窗 -->
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-card">
       <h3>确认删除？</h3>
@@ -314,6 +471,7 @@
     </div>
   </div>
 
+  <!-- 删除角色弹窗 -->
   <div class="modal-overlay" id="deleteCharModal">
     <div class="modal-card">
       <h3 style="color:#ff3b30;">确认删除该角色？</h3>
@@ -325,6 +483,7 @@
     </div>
   </div>
 
+  <!-- 搜索弹窗 -->
   <div class="modal-overlay" id="searchModal">
     <div class="modal-card">
       <h3>搜索聊天记录</h3>
@@ -338,6 +497,7 @@
     </div>
   </div>
 
+  <!-- 导入弹窗 -->
   <div class="modal-overlay" id="importModal">
     <div class="modal-card">
       <h3>导入聊天记录</h3>
@@ -349,10 +509,77 @@
       <input type="file" accept=".html,.htm" id="importFileInput" class="hidden-file-input">
       <div class="modal-actions">
         <button class="btn btn-cancel" id="importCancel">取消</button>
-        <button class="btn btn-send" id="importSelectFile" style="background:#1d1d1f;color:#fff;">选择文件</button>
+        <button class="btn btn-primary" id="importSelectFile">选择文件</button>
       </div>
     </div>
   </div>
+
+  <!-- 记忆总结弹窗 -->
+  <div class="modal-overlay" id="summaryModal">
+    <div class="modal-card" style="width: 340px;">
+      <h3>🧠 记忆总结</h3>
+      <p style="font-size: 13px; color: #8e8e93;">选择需要总结的聊天记录，AI 将提炼成精炼的共同记忆</p>
+
+      <!-- 选择范围信息 -->
+      <div class="summary-range-info" id="summaryRangeInfo">共 0 条消息，已选 0 条</div>
+
+      <!-- 消息列表 -->
+      <div class="summary-list" id="summaryList">
+        <div class="summary-empty">加载聊天记录中...</div>
+      </div>
+
+      <!-- 全选 -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding-top: 4px;">
+        <label class="summary-select-all">
+          <input type="checkbox" id="summarySelectAll"> 全选
+        </label>
+        <button class="btn btn-cancel" id="summaryClearBtn" style="flex:0; padding:6px 14px; font-size:12px;">清空选择</button>
+      </div>
+
+      <!-- 预设 Prompt -->
+      <details style="margin-top: 4px;">
+        <summary style="font-size:13px; color:#1d1d1f; cursor:pointer; font-weight:500; padding:4px 0;">📝 总结预设（点击展开编辑）</summary>
+        <textarea class="summary-preset-textarea" id="summaryPreset"># Role: 高保真对话精炼助手
+
+## Profile
+你具备极强的聊天内容概括能力，擅长将长篇、冗长的历史聊天记录，提炼出无损关键信息的极简总结。你的目标是在不遗漏任何决策细节和核心事实的前提下，用最少的文字还原对话精髓。
+
+## Execution Rules
+1. **极致精简：** 消除所有重复指令、语气词、寒暄或无意义的互动（如"好的"、"在吗"）。
+2. **逻辑重组：** 聊天记录往往是跳跃的，你需要按事件发展的逻辑顺序重新梳理，而非简单的截取，需要保证内容的连贯性。
+3. **客观中立：** 保持客观第三视角，不添加个人主观评判和联想，仅基于提供的内容进行概括。
+
+## Workflow
+1. **核心锚定：** 提取对话中的核心事件、事件的顺序、双方的关系和情感变化、达成的共识、关键的转折点以及未解决的遗留问题。
+2. **浓缩概括：** 将零散的信息点串联成简洁的叙事性段落，需要在有限的文字里面浓缩足够多的有效信息，因为双方将会基于这份输出内容作为双方的共同记忆，这份内容的提供的信息需要能做到历史记忆唤醒的作用。
+
+## Output Format
+严禁任何开场白（如"好的"、"这是总结"等），你需要直接输出纯文字正文，禁止出现markdown格式，输出内容前需要检查内容的连贯性。</textarea>
+      </details>
+
+      <div class="modal-actions" style="flex-direction: column; gap: 8px;">
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <button class="btn btn-cancel" id="summaryCancel">取消</button>
+          <button class="btn btn-primary" id="summaryGenerateBtn">✨ 生成总结</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 总结结果弹窗 -->
+  <div class="modal-overlay" id="summaryResultModal">
+    <div class="modal-card" style="width: 340px;">
+      <h3>📋 总结结果</h3>
+      <div class="summary-result-box" id="summaryResultContent">正在生成...</div>
+      <div class="summary-actions">
+        <button class="btn btn-cancel" id="summaryResultClose">关闭</button>
+        <button class="btn btn-success" id="summaryResultCopy">📄 复制</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
@@ -364,6 +591,7 @@
   function getCharacters() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
   function saveCharacters(chars) { localStorage.setItem('chat_characters', JSON.stringify(chars)); }
   function getChar() { return getCharacters().find(c => c.id == charId) || null; }
+  function loadUserData() { try { return JSON.parse(localStorage.getItem('user_data')) || {}; } catch(e) { return {}; } }
 
   const char = getChar();
   if (!char) { window.location.href = 'phone.html'; return; }
@@ -371,7 +599,7 @@
   const themes = ['theme-violet', 'theme-sage', 'theme-rose'];
   document.getElementById('namecard').className = 'namecard ' + themes[parseInt(charId.slice(-4), 16) % 3];
 
-  // ★ IndexedDB 辅助函数
+  // IndexedDB 辅助函数
   const DB_NAME = 'FiN_DB';
   const DB_VERSION = 1;
   const STORE_NAME = 'chat_messages';
@@ -445,6 +673,254 @@
   }
   renderNamecard();
 
+  // Toast 提示
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  // ===== 记忆总结功能 =====
+  const summaryModal = document.getElementById('summaryModal');
+  const summaryList = document.getElementById('summaryList');
+  const summaryRangeInfo = document.getElementById('summaryRangeInfo');
+  const summarySelectAll = document.getElementById('summarySelectAll');
+  const summaryClearBtn = document.getElementById('summaryClearBtn');
+  const summaryPreset = document.getElementById('summaryPreset');
+  const summaryGenerateBtn = document.getElementById('summaryGenerateBtn');
+  const summaryCancel = document.getElementById('summaryCancel');
+  const summaryResultModal = document.getElementById('summaryResultModal');
+  const summaryResultContent = document.getElementById('summaryResultContent');
+  const summaryResultClose = document.getElementById('summaryResultClose');
+  const summaryResultCopy = document.getElementById('summaryResultCopy');
+
+  let allMessages = [];
+  let selectedIndices = new Set();
+
+  // 打开记忆总结弹窗
+  document.getElementById('summaryItem').addEventListener('click', async () => {
+    allMessages = await loadMessages();
+    // 过滤掉系统消息，只保留用户和角色的对话
+    const filtered = allMessages.filter(m => m.type !== 'system');
+    allMessages = filtered;
+    selectedIndices = new Set();
+    renderSummaryList();
+    summaryModal.classList.add('active');
+  });
+
+  function renderSummaryList() {
+    const userName = loadUserData().name || '我';
+    const charName = char.name || '角色';
+
+    if (allMessages.length === 0) {
+      summaryList.innerHTML = '<div class="summary-empty">暂无聊天记录</div>';
+      summaryRangeInfo.textContent = '共 0 条消息，已选 0 条';
+      return;
+    }
+
+    summaryList.innerHTML = allMessages.map((msg, idx) => {
+      const sender = msg.sender === 'self' ? userName : charName;
+      const senderClass = msg.sender === 'self' ? 'self' : 'other';
+      const isSelected = selectedIndices.has(idx);
+      const timeStr = msg.time || '';
+      const text = msg.text || '';
+      // 处理特殊类型
+      let displayText = text;
+      if (msg.type === 'image' || msg.type === 'image_prompt') displayText = '📷 ' + (text || '图片');
+      else if (msg.type === 'file') displayText = '📄 ' + (text || '文件');
+      else if (msg.type === 'voice') displayText = '🎤 ' + (text || '语音');
+      
+      return `<div class="summary-msg-item ${isSelected ? 'selected' : ''}" data-index="${idx}">
+        <div class="msg-check">${isSelected ? '✓' : ''}</div>
+        <div style="flex:1; min-width:0;">
+          <div class="msg-sender">${sender}</div>
+          <div class="msg-text">${escapeHtml(displayText)}</div>
+        </div>
+        ${timeStr ? `<div class="msg-time">${timeStr}</div>` : ''}
+      </div>`;
+    }).join('');
+
+    // 点击切换选择
+    summaryList.querySelectorAll('.summary-msg-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = parseInt(el.dataset.index);
+        if (selectedIndices.has(idx)) selectedIndices.delete(idx);
+        else selectedIndices.add(idx);
+        renderSummaryList();
+      });
+    });
+
+    // 更新信息
+    summaryRangeInfo.textContent = `共 ${allMessages.length} 条消息，已选 ${selectedIndices.size} 条`;
+    summarySelectAll.checked = selectedIndices.size === allMessages.length && allMessages.length > 0;
+  }
+
+  function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // 全选
+  summarySelectAll.addEventListener('change', () => {
+    if (summarySelectAll.checked) {
+      allMessages.forEach((_, idx) => selectedIndices.add(idx));
+    } else {
+      selectedIndices.clear();
+    }
+    renderSummaryList();
+  });
+
+  // 清空选择
+  summaryClearBtn.addEventListener('click', () => {
+    selectedIndices.clear();
+    renderSummaryList();
+  });
+
+  // 关闭总结弹窗
+  summaryCancel.addEventListener('click', () => summaryModal.classList.remove('active'));
+  summaryModal.addEventListener('click', (e) => { if (e.target === summaryModal) summaryModal.classList.remove('active'); });
+
+  // 生成总结
+  summaryGenerateBtn.addEventListener('click', async () => {
+    if (selectedIndices.size === 0) {
+      showToast('请至少选择一条消息');
+      return;
+    }
+
+    // 获取选中的消息
+    const selectedMsgs = [];
+    const sortedIndices = Array.from(selectedIndices).sort((a, b) => a - b);
+    for (const idx of sortedIndices) {
+      selectedMsgs.push(allMessages[idx]);
+    }
+
+    if (selectedMsgs.length === 0) {
+      showToast('请选择有效的消息');
+      return;
+    }
+
+    // 构建对话文本
+    const userName = loadUserData().name || '我';
+    const charName = char.name || '角色';
+    let conversationText = '';
+    for (const msg of selectedMsgs) {
+      const sender = msg.sender === 'self' ? userName : charName;
+      let content = msg.text || '';
+      if (msg.type === 'image' || msg.type === 'image_prompt') content = '[图片] ' + content;
+      else if (msg.type === 'file') content = '[文件] ' + content;
+      else if (msg.type === 'voice') content = '[语音] ' + content;
+      conversationText += `${sender}：${content}\n`;
+    }
+
+    // 构建完整 prompt
+    const preset = summaryPreset.value || '请总结以下聊天记录，提炼出核心事件和关键信息：';
+    const fullPrompt = `${preset}\n\n--- 聊天记录 ---\n${conversationText}`;
+
+    // 关闭选择弹窗，打开结果弹窗
+    summaryModal.classList.remove('active');
+    summaryResultModal.classList.add('active');
+    summaryResultContent.textContent = '正在生成总结...';
+
+    try {
+      // 调用 AI API
+      const result = await callSummaryAPI(fullPrompt);
+      summaryResultContent.textContent = result || '（生成失败，请重试）';
+    } catch (err) {
+      summaryResultContent.textContent = '❌ 生成失败：' + err.message;
+    }
+  });
+
+  // 调用 AI API 进行总结
+  async function callSummaryAPI(prompt) {
+    const char = getChar();
+    if (!char?.apiEndpoint || !char?.apiKey) {
+      // 如果没有配置 API，使用模拟总结
+      return simulateSummary(prompt);
+    }
+
+    let apiUrl = char.apiEndpoint.trim().replace(/\/+$/, '');
+    if (!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1') ? '/chat/completions' : '/chat/completions');
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', apiUrl, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Authorization', `Bearer ${char.apiKey}`);
+      xhr.timeout = 120000;
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            resolve(data.choices[0].message.content);
+          } catch(e) { reject(new Error('解析失败')); }
+        } else {
+          let m = `HTTP ${xhr.status}`;
+          try { m += ': ' + JSON.parse(xhr.responseText).error?.message; } catch(e) {}
+          reject(new Error(m));
+        }
+      };
+      xhr.onerror = () => reject(new Error('网络错误'));
+      xhr.ontimeout = () => reject(new Error('超时'));
+      xhr.send(JSON.stringify({
+        model: char.model || 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 2000
+      }));
+    });
+  }
+
+  // 模拟总结（无 API 时使用）
+  function simulateSummary(prompt) {
+    const lines = prompt.split('\n').filter(l => l.includes('：'));
+    if (lines.length === 0) return '（没有可总结的对话内容）';
+    const summary = lines.map(l => {
+      const parts = l.split('：');
+      if (parts.length >= 2) return parts[1].trim();
+      return '';
+    }).filter(t => t).join('；');
+    return `双方进行了关于以下内容的对话：${summary}。${lines.length} 条消息已记录。`;
+  }
+
+  // 总结结果弹窗控制
+  summaryResultClose.addEventListener('click', () => summaryResultModal.classList.remove('active'));
+  summaryResultModal.addEventListener('click', (e) => { if (e.target === summaryResultModal) summaryResultModal.classList.remove('active'); });
+
+  summaryResultCopy.addEventListener('click', () => {
+    const text = summaryResultContent.textContent;
+    if (!text || text === '正在生成总结...' || text.startsWith('❌')) {
+      showToast('没有可复制的内容');
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ 已复制到剪贴板');
+      }).catch(() => {
+        // 降级方案
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast('✅ 已复制到剪贴板');
+    } catch(e) {
+      showToast('复制失败，请手动复制');
+    }
+    document.body.removeChild(ta);
+  }
+
+  // ===== 原有功能 =====
+
   document.getElementById('namecard').addEventListener('click', () => {
     window.location.href = `char.html?id=${charId}`;
   });
@@ -465,7 +941,7 @@
     window.location.href = `表情包.html?id=${charId}`;
   });
 
-  // ★ 搜索（改用IndexedDB）
+  // 搜索
   const searchModal = document.getElementById('searchModal');
   const searchInput = document.getElementById('searchInput');
   const searchResults = document.getElementById('searchResults');
@@ -501,7 +977,7 @@
     });
   });
 
-  // ★ 导入（改用IndexedDB）
+  // 导入
   const importModal = document.getElementById('importModal');
   const importFileInput = document.getElementById('importFileInput');
 
@@ -529,7 +1005,6 @@
           }
         });
         if (imported.length === 0) { alert('未能解析到聊天记录'); return; }
-        // IndexedDB 容量足够，不限条数
         const existing = await loadMessages();
         const merged = mode === 'replace' ? imported : [...existing, ...imported];
         await saveMessages(merged);
@@ -565,11 +1040,11 @@
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => { localStorage.setItem(`chat_bg_${charId}`, ev.target.result); alert('聊天背景已更新'); };
+    reader.onload = (ev) => { localStorage.setItem(`chat_bg_${charId}`, ev.target.result); showToast('聊天背景已更新'); };
     reader.readAsDataURL(file);
   });
 
-  // ★ 删除聊天记录（改用IndexedDB）
+  // 删除聊天记录
   const confirmModal = document.getElementById('confirmModal');
   document.getElementById('clearItem').addEventListener('click', () => confirmModal.classList.add('active'));
   document.getElementById('confirmCancel').addEventListener('click', () => confirmModal.classList.remove('active'));
@@ -578,9 +1053,10 @@
     await deleteMessages();
     confirmModal.classList.remove('active');
     renderNamecard();
-    alert('聊天记录已清空');
+    showToast('聊天记录已清空');
   });
 
+  // 删除角色
   const deleteCharModal = document.getElementById('deleteCharModal');
   document.getElementById('deleteCharItem').addEventListener('click', () => deleteCharModal.classList.add('active'));
   document.getElementById('deleteCharCancel').addEventListener('click', () => deleteCharModal.classList.remove('active'));
@@ -591,8 +1067,8 @@
     await deleteMessages();
     localStorage.removeItem(`chat_bg_${charId}`);
     deleteCharModal.classList.remove('active');
-    alert('角色已被成功删除');
-    window.location.href = 'phone.html';
+    showToast('角色已删除');
+    setTimeout(() => { window.location.href = 'phone.html'; }, 500);
   });
 })();
 </script>
