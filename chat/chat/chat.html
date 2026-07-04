@@ -230,7 +230,6 @@
       position: absolute; top: 8px; left: 8px;
       background: rgba(0,0,0,0.05); color: var(--text-tertiary); font-size: 9.5px;
       font-weight: 600; letter-spacing: 0.1em; padding: 3px 7px; border-radius: 5px;
-      z-index: 2;
     }
     .self .image-badge { background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.75); }
     .img-placeholder-icon { font-size: 30px; opacity: 0.4; }
@@ -491,34 +490,32 @@
     }
     .message-input:focus { border-color: var(--navy-light); background: var(--bg-surface); box-shadow: 0 0 0 3px rgba(46,74,142,0.10); }
     .message-input::placeholder { color: var(--text-tertiary); }
-    .message-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .plus-panel {
       position: absolute; left: 14px; right: 14px;
       background: var(--bg-surface); border-radius: var(--radius-panel);
-      padding: 20px 12px;
+      padding: 20px 16px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow-float);
       display: flex; flex-wrap: wrap;
-      gap: 12px; justify-content: space-around;
+      gap: 14px; justify-content: space-around;
       visibility: hidden; opacity: 0; transform: translateY(8px);
       transition: opacity 0.2s, transform 0.2s, visibility 0.2s; z-index: 20;
       bottom: max(72px, calc(72px + env(safe-area-inset-bottom)));
     }
     .plus-panel.active { visibility: visible; opacity: 1; transform: translateY(0); }
     .plus-item {
-      display: flex; flex-direction: column; align-items: center; gap: 5px;
-      width: 58px; cursor: pointer; transition: opacity 0.15s;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      width: 68px; cursor: pointer; transition: opacity 0.15s;
     }
     .plus-item:hover { opacity: 0.72; }
     .plus-circle {
-      width: 46px; height: 46px; background: var(--bg-base);
-      border: 1px solid var(--border); border-radius: 14px;
+      width: 52px; height: 52px; background: var(--bg-base);
+      border: 1px solid var(--border); border-radius: 16px;
       display: flex; align-items: center; justify-content: center; overflow: hidden;
-      font-size: 22px;
     }
     .plus-circle img { width: 100%; height: 100%; object-fit: cover; }
-    .plus-label { font-size: 10px; color: var(--text-secondary); text-align: center; letter-spacing: 0.01em; line-height: 1.2; }
+    .plus-label { font-size: 11px; color: var(--text-secondary); text-align: center; letter-spacing: 0.01em; }
     .overlay-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: none; }
     .overlay-bg.active { display: block; }
 
@@ -530,32 +527,8 @@
       100% { background-color: transparent; }
     }
 
-    .emoji-panel {
-      position: absolute; left: 14px; right: 14px;
-      background: var(--bg-surface); border-radius: var(--radius-panel);
-      padding: 16px 12px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-float);
-      display: none; flex-wrap: wrap;
-      gap: 10px; justify-content: center;
-      z-index: 25;
-      bottom: max(72px, calc(72px + env(safe-area-inset-bottom)));
-      max-height: 260px; overflow-y: auto;
-    }
-    .emoji-panel.active { display: flex; }
-    .emoji-item {
-      width: 52px; height: 52px; border-radius: 12px;
-      border: 1px solid var(--border); overflow: hidden;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 28px; background: var(--bg-base);
-      transition: transform 0.12s, box-shadow 0.12s;
-    }
-    .emoji-item:hover { transform: scale(1.05); box-shadow: var(--shadow-float); }
-    .emoji-item img { width: 100%; height: 100%; object-fit: cover; }
-    .emoji-empty {
-      color: var(--text-tertiary); font-size: 13px; padding: 20px 0;
-      text-align: center; width: 100%;
-    }
+    /* 图片选择器隐藏 */
+    #imageFileInput { display: none; }
   </style>
 </head>
 <body>
@@ -604,14 +577,10 @@
 
   <div class="message-list" id="messageList"></div>
 
-  <div class="emoji-panel" id="emojiPanel">
-    <div class="emoji-empty" id="emojiEmpty">暂无表情包，请去 表情包.html 添加</div>
-  </div>
-
   <div class="input-bar">
     <button class="icon-btn" id="loveBtn" title="AI回复">♥︎</button>
     <input type="text" class="message-input" id="messageInput" placeholder="输入消息，回车发送..." autocomplete="off">
-    <button class="icon-btn" id="emojiBtn" title="表情包">🫥</button>
+    <button class="icon-btn" id="cameraBtn">📷</button>
     <button class="icon-btn" id="plusBtn">➕</button>
   </div>
 
@@ -656,18 +625,10 @@
       <div class="plus-circle"><img src="../../icon/file.jpg" alt="文件" onerror="this.style.display='none';this.parentElement.innerHTML='📄';"></div>
       <span class="plus-label">文件</span>
     </div>
-    <div class="plus-item" data-page="zhengze">
-      <div class="plus-circle"><img src="../../icon/正则.jpg" alt="正则" onerror="this.style.display='none';this.parentElement.innerHTML='📐';"></div>
-      <span class="plus-label">正则</span>
-    </div>
-    <div class="plus-item" data-page="meet">
-      <div class="plus-circle"><img src="../../icon/见面.jpg" alt="见面" onerror="this.style.display='none';this.parentElement.innerHTML='🤝';"></div>
-      <span class="plus-label">见面</span>
-    </div>
   </div>
   <div class="overlay-bg" id="overlayBg"></div>
 
-  <input type="file" accept="image/*" id="photoInput" style="display:none;" multiple>
+  <input type="file" accept="image/*" id="imageFileInput" style="display:none;" multiple>
   <input type="file" accept=".html,.htm,.txt,.json,.csv,.md,.js,.css" id="fileInput" style="display:none;">
 
   <div class="edit-modal-overlay" id="editModalOverlay">
@@ -821,155 +782,27 @@
   const RENDER_COUNT = 50;
   let renderStart = 0;
 
-  function loadEmojis() {
-    const data = localStorage.getItem('chat_emojis');
-    if (!data) return [];
-    try { return JSON.parse(data); } catch(e) { return []; }
-  }
-  function renderEmojiPanel() {
-    const panel = document.getElementById('emojiPanel');
-    const empty = document.getElementById('emojiEmpty');
-    const emojis = loadEmojis();
-    panel.innerHTML = '';
-    if (emojis.length === 0) {
-      panel.innerHTML = '<div class="emoji-empty">暂无表情包，请去 表情包.html 添加</div>';
-      return;
-    }
-    emojis.forEach((e, idx) => {
-      const div = document.createElement('div');
-      div.className = 'emoji-item';
-      if (e.type === 'text') {
-        div.textContent = e.content;
-      } else {
-        const img = document.createElement('img');
-        img.src = e.content;
-        img.alt = e.name || '表情';
-        img.onerror = () => { div.textContent = '❓'; };
-        div.appendChild(img);
-      }
-      div.title = e.name || '';
-      div.onclick = () => {
-        sendEmojiMessage(e);
-        document.getElementById('emojiPanel').classList.remove('active');
-      };
-      panel.appendChild(div);
-    });
+  // ===== 检测是否为视觉模型 =====
+  function isVisionModel(modelName) {
+    if (!modelName) return false;
+    const m = modelName.toLowerCase();
+    // Claude 视觉模型
+    if (m.includes('claude') && (m.includes('3.5') || m.includes('3-opus') || m.includes('3-sonnet'))) return true;
+    // Gemini 视觉模型
+    if (m.includes('gemini') && (m.includes('1.5') || m.includes('2.0'))) return true;
+    // GPT-4 视觉模型
+    if (m.includes('gpt-4') && (m.includes('vision') || m.includes('turbo') || m.includes('o1') || m.includes('4o'))) return true;
+    return false;
   }
 
-  // ----- 核心逻辑：发消息不自动回复，空输入框回车触发回复，爱心触发回复 -----
-  let isReplying = false;
-
-  function setReplyingState(replying) {
-    isReplying = replying;
-    messageInput.disabled = replying;
-    if (replying) {
-      messageInput.placeholder = 'AI 正在回复...';
-    } else {
-      messageInput.placeholder = '输入消息，回车发送...';
-      messageInput.focus();
-    }
+  // ===== 检测 API 类型 =====
+  function getApiType(apiEndpoint) {
+    if (!apiEndpoint) return 'openai';
+    const e = apiEndpoint.toLowerCase();
+    if (e.includes('anthropic') || e.includes('claude')) return 'anthropic';
+    if (e.includes('gemini') || e.includes('googleapis')) return 'gemini';
+    return 'openai';
   }
-
-  // 发送消息（只发消息，不触发 AI 回复）
-  async function sendMessageOnly() {
-    if (isReplying) return;
-    const text = messageInput.value.trim();
-    if (!text) return;
-
-    try {
-      if (quoteMessage) {
-        await addMessage(text, 'self', 'text', { quote: quoteMessage.text });
-        quoteMessage = null;
-        quoteBar.style.display = 'none';
-      } else {
-        await addMessage(text, 'self');
-      }
-      messageInput.value = '';
-    } catch(e) {
-      console.warn('Send message error:', e);
-    }
-  }
-
-  // 触发 AI 回复（检查锁 + 检查是否有用户消息）
-  async function triggerAIReply() {
-    if (isReplying) return;
-
-    // 查找最近一条用户消息（不算系统消息）
-    const lastUserMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
-    if (!lastUserMsg) {
-      // 如果没有用户消息，发一条默认的
-      await addMessage('你好', 'self');
-    }
-
-    setReplyingState(true);
-    setSignatureTyping();
-    try {
-      // 重新查找用户消息（因为可能刚发了一条默认的）
-      const userMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
-      if (!userMsg) return;
-
-      const reply = await callAIAPI(userMsg.text);
-      const parsed = parseAIResponse(reply);
-      for (let i = 0; i < parsed.length; i++) {
-        await new Promise(r => setTimeout(r, 300));
-        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
-      }
-    } catch(err) {
-      await addMessage('❌ ' + err.message, 'other');
-    } finally {
-      setReplyingState(false);
-      restoreSignature();
-    }
-  }
-
-  // 发送表情消息（只发消息，不触发 AI 回复）
-  async function sendEmojiMessage(emoji) {
-    if (isReplying) return;
-    const text = emoji.type === 'text' ? emoji.content : `[图片表情]${emoji.name||'表情'}`;
-    await addMessage(text, 'self', emoji.type === 'text' ? 'text' : 'image', emoji.type === 'image' ? { imageUrl: emoji.content } : {});
-  }
-
-  // 键盘事件：有内容时回车 → 发送消息；空时回车 → 触发 AI 回复
-  messageInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const text = this.value.trim();
-      if (text) {
-        // 有内容 → 发送消息
-        sendMessageOnly();
-      } else {
-        // 空输入框 → 触发 AI 回复
-        triggerAIReply();
-      }
-    }
-  });
-
-  // 爱心按钮 → 触发 AI 回复
-  document.getElementById('loveBtn').onclick = () => {
-    triggerAIReply();
-  };
-
-  // 照片发送（只发消息，不触发 AI 回复）
-  document.getElementById('photoInput').addEventListener('change', async (e) => {
-    if (isReplying) return;
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    try {
-      for (const file of files) {
-        if (!file.type.startsWith('image/')) continue;
-        const reader = new FileReader();
-        const dataUrl = await new Promise((resolve) => {
-          reader.onload = (ev) => resolve(ev.target.result);
-          reader.readAsDataURL(file);
-        });
-        await addMessage(file.name || '图片', 'self', 'image', { imageUrl: dataUrl });
-      }
-      e.target.value = '';
-    } catch(err) {
-      console.warn('Photo send error:', err);
-    }
-  });
-  // ------------------------------------------------------------
 
   function renderMessages() {
     messageList.innerHTML = '';
@@ -1013,7 +846,12 @@
       });
       wrapper.appendChild(actionBar);
 
-      if (msg.type === 'file') {
+      // ===== 渲染带真实图片的消息 =====
+      if (msg.type === 'image' && msg.imageData) {
+        const ib = document.createElement('div'); ib.className = 'image-bubble';
+        ib.innerHTML = `<div class="image-img-area"><img src="${escapeHtml(msg.imageData)}" alt="图片"><div class="image-badge">📷 图片</div></div><div class="image-bubble-body"><div class="image-bubble-text">${escapeHtml(msg.text || '图片')}</div><div class="image-bubble-meta"><div class="meta-label"><div class="meta-dot"></div>已发送</div><div class="meta-time">${msg.time||''}</div></div></div>`;
+        wrapper.appendChild(ib);
+      } else if (msg.type === 'file') {
         const ext = (msg.fileName || '').split('.').pop().toLowerCase();
         const icons = { html:'🌐', htm:'🌐', txt:'📄', json:'📋', csv:'📊', md:'📝', js:'⚡', css:'🎨' };
         const icon = icons[ext] || '📎';
@@ -1024,10 +862,10 @@
         const wrap = document.createElement('div'); wrap.appendChild(fb); wrap.appendChild(preview);
         if (msg.time) { const t = document.createElement('span'); t.className = 'bubble-time'; t.textContent = msg.time; wrap.appendChild(t); }
         wrapper.appendChild(wrap);
-      } else if (msg.type === 'image' || msg.type === 'image_prompt') {
+      } else if (msg.type === 'image' && !msg.imageData) {
+        // 旧的图片描述消息
         const ib = document.createElement('div'); ib.className = 'image-bubble';
-        const hasImageUrl = msg.imageUrl && msg.imageUrl.startsWith('data:');
-        ib.innerHTML = `<div class="image-img-area">${hasImageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="图片">` : `<div class="img-placeholder-icon">🖼️</div>`}<div class="image-badge">${msg.imageUrl ? '📷' : 'IMAGE'}</div></div><div class="image-bubble-body"><div class="image-bubble-text">${escapeHtml(msg.text)}</div><div class="image-bubble-meta"><div class="meta-label"><div class="meta-dot"></div>${msg.imageUrl ? '已发送' : '图片描述'}</div><div class="meta-time">${msg.time||''}</div></div></div>`;
+        ib.innerHTML = `<div class="image-img-area"><div class="image-badge">IMAGE</div><div class="img-placeholder-icon">🖼️</div></div><div class="image-bubble-body"><div class="image-bubble-text">${escapeHtml(msg.text)}</div><div class="image-bubble-meta"><div class="meta-label"><div class="meta-dot"></div>图片描述</div><div class="meta-time">${msg.time||''}</div></div></div>`;
         wrapper.appendChild(ib);
       } else if (msg.type === 'video_call' || msg.type === 'voice_call') {
         const cb = document.createElement('div'); cb.className = 'call-bubble';
@@ -1104,12 +942,8 @@
     if (action === '删除') { messages.splice(index,1); saveMessages(messages); renderMessages(); }
     else if (action === '编辑') { openEditModal(index, msg); }
     else if (action === '重回') {
-      if (msg.sender === 'other') {
-        messages.splice(index,1); saveMessages(messages); renderMessages();
-        triggerAIReply();
-      } else {
-        messageInput.value = msg.text; messageInput.focus();
-      }
+      if (msg.sender === 'other') { messages.splice(index,1); saveMessages(messages); renderMessages(); triggerAIReply(); }
+      else { messageInput.value = msg.text; messageInput.focus(); }
     } else if (action === '引用') {
       quoteMessage = msg;
       quoteText.textContent = msg.text.length > 30 ? msg.text.substring(0,30)+'…' : msg.text;
@@ -1171,89 +1005,116 @@
   };
 
   async function addMessage(text, sender='self', type='text', extra={}) {
-    if (!text.trim()) return;
+    if (!text) return;
     const msg = { text:text.trim(), sender, type, timestamp:Date.now(), time:getTimeStr(), ...extra };
-    if (extra.imageUrl) msg.imageUrl = extra.imageUrl;
+    if (extra.imageData) msg.imageData = extra.imageData;
     messages.push(msg);
     await saveMessages(messages); renderMessages();
-    updateLastMessage(type==='image'?'[图片]':type==='file'?'[文件]':type==='image_prompt'?'[图片生成]':text);
+    const lastText = type==='image' ? (extra.imageData ? '[图片]' : '[图片描述]') : type==='file'?'[文件]':text;
+    updateLastMessage(lastText);
   }
   async function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); await saveMessages(messages); renderMessages(); }
   function updateLastMessage(text) { const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId); if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); } }
 
-  // ----- AI 相关函数（buildSystemPrompt 增强日期感知）-----
-  function buildSystemPrompt(userMessage) {
-    const char = getCurrentCharacter(), user = loadUserData(), parts = [];
-    const now = new Date();
-    const timeStr = now.getFullYear() + '年' + 
-                    (now.getMonth()+1).toString().padStart(2,'0') + '月' + 
-                    now.getDate().toString().padStart(2,'0') + '日 ' + 
-                    now.getHours().toString().padStart(2,'0') + ':' + 
-                    now.getMinutes().toString().padStart(2,'0');
-    parts.push('【当前时间】' + timeStr);
-    parts.push('【星期】' + ['日','一','二','三','四','五','六'][now.getDay()] + '曜日');
-    const month = now.getMonth() + 1;
-    let season = '';
-    if (month >= 3 && month <= 5) season = '春季';
-    else if (month >= 6 && month <= 8) season = '夏季';
-    else if (month >= 9 && month <= 11) season = '秋季';
-    else season = '冬季';
-    parts.push('【季节】' + season);
-    const hour = now.getHours();
-    let timeOfDay = '';
-    if (hour >= 5 && hour < 9) timeOfDay = '清晨/早晨';
-    else if (hour >= 9 && hour < 12) timeOfDay = '上午';
-    else if (hour >= 12 && hour < 14) timeOfDay = '中午';
-    else if (hour >= 14 && hour < 18) timeOfDay = '下午';
-    else if (hour >= 18 && hour < 21) timeOfDay = '傍晚/晚上';
-    else timeOfDay = '深夜/夜间';
-    parts.push('【时段】' + timeOfDay);
-    parts.push('【当前时间戳（毫秒）】' + now.getTime());
-
-    // 增强日期感知：加上与上一条消息的时间间隔
-    if (messages.length > 0) {
-      const lastMsg = messages[messages.length - 1];
-      if (lastMsg && lastMsg.timestamp) {
-        const lastTime = new Date(lastMsg.timestamp);
-        const diffMs = now.getTime() - lastTime.getTime();
-        const diffSec = Math.floor(diffMs / 1000);
-        const diffMin = Math.floor(diffSec / 60);
-        const diffHour = Math.floor(diffMin / 60);
-        const diffDay = Math.floor(diffHour / 24);
-        let timeAgo = '';
-        if (diffDay > 0) {
-          timeAgo = diffDay + '天' + (diffHour % 24) + '小时' + (diffMin % 60) + '分钟前';
-        } else if (diffHour > 0) {
-          timeAgo = diffHour + '小时' + (diffMin % 60) + '分钟前';
-        } else if (diffMin > 0) {
-          timeAgo = diffMin + '分钟前';
-        } else {
-          timeAgo = '刚刚';
-        }
-        parts.push('【距离上一条消息的时间间隔】' + timeAgo);
-        parts.push('【上一条消息的发送时间】' + lastTime.getFullYear() + '年' + 
-                    (lastTime.getMonth()+1).toString().padStart(2,'0') + '月' + 
-                    lastTime.getDate().toString().padStart(2,'0') + '日 ' + 
-                    lastTime.getHours().toString().padStart(2,'0') + ':' + 
-                    lastTime.getMinutes().toString().padStart(2,'0'));
+  // ===== 构建带图片的 AI 请求消息 =====
+  function buildAIMessages(userMessage, imageDataList) {
+    const char = getCurrentCharacter();
+    const model = char?.model || '';
+    const apiType = getApiType(char?.apiEndpoint || '');
+    const isVision = isVisionModel(model);
+    
+    const systemPrompt = buildSystemPrompt(userMessage);
+    const history = messages.slice(-100).filter(m => m.type !== 'system');
+    
+    // 构建历史消息
+    const historyMsgs = history.map(m => {
+      if (m.type === 'file') {
+        return { role: m.sender === 'self' ? 'user' : 'assistant', content: `[文件:${m.fileName}]\n${m.fileContent}` };
       }
+      if (m.type === 'image' && m.imageData) {
+        // 历史图片消息：如果有图片数据，用视觉格式
+        if (isVision) {
+          return {
+            role: m.sender === 'self' ? 'user' : 'assistant',
+            content: buildVisionContent(m.text || '图片', m.imageData, apiType)
+          };
+        }
+        return { role: m.sender === 'self' ? 'user' : 'assistant', content: `[图片]${m.text || '图片'}` };
+      }
+      return { role: m.sender === 'self' ? 'user' : 'assistant', content: m.text };
+    });
+
+    // 构建当前用户消息
+    let userContent;
+    if (imageDataList && imageDataList.length > 0 && isVision) {
+      // 多图 + 文字
+      userContent = buildVisionContent(userMessage, imageDataList, apiType);
+    } else if (imageDataList && imageDataList.length > 0 && !isVision) {
+      // 模型不支持视觉，只传文字
+      userContent = userMessage + (imageDataList.length > 0 ? ' [用户发送了图片，但模型不支持识图]' : '');
+    } else {
+      userContent = userMessage;
     }
 
-    parts.push('【场景】手机微信聊天，你和对方正在用文字聊天。');
-    parts.push('【格式规则】1. 不要写任何动作描写，如 "微笑" "点头" "叹气" 等，只发纯对话内容。');
-    parts.push('【时间规则】聊天中的时间以系统提供的【当前时间】为准。如果用户提到时间相关的词（如"现在""几点""今天""什么时候""隔了多久"等），请基于【当前时间】和【距离上一条消息的时间间隔】来计算和回答。');
-    parts.push('2. 不要写 "：" 和角色名，直接发聊天内容。');
-    parts.push('3. 多条消息用 "\\n---\\n" 分隔，每条消息独立发送。');
-    parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
-    parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
-    parts.push('6. 语气口语化，不要像写小说。');
-    if (char?.aiPrompt) parts.push('【你的角色设定】' + char.aiPrompt);
-    const rb = buildRelationContext(char); if (rb) parts.push(rb);
-    const ui = []; if (user.name) ui.push('姓名：' + user.name); if (user.gender) ui.push('性别：' + user.gender); if (user.region) ui.push('地区：' + user.region); if (user.signature) ui.push('签名：' + user.signature); if (user.persona) ui.push('用户自述：' + user.persona);
-    if (ui.length) parts.push('【关于和你聊天的这个人】' + ui.join('；'));
-    const rbs = getRelevantWorldbooks(userMessage);
-    if (rbs.length) { const f=rbs.filter(b=>b.force),m=rbs.filter(b=>!b.force&&!b.optional),o=rbs.filter(b=>b.optional); if(f.length)parts.push('【必须记住】'+f.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(m.length)parts.push('【当前相关】'+m.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(o.length)parts.push('【可选参考】'+o.map(b=>`《${b.name}》：${b.content}`).join('\n')); }
-    return parts.join('\n\n');
+    return {
+      system: systemPrompt,
+      history: historyMsgs,
+      userContent: userContent,
+      isVision: isVision && imageDataList && imageDataList.length > 0
+    };
+  }
+
+  // ===== 构建视觉模型的内容格式 =====
+  function buildVisionContent(text, images, apiType) {
+    // 确保 images 是数组
+    const imageList = Array.isArray(images) ? images : [images];
+    
+    if (apiType === 'anthropic') {
+      // Claude API 格式
+      const content = [];
+      // 先加文字
+      if (text) content.push({ type: 'text', text: text });
+      // 加图片
+      imageList.forEach(imgData => {
+        // 去掉 data:image/xxx;base64, 前缀
+        const base64Data = imgData.replace(/^data:image\/\w+;base64,/, '');
+        content.push({
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: 'image/jpeg',
+            data: base64Data
+          }
+        });
+      });
+      return content;
+    } else if (apiType === 'gemini') {
+      // Gemini API 格式 (内联数据)
+      const parts = [];
+      if (text) parts.push({ text: text });
+      imageList.forEach(imgData => {
+        // 去掉 data:image/xxx;base64, 前缀
+        const base64Data = imgData.replace(/^data:image\/\w+;base64,/, '');
+        parts.push({
+          inline_data: {
+            mime_type: 'image/jpeg',
+            data: base64Data
+          }
+        });
+      });
+      return parts;
+    } else {
+      // OpenAI 格式 (默认)
+      const content = [];
+      if (text) content.push({ type: 'text', text: text });
+      imageList.forEach(imgData => {
+        content.push({
+          type: 'image_url',
+          image_url: { url: imgData }
+        });
+      });
+      return content;
+    }
   }
 
   function getRelevantWorldbooks(userMessage) {
@@ -1275,23 +1136,175 @@
     return lines.length?('【你的关系网络与共享记忆】\n'+lines.join('\n\n')):'';
   }
 
-  async function callAIAPI(userMessage) {
+  function buildSystemPrompt(userMessage) {
+    const char = getCurrentCharacter(), user = loadUserData(), parts = [];
+    
+    const now = new Date();
+    const timeStr = now.getFullYear() + '年' + 
+                    (now.getMonth()+1).toString().padStart(2,'0') + '月' + 
+                    now.getDate().toString().padStart(2,'0') + '日 ' + 
+                    now.getHours().toString().padStart(2,'0') + ':' + 
+                    now.getMinutes().toString().padStart(2,'0');
+    parts.push('【当前时间】' + timeStr);
+    parts.push('【星期】' + ['日','一','二','三','四','五','六'][now.getDay()] + '曜日');
+    
+    const month = now.getMonth() + 1;
+    let season = '';
+    if (month >= 3 && month <= 5) season = '春季';
+    else if (month >= 6 && month <= 8) season = '夏季';
+    else if (month >= 9 && month <= 11) season = '秋季';
+    else season = '冬季';
+    parts.push('【季节】' + season);
+    
+    const hour = now.getHours();
+    let timeOfDay = '';
+    if (hour >= 5 && hour < 9) timeOfDay = '清晨/早晨';
+    else if (hour >= 9 && hour < 12) timeOfDay = '上午';
+    else if (hour >= 12 && hour < 14) timeOfDay = '中午';
+    else if (hour >= 14 && hour < 18) timeOfDay = '下午';
+    else if (hour >= 18 && hour < 21) timeOfDay = '傍晚/晚上';
+    else timeOfDay = '深夜/夜间';
+    parts.push('【时段】' + timeOfDay);
+    
+    parts.push('【场景】手机微信聊天，你和对方正在用文字聊天。');
+    parts.push('【格式规则】1. 不要写任何动作描写，如 "微笑" "点头" "叹气" 等，只发纯对话内容。');
+    parts.push('【时间规则】聊天中的时间以系统提供的【当前时间】为准，如果用户提到"今天""现在""几点"等，请基于这个时间回答。');
+    parts.push('2. 不要写 "：" 和角色名，直接发聊天内容。');
+    parts.push('3. 多条消息用 "\\n---\\n" 分隔，每条消息独立发送。');
+    parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
+    parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
+    parts.push('6. 语气口语化，不要像写小说。');
+    if (char?.aiPrompt) parts.push('【你的角色设定】' + char.aiPrompt);
+    const rb = buildRelationContext(char); if (rb) parts.push(rb);
+    const ui = []; if (user.name) ui.push('姓名：' + user.name); if (user.gender) ui.push('性别：' + user.gender); if (user.region) ui.push('地区：' + user.region); if (user.signature) ui.push('签名：' + user.signature); if (user.persona) ui.push('用户自述：' + user.persona);
+    if (ui.length) parts.push('【关于和你聊天的这个人】' + ui.join('；'));
+    const rbs = getRelevantWorldbooks(userMessage);
+    if (rbs.length) { const f=rbs.filter(b=>b.force),m=rbs.filter(b=>!b.force&&!b.optional),o=rbs.filter(b=>b.optional); if(f.length)parts.push('【必须记住】'+f.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(m.length)parts.push('【当前相关】'+m.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(o.length)parts.push('【可选参考】'+o.map(b=>`《${b.name}》：${b.content}`).join('\n')); }
+    return parts.join('\n\n');
+  }
+
+  // ===== 核心 AI 调用函数（支持识图）=====
+  async function callAIAPI(userMessage, imageDataList) {
     const char = getCurrentCharacter();
     if (!char?.apiEndpoint||!char?.apiKey) return '❌ 请先配置API';
-    let apiUrl = char.apiEndpoint.trim().replace(/\/+$/,'');
-    if (!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1')?'/chat/completions':'/chat/completions');
-    const sp = buildSystemPrompt(userMessage);
-    const ctx = messages.slice(-100).filter(m=>m.type!=='system').map(m=>({role:m.sender==='self'?'user':'assistant',content:m.type==='file'?`[文件:${m.fileName}]\n${m.fileContent}`:m.type==='image'?`[图片]${m.text}`:m.text}));
+    
+    const apiUrl = char.apiEndpoint.trim().replace(/\/+$/,'');
+    const model = char.model || 'gpt-3.5-turbo';
+    const apiType = getApiType(apiUrl);
+    const isVision = isVisionModel(model);
+    
+    // 构建消息
+    const { system, history, userContent, isVision: hasVision } = buildAIMessages(userMessage, imageDataList);
+    
+    // 根据 API 类型构建请求
+    let requestBody;
+    let finalUrl = apiUrl;
+    
+    if (apiType === 'anthropic') {
+      // Claude API
+      finalUrl = apiUrl.endsWith('/messages') ? apiUrl : apiUrl + '/messages';
+      const messages = history.filter(m => m.role !== 'system');
+      // 如果有视觉内容，userContent 已经是数组格式
+      const userMsgContent = hasVision ? userContent : userContent;
+      requestBody = {
+        model: model,
+        max_tokens: 1024,
+        system: system,
+        messages: [
+          ...messages,
+          { role: 'user', content: userMsgContent }
+        ]
+      };
+    } else if (apiType === 'gemini') {
+      // Gemini API
+      finalUrl = apiUrl.endsWith(':generateContent') ? apiUrl : apiUrl + ':generateContent';
+      const contents = [];
+      // 添加系统提示
+      contents.push({
+        role: 'user',
+        parts: [{ text: system }]
+      });
+      // 添加历史
+      history.forEach(m => {
+        contents.push({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: typeof m.content === 'string' ? m.content : JSON.stringify(m.content) }]
+        });
+      });
+      // 添加当前用户消息
+      const userParts = hasVision ? userContent : [{ text: userContent }];
+      contents.push({
+        role: 'user',
+        parts: userParts
+      });
+      requestBody = {
+        contents: contents,
+        generationConfig: {
+          maxOutputTokens: 1024
+        }
+      };
+    } else {
+      // OpenAI 格式 (默认)
+      finalUrl = apiUrl.endsWith('/chat/completions') ? apiUrl : (apiUrl.endsWith('/v1') ? apiUrl + '/chat/completions' : apiUrl + '/chat/completions');
+      const messages = [
+        { role: 'system', content: system },
+        ...history
+      ];
+      // 添加当前用户消息
+      const userMsgContent = hasVision ? userContent : userContent;
+      messages.push({ role: 'user', content: userMsgContent });
+      requestBody = {
+        model: model,
+        messages: messages,
+        max_tokens: 1024
+      };
+    }
+    
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', apiUrl, true);
-      xhr.setRequestHeader('Content-Type','application/json');
-      xhr.setRequestHeader('Authorization',`Bearer ${char.apiKey}`);
+      xhr.open('POST', finalUrl, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      
+      // 不同 API 的认证头
+      if (apiType === 'anthropic') {
+        xhr.setRequestHeader('x-api-key', char.apiKey);
+        xhr.setRequestHeader('anthropic-version', '2023-06-01');
+      } else if (apiType === 'gemini') {
+        // Gemini 使用 API key 在 URL 参数中
+        const keyParam = finalUrl.includes('?') ? '&key=' : '?key=';
+        finalUrl = finalUrl + keyParam + char.apiKey;
+        // 重新设置 URL
+        xhr.open('POST', finalUrl, true);
+      } else {
+        xhr.setRequestHeader('Authorization', `Bearer ${char.apiKey}`);
+      }
+      
       xhr.timeout = 300000;
-      xhr.onload = () => { if(xhr.status>=200&&xhr.status<300){try{resolve(JSON.parse(xhr.responseText).choices[0].message.content);}catch(e){reject(new Error('解析失败'));}} else {let m=`HTTP ${xhr.status}`;try{m+=': '+JSON.parse(xhr.responseText).error?.message;}catch(e){} reject(new Error(m));} };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            let reply = '';
+            if (apiType === 'anthropic') {
+              reply = data.content?.[0]?.text || '';
+            } else if (apiType === 'gemini') {
+              reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            } else {
+              reply = data.choices?.[0]?.message?.content || '';
+            }
+            resolve(reply || '（AI 返回了空内容）');
+          } catch(e) {
+            reject(new Error('解析失败: ' + e.message));
+          }
+        } else {
+          let m = `HTTP ${xhr.status}`;
+          try { m += ': ' + JSON.parse(xhr.responseText).error?.message; } catch(e) {}
+          reject(new Error(m));
+        }
+      };
       xhr.onerror = () => reject(new Error('网络错误'));
       xhr.ontimeout = () => reject(new Error('超时'));
-      xhr.send(JSON.stringify({model:char.model||'gpt-3.5-turbo',messages:[{role:'system',content:sp},...ctx,{role:'user',content:userMessage}],max_tokens:1000}));
+      xhr.send(JSON.stringify(requestBody));
     });
   }
 
@@ -1307,7 +1320,7 @@
             const vm = trimmed.match(/\[voice:(\d+)\]([\s\S]*)/);
             if (vm) { msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() }); return; }
             const im = trimmed.match(/\[image\]([\s\S]*)/);
-            if (im) { msgs.push({ type: 'image_prompt', text: im[1].trim() }); return; }
+            if (im) { msgs.push({ type: 'image', text: im[1].trim() }); return; }
             msgs.push({ type: 'text', text: trimmed });
           }
         });
@@ -1320,7 +1333,7 @@
       const vm = part.match(/\[voice:(\d+)\]([\s\S]*)/);
       if (vm) { msgs.push({ type: 'voice', text: vm[2].trim(), duration: formatDuration(parseInt(vm[1])), transcript: vm[2].trim() }); return; }
       const im = part.match(/\[image\]([\s\S]*)/);
-      if (im) { msgs.push({ type: 'image_prompt', text: im[1].trim() }); return; }
+      if (im) { msgs.push({ type: 'image', text: im[1].trim() }); return; }
       msgs.push({ type: 'text', text: part });
     });
     return msgs.length ? msgs : [{ type: 'text', text: text }];
@@ -1328,25 +1341,103 @@
 
   function formatDuration(s) { const m=Math.floor(s/60); return m+':'+(s%60).toString().padStart(2,'0'); }
 
-  // 表情包按钮
-  document.getElementById('emojiBtn').onclick = (e) => {
-    e.stopPropagation();
-    const panel = document.getElementById('emojiPanel');
-    const isActive = panel.classList.contains('active');
-    document.getElementById('plusPanel').classList.remove('active');
-    document.getElementById('overlayBg').classList.remove('active');
-    if (isActive) {
-      panel.classList.remove('active');
-    } else {
-      renderEmojiPanel();
-      panel.classList.add('active');
+  // ===== 触发 AI 回复（支持带图片）=====
+  async function triggerAIReply(imageDataList) {
+    const lum = [...messages].reverse().find(m => m.sender === 'self');
+    if (!lum) return;
+    setSignatureTyping();
+    try {
+      const reply = await callAIAPI(lum.text, imageDataList);
+      const parsed = parseAIResponse(reply);
+      for (let i = 0; i < parsed.length; i++) {
+        await new Promise(r => setTimeout(r, 300));
+        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
+      }
+    } catch(err) {
+      await addMessage('❌ ' + err.message, 'other');
+    } finally {
+      restoreSignature();
     }
+  }
+
+  // ===== 发送消息 =====
+  async function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text) return;
+    if (quoteMessage) {
+      await addMessage(text, 'self', 'text', { quote: quoteMessage.text });
+      quoteMessage = null;
+      quoteBar.style.display = 'none';
+    } else {
+      await addMessage(text, 'self');
+    }
+    messageInput.value = '';
+  }
+
+  messageInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  document.getElementById('loveBtn').onclick = async () => {
+    if (messages.length === 0 || messages.every(m => m.sender === 'other')) {
+      await addMessage('你好', 'self');
+    }
+    triggerAIReply();
   };
 
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#emojiPanel') && !e.target.closest('#emojiBtn')) {
-      document.getElementById('emojiPanel').classList.remove('active');
+  // ===== 图片选择处理 =====
+  const imageFileInput = document.getElementById('imageFileInput');
+  imageFileInput.addEventListener('change', async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const imageDataList = [];
+    const fileNames = [];
+    
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) continue;
+      const reader = new FileReader();
+      const dataUrl = await new Promise((resolve) => {
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.readAsDataURL(file);
+      });
+      imageDataList.push(dataUrl);
+      fileNames.push(file.name);
     }
+    
+    if (imageDataList.length === 0) return;
+    
+    // 添加图片消息（显示在聊天中）
+    const text = fileNames.join(', ');
+    await addMessage(text, 'self', 'image', { imageData: imageDataList[0] });
+    
+    // 自动触发 AI 回复（带图片）
+    triggerAIReply(imageDataList);
+    
+    imageFileInput.value = '';
+  });
+
+  // ===== 相机按钮 =====
+  document.getElementById('cameraBtn').onclick = () => {
+    imageFileInput.click();
+  };
+
+  // ===== Plus 面板中的照片/拍摄 =====
+  document.querySelectorAll('.plus-item[data-page="photo"], .plus-item[data-page="take"]').forEach(item => {
+    item.onclick = (e) => {
+      e.stopPropagation();
+      plusPanel.classList.remove('active');
+      overlayBg.classList.remove('active');
+      // 照片和拍摄都使用同一个文件选择器
+      if (item.getAttribute('data-page') === 'take') {
+        imageFileInput.setAttribute('capture', 'environment');
+      }
+      imageFileInput.click();
+      imageFileInput.removeAttribute('capture');
+    };
   });
 
   const imageModalOverlay = document.getElementById('imageModalOverlay');
@@ -1358,65 +1449,35 @@
   imageModalOverlay.onclick = e => { if(e.target===imageModalOverlay) closeImageModal(); };
   document.getElementById('imageSendBtn').onclick = () => { const p=imagePromptInput.value.trim(); if(!p){alert('请输入描述');return;} if(imageCb)imageCb(p); closeImageModal(); };
 
-  document.querySelectorAll('.plus-item[data-page="photo"]').forEach(item => {
-    item.onclick = (e) => {
-      e.stopPropagation();
-      plusPanel.classList.remove('active');
-      overlayBg.classList.remove('active');
-      document.getElementById('photoInput').click();
-    };
-  });
-  document.querySelectorAll('.plus-item[data-page="take"]').forEach(item => {
-    item.onclick = (e) => {
-      e.stopPropagation();
-      plusPanel.classList.remove('active');
-      overlayBg.classList.remove('active');
-      const input = document.getElementById('photoInput');
-      input.setAttribute('capture', 'environment');
-      input.click();
-      input.removeAttribute('capture');
-    };
-  });
-
   const plusPanel = document.getElementById('plusPanel');
   const overlayBg = document.getElementById('overlayBg');
-  document.getElementById('plusBtn').onclick = (e) => {
-    e.stopPropagation();
-    document.getElementById('emojiPanel').classList.remove('active');
-    plusPanel.classList.toggle('active');
-    overlayBg.classList.toggle('active');
-  };
-  overlayBg.onclick = () => {
-    plusPanel.classList.remove('active');
-    overlayBg.classList.remove('active');
-  };
+  document.getElementById('plusBtn').onclick = e => { e.stopPropagation(); plusPanel.classList.toggle('active'); overlayBg.classList.toggle('active'); };
+  overlayBg.onclick = () => { plusPanel.classList.remove('active'); overlayBg.classList.remove('active'); };
 
-  const plusRoutes = {
-    'video_call': '../../chat_more/video call.html',
-    'voice_call': '../../chat_more/voice call.html',
-    'locate': '../../chat_more/locate.html',
-    'red_bag': '../../chat_more/red bag.html',
-    'gift': '../../chat_more/gift.html',
-    'account': '../../chat_more/account.html',
-    'collect': '../../chat_more/collect.html',
-    'zhengze': '../../chat_more/正则.html',
-    'meet': '../../chat_more/见面.html',
-    'file': null
+  const plusRoutes = { 
+    'video_call':'../../chat_more/video call.html',
+    'voice_call':'../../chat_more/voice call.html',
+    'locate':'../../chat_more/locate.html',
+    'red_bag':'../../chat_more/red bag.html',
+    'gift':'../../chat_more/gift.html',
+    'account':'../../chat_more/account.html',
+    'collect':'../../chat_more/collect.html',
+    'file':null 
   };
   document.querySelectorAll('.plus-item').forEach(item => {
     const page = item.getAttribute('data-page');
+    if (page === 'photo' || page === 'take') return;
     item.addEventListener('click', () => {
-      if (page === 'photo' || page === 'take') return;
-      if (page === 'file') {
-        document.getElementById('fileInput').click();
-        plusPanel.classList.remove('active');
-        overlayBg.classList.remove('active');
-        return;
+      if (page === 'file') { 
+        document.getElementById('fileInput').click(); 
+        plusPanel.classList.remove('active'); 
+        overlayBg.classList.remove('active'); 
+        return; 
       }
       if (plusRoutes[page]) {
         window.location.href = plusRoutes[page] + `?id=${charId}`;
       }
-      plusPanel.classList.remove('active');
+      plusPanel.classList.remove('active'); 
       overlayBg.classList.remove('active');
     });
   });
@@ -1424,12 +1485,13 @@
   document.getElementById('fileInput').addEventListener('change', (e) => {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      const content = ev.target.result;
-      const truncated = content.length > 5000 ? content.substring(0,5000)+'\n…' : content;
-      addMessage(file.name, 'self', 'file', { fileContent: truncated, fileName: file.name, fileSize: file.size });
+    reader.onload = (ev) => { 
+      const content = ev.target.result; 
+      const truncated = content.length > 5000 ? content.substring(0,5000)+'\n…' : content; 
+      addMessage(file.name, 'self', 'file', { fileContent: truncated, fileName: file.name, fileSize: file.size }); 
     };
-    reader.readAsText(file); e.target.value = '';
+    reader.readAsText(file); 
+    e.target.value = '';
   });
 
   document.getElementById('quoteCancelBtn').onclick = () => { quoteMessage=null; quoteBar.style.display='none'; };
@@ -1443,11 +1505,10 @@
   document.querySelectorAll('.header-avatar').forEach(av => { av.onclick = () => handleAvatarClick(av.getAttribute('data-avatar-type')); });
 
   window.addEventListener('storage', () => updateAllDisplay());
-  (async function init() {
-    messages = await loadMessages();
-    renderMessages();
-    renderEmojiPanel();
-    setReplyingState(false);
+  
+  (async function init() { 
+    messages = await loadMessages(); 
+    renderMessages(); 
   })();
 })();
 </script>
