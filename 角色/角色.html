@@ -10,85 +10,253 @@
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: #f5f5f7;
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; margin: 0; padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
 
     .app-container {
-      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
-      background: #ffffff; display: flex; flex-direction: column;
-      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+      overflow: hidden;
+      position: relative;
     }
 
+    /* ── 顶栏 + 安全区 ── */
     .header {
-      display: flex; align-items: center; padding: 14px 16px;
-      background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
-    }
-    .back-btn {
-      background: none; border: none; font-size: 18px; cursor: pointer; color: #1d1d1f;
-      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; flex-shrink: 0;
-    }
-    .header-title { font-size: 17px; font-weight: 620; color: #1d1d1f; flex: 1; text-align: center; }
-    .add-btn {
-      background: #1d1d1f; color: #fff; border: none; border-radius: 18px;
-      padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      padding-top: calc(14px + env(safe-area-inset-top, 0px));
+      background: #ffffff;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #1d1d1f;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 620;
+      color: #1d1d1f;
+      flex: 1;
+      text-align: center;
+    }
+
+    .add-btn {
+      background: #1d1d1f;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ── 滚动内容 ── */
     .content {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 10px;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .char-card {
-      background: #ffffff; border: 1px solid #f0f0f0; border-radius: 20px;
-      padding: 16px; display: flex; align-items: center; gap: 14px;
-      cursor: pointer; transition: all 0.15s;
+      background: #ffffff;
+      border: 1px solid #f0f0f0;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      flex-shrink: 0;
     }
-    .char-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+    .char-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .char-card:active {
+      transform: scale(0.98);
+    }
+
     .char-avatar {
-      width: 52px; height: 52px; border-radius: 16px; overflow: hidden;
-      background: linear-gradient(135deg, #e8e3f8, #d4cef5); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; color: #fff;
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
     }
-    .char-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .char-info { flex: 1; min-width: 0; }
-    .char-name { font-size: 16px; font-weight: 600; color: #1d1d1f; }
-    .char-sig { font-size: 12px; color: #8e8e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-    .char-arrow { font-size: 16px; color: #c7c7cc; }
+
+    .char-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .char-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .char-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .char-sig {
+      font-size: 12px;
+      color: #8e8e93;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .char-arrow {
+      font-size: 16px;
+      color: #c7c7cc;
+    }
 
     .empty-hint {
-      text-align: center; color: #c7c7cc; font-size: 14px;
+      text-align: center;
+      color: #c7c7cc;
+      font-size: 14px;
       padding: 60px 20px;
     }
 
+    /* ── 弹窗 ── */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 100; visibility: hidden; opacity: 0; transition: 0.2s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
     }
-    .modal-overlay.active { visibility: visible; opacity: 1; }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
     .modal-card {
-      background: #ffffff; border-radius: 24px; padding: 24px 20px;
-      width: 300px; display: flex; flex-direction: column; gap: 14px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px 20px;
+      width: 300px;
+      max-width: 85vw;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
-    .modal-card h3 { font-size: 17px; font-weight: 620; color: #1d1d1f; text-align: center; }
+
+    .modal-card h3 {
+      font-size: 17px;
+      font-weight: 620;
+      color: #1d1d1f;
+      text-align: center;
+    }
+
     .modal-card input {
-      border: 1px solid #e5e5ea; border-radius: 14px; padding: 10px 12px;
-      font-size: 14px; outline: none; background: #f9f9fb;
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #f9f9fb;
     }
-    .modal-actions { display: flex; gap: 10px; }
+
+    .modal-card input:focus {
+      border-color: #1d1d1f;
+      background: #ffffff;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
     .btn {
-      flex: 1; padding: 10px; border-radius: 14px; border: none;
-      font-size: 14px; font-weight: 500; cursor: pointer;
+      flex: 1;
+      padding: 10px;
+      border-radius: 14px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
     }
-    .btn-cancel { background: #f2f2f6; color: #1d1d1f; }
-    .btn-confirm { background: #1d1d1f; color: #fff; }
-    .btn-danger { background: #ff3b30; color: #fff; }
+
+    .btn:active {
+      opacity: 0.7;
+    }
+
+    .btn-cancel {
+      background: #f2f2f6;
+      color: #1d1d1f;
+    }
+
+    .btn-confirm {
+      background: #1d1d1f;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #ff3b30;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -154,10 +322,8 @@
     container.querySelectorAll('.char-card').forEach(card => {
       card.addEventListener('click', () => {
         const id = card.getAttribute('data-id');
-        // ★ 单击 → char.html
         window.location.href = `../chat/chat/char.html?id=${id}`;
       });
-      // ★ 双击 → 编辑
       card.addEventListener('dblclick', () => {
         const id = card.getAttribute('data-id');
         openEditModal(id);
@@ -234,7 +400,6 @@
     render();
   });
 
-  // ★ 返回 main.html（同一文件夹）
   document.getElementById('backBtn').addEventListener('click', () => {
     window.location.href = '../main.html';
   });
