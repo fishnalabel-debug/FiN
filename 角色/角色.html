@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -7,29 +6,86 @@
   <title>角色 · 小手机</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f7; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 0; }
-    .app-container { width: 100%; max-width: 420px; height: 100vh; max-height: 850px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative; }
-    .header { display: flex; align-items: center; padding: 14px 16px; background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px; }
-    .back-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #1d1d1f; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f7;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; margin: 0; padding: 0;
+    }
+
+    .app-container {
+      width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+      background: #ffffff; display: flex; flex-direction: column;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+    }
+
+    .header {
+      display: flex; align-items: center; padding: 14px 16px;
+      background: #ffffff; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 10px;
+    }
+    .back-btn {
+      background: none; border: none; font-size: 18px; cursor: pointer; color: #1d1d1f;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; flex-shrink: 0;
+    }
     .header-title { font-size: 17px; font-weight: 620; color: #1d1d1f; flex: 1; text-align: center; }
-    .add-btn { background: #1d1d1f; color: #fff; border: none; border-radius: 18px; padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0; }
-    .content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .char-card { background: #ffffff; border: 1px solid #f0f0f0; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+    .add-btn {
+      background: #1d1d1f; color: #fff; border: none; border-radius: 18px;
+      padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0;
+    }
+
+    .content {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .char-card {
+      background: #ffffff; border: 1px solid #f0f0f0; border-radius: 20px;
+      padding: 16px; display: flex; align-items: center; gap: 14px;
+      cursor: pointer; transition: all 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
     .char-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .char-avatar { width: 52px; height: 52px; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #e8e3f8, #d4cef5); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; }
+    .char-avatar {
+      width: 52px; height: 52px; border-radius: 16px; overflow: hidden;
+      background: linear-gradient(135deg, #e8e3f8, #d4cef5); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #fff;
+    }
     .char-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .char-info { flex: 1; min-width: 0; }
     .char-name { font-size: 16px; font-weight: 600; color: #1d1d1f; }
     .char-sig { font-size: 12px; color: #8e8e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
     .char-arrow { font-size: 16px; color: #c7c7cc; }
-    .empty-hint { text-align: center; color: #c7c7cc; font-size: 14px; padding: 60px 20px; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; visibility: hidden; opacity: 0; transition: 0.2s; }
+
+    .empty-hint {
+      text-align: center; color: #c7c7cc; font-size: 14px;
+      padding: 60px 20px;
+    }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; visibility: hidden; opacity: 0; transition: 0.2s;
+    }
     .modal-overlay.active { visibility: visible; opacity: 1; }
-    .modal-card { background: #ffffff; border-radius: 24px; padding: 24px 20px; width: 300px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    .modal-card {
+      background: #ffffff; border-radius: 24px; padding: 24px 20px;
+      width: 300px; display: flex; flex-direction: column; gap: 14px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
     .modal-card h3 { font-size: 17px; font-weight: 620; color: #1d1d1f; text-align: center; }
-    .modal-card input { border: 1px solid #e5e5ea; border-radius: 14px; padding: 10px 12px; font-size: 14px; outline: none; background: #f9f9fb; }
+    .modal-card input {
+      border: 1px solid #e5e5ea; border-radius: 14px; padding: 10px 12px;
+      font-size: 14px; outline: none; background: #f9f9fb;
+    }
     .modal-actions { display: flex; gap: 10px; }
-    .btn { flex: 1; padding: 10px; border-radius: 14px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .btn {
+      flex: 1; padding: 10px; border-radius: 14px; border: none;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+    }
     .btn-cancel { background: #f2f2f6; color: #1d1d1f; }
     .btn-confirm { background: #1d1d1f; color: #fff; }
     .btn-danger { background: #ff3b30; color: #fff; }
@@ -42,7 +98,9 @@
     <div class="header-title">角色</div>
     <button class="add-btn" id="addCharBtn">＋ 新建</button>
   </div>
+
   <div class="content" id="charList"></div>
+
   <div class="modal-overlay" id="editModal">
     <div class="modal-card">
       <h3 id="editModalTitle">编辑角色</h3>
@@ -57,19 +115,31 @@
   </div>
 </div>
 
-<script src="../chat/chat/db.js"></script>
-
-
 <script>
 (function() {
-  function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  const STORAGE_KEY = 'chat_characters';
+
+  function getCharacters() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function saveCharacters(chars) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
+  }
+
+  function escapeHtml(t) {
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
   const container = document.getElementById('charList');
   const editModal = document.getElementById('editModal');
   let editingCharId = null;
 
-  async function render() {
-    const chars = await DB.getCharacters();
-    if (chars.length === 0) { container.innerHTML = '<div class="empty-hint">暂无角色，点击右上角新建</div>'; return; }
+  function render() {
+    const chars = getCharacters();
+    if (chars.length === 0) {
+      container.innerHTML = '<div class="empty-hint">暂无角色，点击右上角新建</div>';
+      return;
+    }
     container.innerHTML = chars.map(c => `
       <div class="char-card" data-id="${c.id}">
         <div class="char-avatar">${c.avatar ? `<img src="${c.avatar}" alt="">` : (c.name||'?').charAt(0)}</div>
@@ -78,15 +148,25 @@
           <div class="char-sig">${escapeHtml(c.signature || '个性签名未设置')}</div>
         </div>
         <span class="char-arrow">›</span>
-      </div>`).join('');
+      </div>
+    `).join('');
+
     container.querySelectorAll('.char-card').forEach(card => {
-      card.addEventListener('click', () => { window.location.href = `../chat/chat/char.html?id=${card.getAttribute('data-id')}`; });
-      card.addEventListener('dblclick', () => { openEditModal(card.getAttribute('data-id')); });
+      card.addEventListener('click', () => {
+        const id = card.getAttribute('data-id');
+        // ★ 单击 → char.html
+        window.location.href = `../chat/chat/char.html?id=${id}`;
+      });
+      // ★ 双击 → 编辑
+      card.addEventListener('dblclick', () => {
+        const id = card.getAttribute('data-id');
+        openEditModal(id);
+      });
     });
   }
 
-  async function openEditModal(id) {
-    const chars = await DB.getCharacters();
+  function openEditModal(id) {
+    const chars = getCharacters();
     const char = chars.find(c => c.id == id);
     if (!char) return;
     editingCharId = id;
@@ -108,41 +188,59 @@
     document.getElementById('editNameInput').focus();
   }
 
-  function closeModal() { editModal.classList.remove('active'); editingCharId = null; }
+  function closeModal() {
+    editModal.classList.remove('active');
+    editingCharId = null;
+  }
 
   document.getElementById('addCharBtn').addEventListener('click', openNewModal);
   document.getElementById('editCancelBtn').addEventListener('click', closeModal);
-  editModal.addEventListener('click', e => { if (e.target === editModal) closeModal(); });
+  editModal.addEventListener('click', e => { if(e.target === editModal) closeModal(); });
 
-  document.getElementById('editConfirmBtn').addEventListener('click', async () => {
+  document.getElementById('editConfirmBtn').addEventListener('click', () => {
     const name = document.getElementById('editNameInput').value.trim();
     if (!name) { alert('请输入角色名称'); return; }
     const sig = document.getElementById('editSigInput').value.trim();
-    const chars = await DB.getCharacters();
+    const chars = getCharacters();
+
     if (editingCharId) {
       const idx = chars.findIndex(c => c.id == editingCharId);
-      if (idx !== -1) { chars[idx].name = name; chars[idx].signature = sig; }
+      if (idx !== -1) {
+        chars[idx].name = name;
+        chars[idx].signature = sig;
+      }
     } else {
-      chars.unshift({ id: Date.now().toString(), name, signature: sig, avatar: '', aiPrompt: '', lastMessage: '点击开始对话', time: '现在', unread: 0 });
+      chars.unshift({
+        id: Date.now().toString(),
+        name, signature: sig,
+        avatar: '', aiPrompt: '',
+        lastMessage: '点击开始对话', time: '现在',
+        unread: 0
+      });
     }
-    await DB.saveCharacters(chars);
-    closeModal(); render();
+    saveCharacters(chars);
+    closeModal();
+    render();
   });
 
-  document.getElementById('editDeleteBtn').addEventListener('click', async () => {
+  document.getElementById('editDeleteBtn').addEventListener('click', () => {
     if (!editingCharId) return;
     if (!confirm('确定删除该角色吗？')) return;
-    const chars = await DB.getCharacters();
-    await DB.saveCharacters(chars.filter(c => c.id != editingCharId));
-    await DB.deleteMessages(editingCharId);
-    closeModal(); render();
+    const chars = getCharacters();
+    const filtered = chars.filter(c => c.id != editingCharId);
+    saveCharacters(filtered);
+    localStorage.removeItem(`chat_msg_${editingCharId}`);
+    closeModal();
+    render();
   });
 
-  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../main.html'; });
+  // ★ 返回 main.html（同一文件夹）
+  document.getElementById('backBtn').addEventListener('click', () => {
+    window.location.href = '../main.html';
+  });
 
   render();
 })();
 </script>
-
 </body>
 </html>
