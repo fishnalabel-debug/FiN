@@ -31,16 +31,13 @@
       --shadow-float:  0 8px 32px rgba(27,45,91,0.13), 0 1px 4px rgba(0,0,0,0.05);
       --shadow-modal:  0 24px 56px rgba(27,45,91,0.20);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg-base);
       display: flex; align-items: center; justify-content: center;
       min-height: 100vh; margin: 0; padding: 0;
     }
-
     .app-container {
       width: 100%; max-width: 420px;
       height: 100vh;
@@ -50,7 +47,6 @@
       box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.08);
       overflow: hidden; position: relative;
     }
-
     .chat-header {
       display: flex; align-items: center; padding: 8px 14px 10px;
       background: var(--navy);
@@ -83,7 +79,6 @@
       transition: background 0.15s;
     }
     .more-btn:hover { background: rgba(255,255,255,0.22); }
-
     .header-avatars {
       display: flex; align-items: center; gap: 3px; margin-right: 2px;
     }
@@ -100,7 +95,6 @@
       font-size: 13px; color: rgba(255,255,255,0.7);
     }
     .header-heart { font-size: 9px; color: rgba(255,255,255,0.45); }
-
     .profile-section { display: none; }
     .dual-avatars { display: flex; gap: 16px; margin-bottom: 10px; position: relative; }
     .avatar-circle {
@@ -121,7 +115,6 @@
       max-width: 280px; margin-top: 0; min-height: 18px;
       letter-spacing: 0.01em;
     }
-
     .signature-bar {
       display: flex; align-items: center; justify-content: center;
       padding: 6px 16px; background: var(--navy-dark);
@@ -134,7 +127,6 @@
       max-width: 260px; letter-spacing: 0.01em;
     }
     .sig-text.typing { color: #7ab4ff; }
-
     .quote-bar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 8px 16px; background: #f4f6fb;
@@ -148,7 +140,6 @@
       padding: 2px 4px; border-radius: 4px; transition: color 0.15s;
     }
     .quote-bar .quote-cancel:hover { color: var(--text-secondary); }
-
     .message-list {
       flex: 1;
       overflow-y: auto;
@@ -160,15 +151,12 @@
     .message-list::-webkit-scrollbar { width: 4px; }
     .message-list::-webkit-scrollbar-track { background: transparent; }
     .message-list::-webkit-scrollbar-thumb { background: #c5cadc; border-radius: 2px; }
-
     .message-row {
       display: flex; align-items: flex-end; gap: 8px; max-width: 85%;
     }
     .message-row.self { align-self: flex-end; flex-direction: row-reverse; }
     .message-row.other { align-self: flex-start; }
-
     .bubble-wrapper { position: relative; }
-
     .bubble {
       padding: 10px 15px; border-radius: var(--radius-bubble); font-size: 15px;
       line-height: 1.5; word-break: break-word; max-width: 100%;
@@ -188,7 +176,6 @@
       white-space: nowrap; margin-bottom: 2px;
     }
     .self .bubble-time { color: #9fa4b8; }
-
     .quote-bubble {
       border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
       background: var(--bg-surface); max-width: 240px;
@@ -204,7 +191,6 @@
       border-bottom-color: rgba(255,255,255,0.1);
     }
     .self .quote-bubble .quote-content { color: white; }
-
     .image-bubble {
       max-width: 240px; border-radius: 20px; overflow: hidden;
       background: var(--bg-surface); border: 1px solid var(--border);
@@ -246,7 +232,6 @@
     .self .meta-dot { background: rgba(255,255,255,0.55); }
     .meta-time { font-size: 10.5px; color: var(--text-tertiary); }
     .self .meta-time { color: rgba(255,255,255,0.45); }
-
     .file-bubble {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 14px; border-radius: 16px; cursor: pointer;
@@ -268,7 +253,6 @@
     }
     .self .file-preview { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
     .file-preview.show { display: block; }
-
     .call-bubble {
       display: flex; align-items: center; gap: 12px;
       padding: 12px 16px; border-radius: 18px; min-width: 200px; max-width: 260px;
@@ -291,7 +275,6 @@
     .self .call-sub { color: rgba(255,255,255,0.5); }
     .call-arrow { font-size: 13px; color: var(--text-tertiary); flex-shrink: 0; }
     .self .call-arrow { color: rgba(255,255,255,0.45); }
-
     .location-bubble {
       border-radius: 18px; overflow: hidden; min-width: 210px; max-width: 260px;
       background: #ffffff; border: 1px solid var(--border);
@@ -315,7 +298,6 @@
     .location-info { padding: 9px 13px 11px; }
     .location-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
     .location-addr { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
     .redpacket-bubble {
       display: flex; align-items: center; gap: 12px;
       padding: 13px 16px; border-radius: 18px; min-width: 200px; max-width: 250px;
@@ -339,7 +321,6 @@
       padding: 4px 16px; background: rgba(0,0,0,0.18);
       font-size: 10.5px; color: rgba(255,220,150,0.7); letter-spacing: 0.04em;
     }
-
     .transfer-bubble {
       display: flex; align-items: center; gap: 12px;
       padding: 13px 16px 13px; border-radius: 18px; min-width: 200px; max-width: 250px;
@@ -372,7 +353,6 @@
     }
     .self .transfer-divider { border-top-color: rgba(255,255,255,0.1); background: rgba(0,0,0,0.12); color: rgba(255,255,255,0.4); border-radius: 0 0 16px 16px; }
     .transfer-main { padding-bottom: 28px; }
-
     .collect-bubble {
       display: flex; align-items: center; gap: 11px;
       padding: 11px 14px; border-radius: 18px; min-width: 190px; max-width: 250px;
@@ -396,14 +376,12 @@
     .self .collect-meta { color: rgba(255,255,255,0.45); }
     .collect-dot { width: 2px; height: 2px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; }
     .self .collect-dot { background: rgba(255,255,255,0.3); }
-
     .system-msg {
       text-align: center; font-size: 11.5px; color: var(--text-tertiary);
       padding: 3px 10px; cursor: pointer; position: relative;
       background: rgba(180,180,195,0.12); border-radius: 20px;
       display: inline-block; margin: 0 auto;
     }
-
     .system-action-bar {
       position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px;
@@ -411,7 +389,6 @@
       box-shadow: var(--shadow-float); white-space: nowrap; z-index: 10;
     }
     .system-action-bar.show { display: flex; }
-
     .msg-action-bar {
       position: absolute; bottom: calc(100% + 6px);
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px;
@@ -428,7 +405,6 @@
     }
     .msg-action-btn:hover { background: var(--bg-base); }
     .msg-action-btn.danger { color: var(--accent-danger); }
-
     .edit-modal-overlay, .image-modal-overlay, .event-modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.3); backdrop-filter: blur(6px);
@@ -469,7 +445,6 @@
     .btn:hover { opacity: 0.85; }
     .btn-cancel { background: var(--bg-base); color: var(--text-secondary); border: 1px solid var(--border); }
     .btn-send { background: var(--navy); color: white; }
-
     .input-bar {
       display: flex; align-items: center; padding: 10px 12px 14px;
       background: #ffffff;
@@ -493,7 +468,6 @@
     .message-input:focus { border-color: var(--navy-light); background: var(--bg-surface); box-shadow: 0 0 0 3px rgba(46,74,142,0.10); }
     .message-input::placeholder { color: var(--text-tertiary); }
     .message-input:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .plus-panel {
       position: absolute; left: 14px; right: 14px;
       background: var(--bg-surface); border-radius: var(--radius-panel);
@@ -522,7 +496,6 @@
     .plus-label { font-size: 10px; color: var(--text-secondary); text-align: center; letter-spacing: 0.01em; line-height: 1.2; }
     .overlay-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: none; }
     .overlay-bg.active { display: block; }
-
     .search-highlight {
       animation: highlightPulse 2s ease-out;
     }
@@ -530,7 +503,6 @@
       0% { background-color: #FFD60A44; }
       100% { background-color: transparent; }
     }
-
     .emoji-panel {
       position: absolute; left: 14px; right: 14px;
       background: var(--bg-surface); border-radius: var(--radius-panel);
@@ -829,14 +801,13 @@
   }
   function renderEmojiPanel() {
     const panel = document.getElementById('emojiPanel');
-    const empty = document.getElementById('emojiEmpty');
     const emojis = loadEmojis();
     panel.innerHTML = '';
     if (emojis.length === 0) {
       panel.innerHTML = '<div class="emoji-empty">暂无表情包，请去 表情包.html 添加</div>';
       return;
     }
-    emojis.forEach((e, idx) => {
+    emojis.forEach((e) => {
       const div = document.createElement('div');
       div.className = 'emoji-item';
       if (e.type === 'text') {
@@ -857,7 +828,6 @@
     });
   }
 
-  // ----- 核心逻辑：发消息不自动回复，空输入框回车触发回复，爱心触发回复 -----
   let isReplying = false;
 
   function setReplyingState(replying) {
@@ -871,7 +841,6 @@
     }
   }
 
-  // 发送消息（只发消息，不触发 AI 回复）
   async function sendMessageOnly() {
     if (isReplying) return;
     const text = messageInput.value.trim();
@@ -891,30 +860,26 @@
     }
   }
 
-  // 触发 AI 回复（检查锁 + 检查是否有用户消息）
+  // 触发 AI 回复 - 支持上下文中的历史图片
   async function triggerAIReply() {
     if (isReplying) return;
 
     // 查找最近一条用户消息（不算系统消息）
-    const lastUserMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
-    if (!lastUserMsg) {
-      // 如果没有用户消息，发一条默认的
+    let userMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
+    if (!userMsg) {
       await addMessage('你好', 'self');
+      userMsg = messages[messages.length - 1];
     }
 
     setReplyingState(true);
     setSignatureTyping();
     try {
-      // 重新查找用户消息（因为可能刚发了一条默认的）
-      const userMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
-      if (!userMsg) return;
-
       const reply = await callAIAPI(userMsg);
       const parsed = parseAIResponse(reply);
       for (let i = 0; i < parsed.length; i++) {
-  await new Promise(r => setTimeout(r, 300 + i * 150));
-  await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
-}
+        await new Promise(r => setTimeout(r, 300 + i * 150));
+        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
+      }
     } catch(err) {
       await addMessage('❌ ' + err.message, 'other');
     } finally {
@@ -923,34 +888,29 @@
     }
   }
 
-  // 发送表情消息（只发消息，不触发 AI 回复）
   async function sendEmojiMessage(emoji) {
     if (isReplying) return;
     const text = emoji.type === 'text' ? emoji.content : `[图片表情]${emoji.name||'表情'}`;
     await addMessage(text, 'self', emoji.type === 'text' ? 'text' : 'image', emoji.type === 'image' ? { imageUrl: emoji.content } : {});
   }
 
-  // 键盘事件：有内容时回车 → 发送消息；空时回车 → 触发 AI 回复
   messageInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
       const text = this.value.trim();
       if (text) {
-        // 有内容 → 发送消息
         sendMessageOnly();
       } else {
-        // 空输入框 → 触发 AI 回复
         triggerAIReply();
       }
     }
   });
 
-  // 爱心按钮 → 触发 AI 回复
   document.getElementById('loveBtn').onclick = () => {
     triggerAIReply();
   };
 
-  // 照片发送 - 图片会保存在消息中，AI 可读取
+  // ✅ 修复：图片发送后不自动触发 AI 回复，只保存图片
   document.getElementById('photoInput').addEventListener('change', async (e) => {
     if (isReplying) return;
     const files = e.target.files;
@@ -963,31 +923,11 @@
           reader.onload = (ev) => resolve(ev.target.result);
           reader.readAsDataURL(file);
         });
-        // 图片发送后，自动触发 AI 回复，让 AI 能读取图片
         await addMessage(file.name || '图片', 'self', 'image', { imageUrl: dataUrl });
-        // 发送后自动触发 AI 回复（带图片上下文）
-        setReplyingState(true);
-        setSignatureTyping();
-        try {
-          const userMsg = messages[messages.length - 1]; // 刚发的图片消息
-          const reply = await callAIAPI(userMsg);
-          const parsed = parseAIResponse(reply);
-          for (let i = 0; i < parsed.length; i++) {
-            await new Promise(r => setTimeout(r, 300));
-            await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
-          }
-        } catch(err) {
-          await addMessage('❌ ' + err.message, 'other');
-        } finally {
-          setReplyingState(false);
-          restoreSignature();
-        }
       }
       e.target.value = '';
     } catch(err) {
       console.warn('Photo send error:', err);
-      setReplyingState(false);
-      restoreSignature();
     }
   });
 
@@ -1049,7 +989,6 @@
         const hasImageUrl = msg.imageUrl && msg.imageUrl.startsWith('data:');
         ib.innerHTML = `<div class="image-img-area">${hasImageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="图片">` : `<div class="img-placeholder-icon">🖼️</div>`}<div class="image-badge">${msg.imageUrl ? '📷' : 'IMAGE'}</div></div><div class="image-bubble-body"><div class="image-bubble-text">${escapeHtml(msg.text)}</div><div class="image-bubble-meta"><div class="meta-label"><div class="meta-dot"></div>${msg.imageUrl ? '已发送' : '图片描述'}</div><div class="meta-time">${msg.time||''}</div></div></div>`;
         wrapper.appendChild(ib);
-        // 点击图片放大查看
         if (hasImageUrl) {
           ib.onclick = () => {
             const win = window.open('', '_blank');
@@ -1159,33 +1098,29 @@
   document.getElementById('editCancelBtn').onclick = closeEditModal;
   editModalOverlay.onclick = e => { if(e.target===editModalOverlay) closeEditModal(); };
   document.getElementById('editConfirmBtn').onclick = () => {
-  const t = editTextarea.value.trim();
-  if (!t || editIndex === null) { closeEditModal(); return; }
-  
-  const originalMsg = messages[editIndex];
-  
-  // 按换行分割，过滤空行
-  const lines = t.split(/\n+/).filter(line => line.trim());
-  
-  if (lines.length === 1) {
-    // 只有一行，直接更新
-    messages[editIndex].text = t;
-  } else {
-    // 多行：删除原消息，插入多条新消息
-    messages.splice(editIndex, 1);
-    const newMessages = lines.map((line, i) => ({
-      ...originalMsg,
-      text: line.trim(),
-      timestamp: Date.now() + i,  // 加微小偏移保证顺序
-      time: getTimeStr()
-    }));
-    messages.splice(editIndex, 0, ...newMessages);
-  }
-  
-  saveMessages(messages);
-  renderMessages();
-  closeEditModal();
-};
+    const t = editTextarea.value.trim();
+    if (!t || editIndex === null) { closeEditModal(); return; }
+    
+    const originalMsg = messages[editIndex];
+    const lines = t.split(/\n+/).filter(line => line.trim());
+    
+    if (lines.length === 1) {
+      messages[editIndex].text = t;
+    } else {
+      messages.splice(editIndex, 1);
+      const newMessages = lines.map((line, i) => ({
+        ...originalMsg,
+        text: line.trim(),
+        timestamp: Date.now() + i,
+        time: getTimeStr()
+      }));
+      messages.splice(editIndex, 0, ...newMessages);
+    }
+    
+    saveMessages(messages);
+    renderMessages();
+    closeEditModal();
+  };
 
   const MAX_RECENT_EVENTS = 20;
   function getRelatedCharacters() {
@@ -1235,12 +1170,12 @@
   async function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); await saveMessages(messages); renderMessages(); }
   function updateLastMessage(text) { const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId); if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); } }
 
-  // ----- AI 相关函数 - 支持图片识别 -----
+  // ----- AI 相关函数 - 支持上下文中的历史图片 -----
   function buildSystemPrompt(userMessage) {
     const char = getCurrentCharacter(), user = loadUserData(), parts = [];
     parts.unshift('【最高优先级指令】⚠️ 绝对不要输出你的思考过程、推理步骤或内部思维链。');
-  parts.unshift('【输出规则】只输出最终回复内容，不要包含任何 "分析："、"思考："、"我考虑了一下" 等元描述。');
-  parts.unshift('【角色扮演规则】你是在扮演角色直接对话，不是 AI 助手。不要解释你是怎么想的，直接说角色该说的话。');
+    parts.unshift('【输出规则】只输出最终回复内容，不要包含任何 "分析："、"思考："、"我考虑了一下" 等元描述。');
+    parts.unshift('【角色扮演规则】你是在扮演角色直接对话，不是 AI 助手。不要解释你是怎么想的，直接说角色该说的话。');
     const now = new Date();
     const timeStr = now.getFullYear() + '年' + 
                     (now.getMonth()+1).toString().padStart(2,'0') + '月' + 
@@ -1300,15 +1235,23 @@
     parts.push('【时间规则】聊天中的时间以系统提供的【当前时间】为准。如果用户提到时间相关的词（如"现在""几点""今天""什么时候""隔了多久"等），请基于【当前时间】和【距离上一条消息的时间间隔】来计算和回答。');
     parts.push('2. 不要写 "：" 和角色名，直接发聊天内容。');
     parts.push('3. 多条消息用换行分隔，每一行独立发送。');
-parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
-parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
+    parts.push('4. 每条消息尽量简短（1~3句），符合手机聊天的自然节奏。');
+    parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:秒数]内容"。');
     parts.push('6. 语气口语化，不要像写小说。');
     if (char?.aiPrompt) parts.push('【你的角色设定】' + char.aiPrompt);
     const rb = buildRelationContext(char); if (rb) parts.push(rb);
     const ui = []; if (user.name) ui.push('姓名：' + user.name); if (user.gender) ui.push('性别：' + user.gender); if (user.region) ui.push('地区：' + user.region); if (user.signature) ui.push('签名：' + user.signature); if (user.persona) ui.push('用户自述：' + user.persona);
     if (ui.length) parts.push('【关于和你聊天的这个人】' + ui.join('；'));
     const rbs = getRelevantWorldbooks(userMessage.text || '');
-    if (rbs.length) { const f=rbs.filter(b=>b.force),m=rbs.filter(b=>!b.force&&!b.optional),o=rbs.filter(b=>b.optional); if(f.length)parts.push('【必须记住】'+f.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(m.length)parts.push('【当前相关】'+m.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(o.length)parts.push('【可选参考】'+o.map(b=>`《${b.name}》：${b.content}`).join('\n')); }
+    if (rbs.length) {
+      const f = rbs.filter(b=>b.force);
+      // ✅ 修复：正确过滤中等强度（非强制、非可选）
+      const m = rbs.filter(b=>!b.force && !b.optional);
+      const o = rbs.filter(b=>b.optional);
+      if(f.length) parts.push('【必须记住】' + f.map(b=>`《${b.name}》：${b.content}`).join('\n'));
+      if(m.length) parts.push('【当前相关】' + m.map(b=>`《${b.name}》：${b.content}`).join('\n'));
+      if(o.length) parts.push('【可选参考】' + o.map(b=>`《${b.name}》：${b.content}`).join('\n'));
+    }
     return parts.join('\n\n');
   }
 
@@ -1318,62 +1261,79 @@ parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:�
       const isGlobal = book.isGlobal; const isCharMatch = !isGlobal && book.characters && book.characters.includes(charId);
       if (!isGlobal && !isCharMatch) return;
       const intensity = book.intensity || 5;
-      if (intensity >= 8) relevant.push({ name:book.name, content:book.content, intensity, force:true });
-      else if (intensity >= 4) { const kw=book.name+' '+book.content; if(userMessage.split('').some(c=>kw.includes(c))||userMessage.split(/\s+/).some(w=>kw.toLowerCase().includes(w.toLowerCase()))) relevant.push({name:book.name,content:book.content,intensity,force:false}); }
-      else relevant.push({ name:book.name, content:book.content, intensity, force:false, optional:true });
-    }); return relevant;
+      if (intensity >= 8) {
+        // ✅ 修复：显式设置 optional: false
+        relevant.push({ name: book.name, content: book.content, intensity, force: true, optional: false });
+      } else if (intensity >= 4) {
+        const kw=book.name+' '+book.content;
+        if(userMessage.split('').some(c=>kw.includes(c)) || userMessage.split(/\s+/).some(w=>kw.toLowerCase().includes(w.toLowerCase()))) {
+          // ✅ 修复：显式设置 optional: false
+          relevant.push({name: book.name, content: book.content, intensity, force: false, optional: false});
+        }
+      } else {
+        relevant.push({ name: book.name, content: book.content, intensity, force: false, optional: true });
+      }
+    });
+    return relevant;
   }
 
   function buildRelationContext(char) {
     if (!char||!Array.isArray(char.relations)||char.relations.length===0) return '';
     const chars=getCharacters(); const lines=[];
-    char.relations.forEach(rel=>{ const t=chars.find(c=>c.id==rel.targetId); if(!t)return; let line=`你和「${t.name}」的关系是：${rel.label}。`; const events=Array.isArray(t.recentEvents)?t.recentEvents.slice(-20):[]; if(events.length>0) line+=`\n以下是「${t.name}」最近发生的事：\n`+events.map(e=>'- '+e.text).join('\n'); lines.push(line); });
+    char.relations.forEach(rel=>{ const t=chars.find(c=>c.id==rel.targetId); if(!t)return; let line=`你和「${t.name}」的关系是：${rel.label}。`; const events=Array.isArray(t.recentEvents)?t.recentEvents.slice(-20):[]; if(events.length>0) line+='\n以下是「${t.name}」最近发生的事：\n'+events.map(e=>'- '+e.text).join('\n'); lines.push(line); });
     return lines.length?('【你的关系网络与共享记忆】\n'+lines.join('\n\n')):'';
   }
 
-  // 检测 API 是否支持 vision（Claude / Gemini）
   function detectVisionSupport(char) {
     const model = (char.model || '').toLowerCase();
     const endpoint = (char.apiEndpoint || '').toLowerCase();
-    // Claude vision 模型
     if (model.includes('claude-3') || model.includes('claude-3.5') || 
         endpoint.includes('anthropic') || endpoint.includes('claude')) {
       return 'claude';
     }
-    // Gemini vision 模型
     if (model.includes('gemini') || endpoint.includes('google') || endpoint.includes('generativelanguage')) {
       return 'gemini';
     }
-    // 默认尝试 Claude 格式
     return 'claude';
   }
 
+  // ==================== 判断图片消息 ====================
+  function isImageMessage(msg) {
+    return msg.type === 'image' && msg.imageUrl && msg.imageUrl.startsWith('data:');
+  }
+
+  // ==================== 主 API 调用 ====================
   async function callAIAPI(userMsg) {
     const char = getCurrentCharacter();
     if (!char?.apiEndpoint||!char?.apiKey) return '❌ 请先配置API';
 
     const sp = buildSystemPrompt(userMsg);
-    const ctx = messages.slice(-100).filter(m => m.type !== 'system').map(m => {
+    const visionType = detectVisionSupport(char);
+    
+    // 构建上下文消息列表（最近 30 条）
+    const recentMessages = messages.slice(-30).filter(m => m.type !== 'system');
+    
+    // 检测上下文中是否有图片
+    const hasImageInContext = recentMessages.some(m => isImageMessage(m));
+    
+    // 如果当前消息是图片，或者上下文中包含图片，使用 Vision API
+    if (isImageMessage(userMsg) || hasImageInContext) {
+      return callVisionAPIWithContext(char, recentMessages, userMsg, sp, visionType);
+    }
+
+    // 纯文本对话
+    let apiUrl = char.apiEndpoint.trim().replace(/\/+$/, '');
+    if (!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1') ? '/chat/completions' : '/chat/completions');
+
+    const ctx = recentMessages.map(m => {
       let content = m.text || '';
-      if (m.type === 'file') content = `[文件:${m.fileName}]\n${m.fileContent}`;
-      else if (m.type === 'image' && m.imageUrl) {
-        // 图片消息：用特殊标记，让 AI 知道这是一张图片
+      if (m.type === 'file') {
+        content = `[文件:${m.fileName}]\n${m.fileContent}`;
+      } else if (m.type === 'image') {
         content = `[图片: ${m.text || '用户发来了一张图片'}]`;
       }
       return { role: m.sender === 'self' ? 'user' : 'assistant', content: content };
     });
-
-    // 检测 vision 支持
-    const visionType = detectVisionSupport(char);
-
-    // 如果当前消息是图片，使用 vision API
-    if (userMsg.type === 'image' && userMsg.imageUrl) {
-      return callVisionAPI(char, userMsg.imageUrl, userMsg.text || '请描述这张图片', visionType);
-    }
-
-    // 普通文本对话
-    let apiUrl = char.apiEndpoint.trim().replace(/\/+$/, '');
-    if (!apiUrl.endsWith('/chat/completions')) apiUrl += (apiUrl.endsWith('/v1') ? '/chat/completions' : '/chat/completions');
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -1401,14 +1361,187 @@ parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:�
     });
   }
 
-  // Vision API 调用（支持 Claude 和 Gemini）
+  // ==================== 增强版 Vision API ====================
+  async function callVisionAPIWithContext(char, historyMessages, currentUserMsg, systemPrompt, visionType) {
+    const apiKey = char.apiKey;
+    let endpoint = char.apiEndpoint.trim().replace(/\/+$/, '');
+
+    // 构建对话内容
+    const contentParts = [];
+
+    // ✅ 修复：限制历史图片数量，最多 5 张，避免 token 超限
+    let imageCount = 0;
+    const MAX_IMAGES_IN_CONTEXT = 5;
+    const recentHistory = historyMessages.slice(-15).filter(msg => {
+      if (isImageMessage(msg)) {
+        if (imageCount >= MAX_IMAGES_IN_CONTEXT) return false;
+        imageCount++;
+      }
+      return true;
+    });
+    
+    for (const msg of recentHistory) {
+      const role = msg.sender === 'self' ? 'user' : 'assistant';
+      
+      if (isImageMessage(msg)) {
+        const imageData = msg.imageUrl.split(',')[1];
+        const mimeType = msg.imageUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+        
+        if (visionType === 'claude') {
+          contentParts.push({
+            role: role,
+            content: [
+              { type: 'text', text: msg.text || '发来了一张图片' },
+              { type: 'image', source: { type: 'base64', media_type: mimeType, data: imageData } }
+            ]
+          });
+        } else if (visionType === 'gemini') {
+          contentParts.push({
+            role: role === 'user' ? 'user' : 'model',
+            parts: [
+              { text: msg.text || '发来了一张图片' },
+              { inline_data: { mime_type: mimeType, data: imageData } }
+            ]
+          });
+        }
+      } else {
+        if (visionType === 'claude') {
+          contentParts.push({ role: role, content: msg.text || '' });
+        } else if (visionType === 'gemini') {
+          contentParts.push({ role: role === 'user' ? 'user' : 'model', parts: [{ text: msg.text || '' }] });
+        }
+      }
+    }
+
+    // 添加当前用户消息
+    const currentRole = currentUserMsg.sender === 'self' ? (visionType === 'claude' ? 'user' : 'user') : (visionType === 'claude' ? 'assistant' : 'model');
+    
+    if (isImageMessage(currentUserMsg)) {
+      const imageData = currentUserMsg.imageUrl.split(',')[1];
+      const mimeType = currentUserMsg.imageUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+      
+      if (visionType === 'claude') {
+        contentParts.push({
+          role: currentRole,
+          content: [
+            { type: 'text', text: currentUserMsg.text || '请描述这张图片' },
+            { type: 'image', source: { type: 'base64', media_type: mimeType, data: imageData } }
+          ]
+        });
+      } else if (visionType === 'gemini') {
+        contentParts.push({
+          role: currentRole,
+          parts: [
+            { text: currentUserMsg.text || '请描述这张图片' },
+            { inline_data: { mime_type: mimeType, data: imageData } }
+          ]
+        });
+      }
+    } else {
+      if (visionType === 'claude') {
+        contentParts.push({ role: currentRole, content: currentUserMsg.text || '你好' });
+      } else if (visionType === 'gemini') {
+        contentParts.push({ role: currentRole, parts: [{ text: currentUserMsg.text || '你好' }] });
+      }
+    }
+
+    if (visionType === 'claude') {
+      return callClaudeVisionAPI(endpoint, apiKey, contentParts, systemPrompt, char);
+    } else if (visionType === 'gemini') {
+      return callGeminiVisionAPI(endpoint, apiKey, contentParts, systemPrompt, char);
+    } else {
+      throw new Error('不支持的 Vision API 类型，请使用 Claude 或 Gemini');
+    }
+  }
+
+  // Claude Vision API
+  async function callClaudeVisionAPI(endpoint, apiKey, contentParts, systemPrompt, char) {
+    if (!endpoint.includes('v1/messages') && !endpoint.includes('/messages')) {
+      if (endpoint.endsWith('/v1')) endpoint += '/messages';
+      else if (!endpoint.endsWith('/messages')) endpoint += '/v1/messages';
+    }
+
+    const messages = contentParts.map(part => {
+      if (Array.isArray(part.content)) {
+        return { role: part.role, content: part.content };
+      } else {
+        return { role: part.role, content: part.content };
+      }
+    });
+
+    // ✅ 修复：使用角色配置的 model
+    const model = char?.model || 'claude-3-sonnet-20240229';
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      let errMsg = `HTTP ${response.status}`;
+      try { const errJson = JSON.parse(errText); errMsg += ': ' + (errJson.error?.message || errJson.message || errText); } catch(e) { errMsg += ': ' + errText; }
+      throw new Error(errMsg);
+    }
+
+    const data = await response.json();
+    return data.content?.[0]?.text || '（无法解析响应）';
+  }
+
+  // Gemini Vision API
+  async function callGeminiVisionAPI(endpoint, apiKey, contentParts, systemPrompt, char) {
+    // ✅ 修复：使用角色配置的 model
+    const modelName = char?.model || 'gemini-1.5-flash';
+    
+    if (!endpoint.includes('generateContent')) {
+      if (endpoint.endsWith('/v1')) endpoint += `/models/${modelName}:generateContent`;
+      else if (!endpoint.includes('models/')) endpoint += `/v1/models/${modelName}:generateContent`;
+    }
+    const separator = endpoint.includes('?') ? '&' : '?';
+    endpoint += `${separator}key=${apiKey}`;
+
+    const contents = contentParts.map(part => ({
+      role: part.role,
+      parts: part.parts
+    }));
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: contents,
+        system_instruction: systemPrompt ? { parts: [{ text: systemPrompt }] } : undefined
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      let errMsg = `HTTP ${response.status}`;
+      try { const errJson = JSON.parse(errText); errMsg += ': ' + (errJson.error?.message || errJson.message || errText); } catch(e) { errMsg += ': ' + errText; }
+      throw new Error(errMsg);
+    }
+
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '（无法解析响应）';
+  }
+
+  // 备用：单张图片 Vision API
   async function callVisionAPI(char, imageDataUrl, prompt, visionType) {
     const base64Data = imageDataUrl.split(',')[1];
     const apiKey = char.apiKey;
     let endpoint = char.apiEndpoint.trim().replace(/\/+$/, '');
 
     if (visionType === 'claude') {
-      // Claude Messages API
       if (!endpoint.includes('v1/messages') && !endpoint.includes('/messages')) {
         if (endpoint.endsWith('/v1')) endpoint += '/messages';
         else if (!endpoint.endsWith('/messages')) endpoint += '/v1/messages';
@@ -1445,7 +1578,6 @@ parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:�
       return data.content?.[0]?.text || '（无法解析图片）';
 
     } else if (visionType === 'gemini') {
-      // Gemini API
       if (!endpoint.includes('generateContent')) {
         const modelName = char.model || 'gemini-1.5-flash';
         if (endpoint.endsWith('/v1')) endpoint += `/models/${modelName}:generateContent`;
@@ -1483,48 +1615,44 @@ parts.push('5. 若想发图片，用 "[image]描述"；发语音，用 "[voice:�
   }
 
   function parseAIResponse(text) {
-  const msgs = [];
-  text = text.trim();
-  
-  // 按换行符分割，每个段落作为独立消息
-  const lines = text.split(/\n+/).filter(line => line.trim());
-  
-  if (lines.length === 0) {
-    return [{ type: 'text', text: text }];
+    const msgs = [];
+    text = text.trim();
+    
+    const lines = text.split(/\n+/).filter(line => line.trim());
+    
+    if (lines.length === 0) {
+      return [{ type: 'text', text: text }];
+    }
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+      
+      const vm = trimmed.match(/\[voice:(\d+)\]([\s\S]*)/);
+      if (vm) {
+        msgs.push({ 
+          type: 'voice', 
+          text: vm[2].trim(), 
+          duration: formatDuration(parseInt(vm[1])), 
+          transcript: vm[2].trim() 
+        });
+        return;
+      }
+      
+      const im = trimmed.match(/\[image\]([\s\S]*)/);
+      if (im) {
+        msgs.push({ type: 'image_prompt', text: im[1].trim() });
+        return;
+      }
+      
+      msgs.push({ type: 'text', text: trimmed });
+    });
+    
+    return msgs.length ? msgs : [{ type: 'text', text: text }];
   }
-  
-  lines.forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    
-    // 检查是否是语音标记
-    const vm = trimmed.match(/\[voice:(\d+)\]([\s\S]*)/);
-    if (vm) {
-      msgs.push({ 
-        type: 'voice', 
-        text: vm[2].trim(), 
-        duration: formatDuration(parseInt(vm[1])), 
-        transcript: vm[2].trim() 
-      });
-      return;
-    }
-    
-    // 检查是否是图片标记
-    const im = trimmed.match(/\[image\]([\s\S]*)/);
-    if (im) {
-      msgs.push({ type: 'image_prompt', text: im[1].trim() });
-      return;
-    }
-    
-    msgs.push({ type: 'text', text: trimmed });
-  });
-  
-  return msgs.length ? msgs : [{ type: 'text', text: text }];
-}
 
   function formatDuration(s) { const m=Math.floor(s/60); return m+':'+(s%60).toString().padStart(2,'0'); }
 
-  // 表情包按钮
   document.getElementById('emojiBtn').onclick = (e) => {
     e.stopPropagation();
     const panel = document.getElementById('emojiPanel');
