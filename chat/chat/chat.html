@@ -856,10 +856,9 @@
     });
   }
 
-  // ----- 核心修改：isReplying 锁 + 增强的 sendMessage -----
+  // ----- 核心逻辑：发消息不自动回复，空输入框回车触发回复，爱心触发回复 -----
   let isReplying = false;
 
-  // 启用/禁用输入相关控件
   function setReplyingState(replying) {
     isReplying = replying;
     messageInput.disabled = replying;
@@ -871,54 +870,13 @@
     }
   }
 
-  async function sendEmojiMessage(emoji) {
-    // 如果正在回复中，直接忽略
-    if (isReplying) return;
-    const text = emoji.type === 'text' ? emoji.content : `[图片表情]${emoji.name||'表情'}`;
-    // 先上锁，防止并发
-    setReplyingState(true);
-    setSignatureTyping();
-    try {
-      await addMessage(text, 'self', emoji.type === 'text' ? 'text' : 'image', emoji.type === 'image' ? { imageUrl: emoji.content } : {});
-      await triggerAIReplyInternal();
-    } catch(e) {
-      console.warn('Emoji send error:', e);
-    } finally {
-      setReplyingState(false);
-      restoreSignature();
-    }
-  }
-
-  // 内部 AI 回复逻辑：不检查锁，由调用方保证锁状态
-  async function triggerAIReplyInternal() {
-    // 查找最近一条用户消息（不算系统消息）
-    const lum = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
-    if (!lum) return;
-    try {
-      const reply = await callAIAPI(lum.text);
-      const parsed = parseAIResponse(reply);
-      for (let i = 0; i < parsed.length; i++) {
-        await new Promise(r => setTimeout(r, 300));
-        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
-      }
-    } catch(err) {
-      await addMessage('❌ ' + err.message, 'other');
-    }
-  }
-
-  // 发送消息（入口）
-  async function sendMessage() {
-    // 1. 如果正在回复中，直接忽略
+  // 发送消息（只发消息，不触发 AI 回复）
+  async function sendMessageOnly() {
     if (isReplying) return;
     const text = messageInput.value.trim();
     if (!text) return;
 
-    // 2. 立即上锁，禁止并发
-    setReplyingState(true);
-    setSignatureTyping();
-
     try {
-      // 3. 发送用户消息（含引用处理）
       if (quoteMessage) {
         await addMessage(text, 'self', 'text', { quote: quoteMessage.text });
         quoteMessage = null;
@@ -927,37 +885,90 @@
         await addMessage(text, 'self');
       }
       messageInput.value = '';
-
-      // 4. 立即触发 AI 回复（内部不再检查锁，因为已经锁了）
-      await triggerAIReplyInternal();
-
     } catch(e) {
       console.warn('Send message error:', e);
-    } finally {
-      // 5. 无论成功或失败，解锁并恢复 UI
-      setReplyingState(false);
-      restoreSignature();
     }
   }
 
-  // 对外暴露的 AI 回复触发（用于 love 按钮等），同样检查锁
+  // 触发 AI 回复（检查锁 + 检查是否有用户消息）
   async function triggerAIReply() {
     if (isReplying) return;
-    // 如果没有用户消息，发一条默认的
-    if (messages.length === 0 || messages.every(m => m.sender === 'other' || m.type === 'system')) {
+
+    // 查找最近一条用户消息（不算系统消息）
+    const lastUserMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
+    if (!lastUserMsg) {
+      // 如果没有用户消息，发一条默认的
       await addMessage('你好', 'self');
     }
+
     setReplyingState(true);
     setSignatureTyping();
     try {
-      await triggerAIReplyInternal();
-    } catch(e) {
-      console.warn('AI reply error:', e);
+      // 重新查找用户消息（因为可能刚发了一条默认的）
+      const userMsg = [...messages].reverse().find(m => m.sender === 'self' && m.type !== 'system');
+      if (!userMsg) return;
+
+      const reply = await callAIAPI(userMsg.text);
+      const parsed = parseAIResponse(reply);
+      for (let i = 0; i < parsed.length; i++) {
+        await new Promise(r => setTimeout(r, 300));
+        await addMessage(parsed[i].text, 'other', parsed[i].type, parsed[i]);
+      }
+    } catch(err) {
+      await addMessage('❌ ' + err.message, 'other');
     } finally {
       setReplyingState(false);
       restoreSignature();
     }
   }
+
+  // 发送表情消息（只发消息，不触发 AI 回复）
+  async function sendEmojiMessage(emoji) {
+    if (isReplying) return;
+    const text = emoji.type === 'text' ? emoji.content : `[图片表情]${emoji.name||'表情'}`;
+    await addMessage(text, 'self', emoji.type === 'text' ? 'text' : 'image', emoji.type === 'image' ? { imageUrl: emoji.content } : {});
+  }
+
+  // 键盘事件：有内容时回车 → 发送消息；空时回车 → 触发 AI 回复
+  messageInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const text = this.value.trim();
+      if (text) {
+        // 有内容 → 发送消息
+        sendMessageOnly();
+      } else {
+        // 空输入框 → 触发 AI 回复
+        triggerAIReply();
+      }
+    }
+  });
+
+  // 爱心按钮 → 触发 AI 回复
+  document.getElementById('loveBtn').onclick = () => {
+    triggerAIReply();
+  };
+
+  // 照片发送（只发消息，不触发 AI 回复）
+  document.getElementById('photoInput').addEventListener('change', async (e) => {
+    if (isReplying) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    try {
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        const reader = new FileReader();
+        const dataUrl = await new Promise((resolve) => {
+          reader.onload = (ev) => resolve(ev.target.result);
+          reader.readAsDataURL(file);
+        });
+        await addMessage(file.name || '图片', 'self', 'image', { imageUrl: dataUrl });
+      }
+      e.target.value = '';
+    } catch(err) {
+      console.warn('Photo send error:', err);
+    }
+  });
   // ------------------------------------------------------------
 
   function renderMessages() {
@@ -1093,8 +1104,12 @@
     if (action === '删除') { messages.splice(index,1); saveMessages(messages); renderMessages(); }
     else if (action === '编辑') { openEditModal(index, msg); }
     else if (action === '重回') {
-      if (msg.sender === 'other') { messages.splice(index,1); saveMessages(messages); renderMessages(); triggerAIReply(); }
-      else { messageInput.value = msg.text; messageInput.focus(); }
+      if (msg.sender === 'other') {
+        messages.splice(index,1); saveMessages(messages); renderMessages();
+        triggerAIReply();
+      } else {
+        messageInput.value = msg.text; messageInput.focus();
+      }
     } else if (action === '引用') {
       quoteMessage = msg;
       quoteText.textContent = msg.text.length > 30 ? msg.text.substring(0,30)+'…' : msg.text;
@@ -1166,7 +1181,7 @@
   async function addSystemMessage(text) { messages.push({ text, sender:'system', type:'system', timestamp:Date.now() }); await saveMessages(messages); renderMessages(); }
   function updateLastMessage(text) { const chars=getCharacters(); const idx=chars.findIndex(c=>c.id==charId); if(idx!==-1){ chars[idx].lastMessage=text; chars[idx].time=getTimeStr(); saveCharacters(chars); } }
 
-  // ----- 日期感知：增强 buildSystemPrompt 中的时间信息 -----
+  // ----- AI 相关函数（buildSystemPrompt 增强日期感知）-----
   function buildSystemPrompt(userMessage) {
     const char = getCurrentCharacter(), user = loadUserData(), parts = [];
     const now = new Date();
@@ -1193,10 +1208,9 @@
     else if (hour >= 18 && hour < 21) timeOfDay = '傍晚/晚上';
     else timeOfDay = '深夜/夜间';
     parts.push('【时段】' + timeOfDay);
-    // 增加“绝对时间戳”帮助 AI 理解时间跨度
     parts.push('【当前时间戳（毫秒）】' + now.getTime());
 
-    // ----- 增强日期感知：加入上次对话时间（最后一条消息的时间）-----
+    // 增强日期感知：加上与上一条消息的时间间隔
     if (messages.length > 0) {
       const lastMsg = messages[messages.length - 1];
       if (lastMsg && lastMsg.timestamp) {
@@ -1241,7 +1255,6 @@
     if (rbs.length) { const f=rbs.filter(b=>b.force),m=rbs.filter(b=>!b.force&&!b.optional),o=rbs.filter(b=>b.optional); if(f.length)parts.push('【必须记住】'+f.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(m.length)parts.push('【当前相关】'+m.map(b=>`《${b.name}》：${b.content}`).join('\n')); if(o.length)parts.push('【可选参考】'+o.map(b=>`《${b.name}》：${b.content}`).join('\n')); }
     return parts.join('\n\n');
   }
-  // ------------------------------------------------------------
 
   function getRelevantWorldbooks(userMessage) {
     const allBooks = loadWorldbooks(); const relevant = [];
@@ -1315,35 +1328,7 @@
 
   function formatDuration(s) { const m=Math.floor(s/60); return m+':'+(s%60).toString().padStart(2,'0'); }
 
-  messageInput.addEventListener('keypress', e => { if(e.key==='Enter'){ e.preventDefault(); sendMessage(); } });
-  document.getElementById('loveBtn').onclick = () => { triggerAIReply(); };
-
-  document.getElementById('photoInput').addEventListener('change', async (e) => {
-    if (isReplying) return; // 回复中禁止发送
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    setReplyingState(true);
-    setSignatureTyping();
-    try {
-      for (const file of files) {
-        if (!file.type.startsWith('image/')) continue;
-        const reader = new FileReader();
-        const dataUrl = await new Promise((resolve) => {
-          reader.onload = (ev) => resolve(ev.target.result);
-          reader.readAsDataURL(file);
-        });
-        await addMessage(file.name || '图片', 'self', 'image', { imageUrl: dataUrl });
-      }
-      e.target.value = '';
-      await triggerAIReplyInternal();
-    } catch(err) {
-      console.warn('Photo send error:', err);
-    } finally {
-      setReplyingState(false);
-      restoreSignature();
-    }
-  });
-
+  // 表情包按钮
   document.getElementById('emojiBtn').onclick = (e) => {
     e.stopPropagation();
     const panel = document.getElementById('emojiPanel');
@@ -1462,7 +1447,6 @@
     messages = await loadMessages();
     renderMessages();
     renderEmojiPanel();
-    // 确保输入框初始状态可用
     setReplyingState(false);
   })();
 })();
