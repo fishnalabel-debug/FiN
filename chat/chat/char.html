@@ -85,9 +85,14 @@
       font-weight: 500;
       cursor: pointer;
       flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+    .save-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    .save-btn:hover {
+    .save-btn:hover:not(:disabled) {
       background: #2c2c2e;
     }
 
@@ -170,12 +175,11 @@
       font-family: inherit;
     }
 
-    /* 移除 textarea 的默认限制，允许无上限输入 */
     textarea.input-field {
       resize: vertical;
       min-height: 70px;
-      max-height: none;      /* 取消最大高度限制 */
-      overflow-y: visible;   /* 让内容自然伸展，不强制滚动 */
+      max-height: none;
+      overflow-y: visible;
     }
 
     .voice-test-btn {
@@ -274,7 +278,6 @@
       flex: 1;
     }
 
-    /* 小提示：备注风格 */
     .field-hint {
       font-size: 11px;
       color: #8e8e93;
@@ -282,9 +285,41 @@
       margin-bottom: 4px;
       padding-left: 4px;
     }
+
+    /* Toast 提示 */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1d1d1f;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .toast.show {
+      opacity: 1;
+    }
+    .toast.error {
+      background: #d32f2f;
+    }
+    .toast.success {
+      background: #2e7d32;
+    }
   </style>
 </head>
 <body>
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast"></div>
+
   <div class="app-container">
     <div class="header">
       <button class="back-btn" id="backBtn">←</button>
@@ -305,14 +340,12 @@
           <input type="file" accept="image/*" id="avatarFileInput" class="hidden-file-input">
         </div>
         <div class="row">
-          <!-- 角色名称：这里明确为用户对 AI 的备注，让 AI 知道这是备注名 -->
           <input type="text" class="input-field" id="charNameInput" placeholder="角色备注名（你给 AI 的称呼）">
           <input type="text" class="input-field" id="charRealNameInput" placeholder="真名（可选）">
         </div>
         <div class="field-hint">💡 “角色备注名”是你给 AI 的称呼，AI 会知道这是你为它设置的备注。</div>
         <textarea class="input-field" id="charSignatureInput" placeholder="个性签名（将显示在聊天界面）" style="min-height:60px;"></textarea>
         <textarea class="input-field" id="charPromptInput" placeholder="角色设定 / AI 系统提示词 (无字数限制)" style="min-height:100px;"></textarea>
-        <!-- 无任何 maxlength 属性，完全无上限 -->
       </div>
 
       <!-- 语音设置 -->
@@ -345,15 +378,47 @@
 
   <script>
     (function() {
+      // ----- Toast 提示函数 -----
+      function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast';
+        if (type === 'error') toast.classList.add('error');
+        if (type === 'success') toast.classList.add('success');
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), duration);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const charId = params.get('id');
 
+      if (!charId) {
+        showToast('❌ 缺少角色ID，请从角色列表进入', 'error', 4000);
+        setTimeout(() => window.location.href = 'phone.html', 2000);
+        return;
+      }
+
       function getCharacters() {
-        return JSON.parse(localStorage.getItem('chat_characters') || '[]');
+        try {
+          return JSON.parse(localStorage.getItem('chat_characters') || '[]');
+        } catch (e) {
+          return [];
+        }
       }
 
       function saveCharacters(chars) {
-        localStorage.setItem('chat_characters', JSON.stringify(chars));
+        try {
+          localStorage.setItem('chat_characters', JSON.stringify(chars));
+          return true;
+        } catch (e) {
+          if (e.name === 'QuotaExceededError' || e.code === 22) {
+            showToast('❌ 存储空间不足！请清理头像或删除旧角色', 'error', 5000);
+          } else {
+            showToast('❌ 保存失败: ' + e.message, 'error', 4000);
+          }
+          return false;
+        }
       }
 
       function getCurrentChar() {
@@ -374,14 +439,15 @@
       const selectedModelInput = document.getElementById('selectedModelInput');
       const modelListContainer = document.getElementById('modelListContainer');
       const presetSelect = document.getElementById('presetSelect');
+      const saveBtn = document.getElementById('saveSettingsBtn');
 
       let currentAvatarData = '';
 
       function loadCharData() {
         const char = getCurrentChar();
         if (!char) {
-          alert('角色未找到');
-          window.location.href = 'phone.html';
+          showToast('❌ 角色未找到，请返回重试', 'error', 3000);
+          setTimeout(() => window.location.href = 'phone.html', 1500);
           return;
         }
         charNameInput.value = char.name || '';
@@ -404,12 +470,17 @@
           avatarPlaceholderLarge.style.display = 'flex';
         }
         loadPresets();
+        showToast('✅ 已加载角色: ' + (char.name || '未命名'), 'success', 1500);
       }
 
       document.getElementById('uploadAvatarBtn').addEventListener('click', () => avatarFileInput.click());
       avatarFileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        // 检查文件大小，避免撑爆 localStorage
+        if (file.size > 500 * 1024) {
+          showToast('⚠️ 头像建议小于500KB，当前文件较大可能影响保存', 'error', 3000);
+        }
         const reader = new FileReader();
         reader.onload = (ev) => {
           currentAvatarData = ev.target.result;
@@ -424,7 +495,7 @@
         const apiKey = voiceApiKeyInput.value.trim();
         const voiceId = voiceIdInput.value.trim();
         if (!apiKey || !voiceId) {
-          alert('请输入ElevenLabs API Key和语音ID');
+          showToast('⚠️ 请输入ElevenLabs API Key和语音ID', 'error', 2000);
           return;
         }
         try {
@@ -441,15 +512,16 @@
           const blob = await response.blob();
           const url = URL.createObjectURL(blob);
           new Audio(url).play();
+          showToast('🔊 正在播放测试语音', 'success', 1500);
         } catch (err) {
-          alert('语音合成失败: ' + err.message);
+          showToast('❌ 语音合成失败: ' + err.message, 'error', 3000);
         }
       });
 
       document.getElementById('fetchModelsBtn').addEventListener('click', async () => {
         const endpoint = apiEndpointInput.value.trim();
         const apiKey = apiKeyInput.value.trim();
-        if (!endpoint || !apiKey) { alert('请先填写API地址和Key'); return; }
+        if (!endpoint || !apiKey) { showToast('⚠️ 请先填写API地址和Key', 'error', 2000); return; }
 
         const btn = document.getElementById('fetchModelsBtn');
         const originalText = btn.textContent;
@@ -484,9 +556,9 @@
           }
           if (models.length === 0) throw new Error('未找到可用模型');
           renderModelChips(models);
-          alert(`成功拉取 ${models.length} 个模型`);
+          showToast(`✅ 成功拉取 ${models.length} 个模型`, 'success', 2000);
         } catch (err) {
-          alert(`自动拉取失败: ${err.message}\n\n请手动输入模型名称`);
+          showToast(`❌ 自动拉取失败: ${err.message}\n请手动输入模型名称`, 'error', 4000);
         } finally {
           btn.textContent = originalText;
           btn.disabled = false;
@@ -518,69 +590,133 @@
       });
 
       function loadPresets() {
-        const presets = JSON.parse(localStorage.getItem('api_presets') || '[]');
-        presetSelect.innerHTML = '<option value="">-- 选择已保存的API预设 --</option>';
-        presets.forEach((p, idx) => {
-          const opt = document.createElement('option');
-          opt.value = idx;
-          opt.textContent = p.name || `预设 ${idx+1}`;
-          presetSelect.appendChild(opt);
-        });
+        try {
+          const presets = JSON.parse(localStorage.getItem('api_presets') || '[]');
+          presetSelect.innerHTML = '<option value="">-- 选择已保存的API预设 --</option>';
+          presets.forEach((p, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = p.name || `预设 ${idx+1}`;
+            presetSelect.appendChild(opt);
+          });
+        } catch (e) {
+          // ignore
+        }
       }
 
       presetSelect.addEventListener('change', () => {
         const idx = presetSelect.value;
         if (idx === '') return;
-        const presets = JSON.parse(localStorage.getItem('api_presets') || '[]');
-        const preset = presets[idx];
-        if (preset) {
-          apiEndpointInput.value = preset.endpoint || '';
-          apiKeyInput.value = preset.apiKey || '';
-          selectedModelInput.value = preset.model || '';
-        }
+        try {
+          const presets = JSON.parse(localStorage.getItem('api_presets') || '[]');
+          const preset = presets[idx];
+          if (preset) {
+            apiEndpointInput.value = preset.endpoint || '';
+            apiKeyInput.value = preset.apiKey || '';
+            selectedModelInput.value = preset.model || '';
+            showToast('✅ 已加载预设: ' + preset.name, 'success', 1500);
+          }
+        } catch (e) { /* ignore */ }
       });
 
       document.getElementById('newPresetBtn').addEventListener('click', () => {
         const name = prompt('输入预设名称');
         if (!name) return;
-        const presets = JSON.parse(localStorage.getItem('api_presets') || '[]');
-        presets.push({
-          name: name,
-          endpoint: apiEndpointInput.value.trim(),
-          apiKey: apiKeyInput.value.trim(),
-          model: selectedModelInput.value.trim()
-        });
-        localStorage.setItem('api_presets', JSON.stringify(presets));
-        loadPresets();
+        try {
+          const presets = JSON.parse(localStorage.getItem('api_presets') || '[]');
+          presets.push({
+            name: name,
+            endpoint: apiEndpointInput.value.trim(),
+            apiKey: apiKeyInput.value.trim(),
+            model: selectedModelInput.value.trim()
+          });
+          localStorage.setItem('api_presets', JSON.stringify(presets));
+          loadPresets();
+          showToast('✅ 预设已保存', 'success', 1500);
+        } catch (e) {
+          showToast('❌ 保存预设失败: ' + e.message, 'error', 2000);
+        }
       });
 
-      // ★ 保存 —— 无任何字数截断，保留完整内容
-      document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-        const chars = getCharacters();
-        const index = chars.findIndex(c => c.id == charId);
-        if (index === -1) return;
+      // ★★★ 核心保存逻辑 - 增强版 ★★★
+      document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+        // 防止重复点击
+        if (this.disabled) return;
+        this.disabled = true;
+        this.textContent = '⏳ 保存中...';
 
-        chars[index].name = charNameInput.value.trim();         // 备注名
-        chars[index].realName = charRealNameInput.value.trim();
-        chars[index].avatar = currentAvatarData;
-        chars[index].signature = charSignatureInput.value.trim();
-        chars[index].aiPrompt = charPromptInput.value.trim();   // 无上限
-        chars[index].voiceApiKey = voiceApiKeyInput.value.trim();
-        chars[index].voiceId = voiceIdInput.value.trim();
-        chars[index].apiEndpoint = apiEndpointInput.value.trim();
-        chars[index].apiKey = apiKeyInput.value.trim();
-        chars[index].model = selectedModelInput.value.trim();
-        chars[index].contextLength = 100;
+        try {
+          // 1. 检查角色是否存在
+          const chars = getCharacters();
+          const index = chars.findIndex(c => c.id == charId);
+          if (index === -1) {
+            showToast('❌ 角色不存在，请重新打开', 'error', 3000);
+            this.disabled = false;
+            this.textContent = '保存';
+            return;
+          }
 
-        saveCharacters(chars);
-        alert('设置已保存');
-        window.location.href = `chat.html?id=${charId}`;
+          // 2. 收集数据
+          const name = charNameInput.value.trim() || '未命名';
+          const realName = charRealNameInput.value.trim();
+          const signature = charSignatureInput.value.trim();
+          const aiPrompt = charPromptInput.value.trim();
+          const voiceApiKey = voiceApiKeyInput.value.trim();
+          const voiceId = voiceIdInput.value.trim();
+          const apiEndpoint = apiEndpointInput.value.trim();
+          const apiKey = apiKeyInput.value.trim();
+          const model = selectedModelInput.value.trim();
+
+          // 3. 计算数据大小，预警
+          const totalSize = new Blob([JSON.stringify({
+            name, realName, signature, aiPrompt, voiceApiKey, voiceId,
+            apiEndpoint, apiKey, model, avatar: currentAvatarData
+          })]).size;
+          if (totalSize > 4 * 1024 * 1024) {
+            showToast('⚠️ 数据量较大(' + (totalSize/1024/1024).toFixed(1) + 'MB)，可能超出存储限制', 'error', 4000);
+            // 仍然继续尝试保存
+          }
+
+          // 4. 更新数据
+          chars[index].name = name;
+          chars[index].realName = realName;
+          chars[index].avatar = currentAvatarData;
+          chars[index].signature = signature;
+          chars[index].aiPrompt = aiPrompt;
+          chars[index].voiceApiKey = voiceApiKey;
+          chars[index].voiceId = voiceId;
+          chars[index].apiEndpoint = apiEndpoint;
+          chars[index].apiKey = apiKey;
+          chars[index].model = model;
+          chars[index].contextLength = 100;
+
+          // 5. 保存到 localStorage
+          const saved = saveCharacters(chars);
+          
+          if (saved) {
+            showToast('✅ 设置已保存成功！', 'success', 2000);
+            // 延迟跳转，让用户看到成功提示
+            setTimeout(() => {
+              window.location.href = `chat.html?id=${charId}`;
+            }, 800);
+          } else {
+            // saveCharacters 内部已经 showToast 了
+            this.disabled = false;
+            this.textContent = '保存';
+          }
+        } catch (err) {
+          showToast('❌ 保存异常: ' + err.message, 'error', 4000);
+          this.disabled = false;
+          this.textContent = '保存';
+          console.error('保存错误:', err);
+        }
       });
 
       document.getElementById('backBtn').addEventListener('click', () => {
         window.location.href = `more.html?id=${charId}`;
       });
 
+      // 加载数据
       loadCharData();
     })();
   </script>
