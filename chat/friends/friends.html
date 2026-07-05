@@ -1,119 +1,129 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>通讯录 · 小手机</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #f5f5f7;
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; margin: 0; padding: 0;
-    }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #f7f8fa;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; margin: 0; padding: 0;
+}
 
-    .app-container {
-      width: 100%; max-width: 420px;
-      height: 100vh;
-      max-height: 850px;
-      background: #ffffff;
-      display: flex; flex-direction: column;
-      box-shadow: 0 0 30px rgba(0,0,0,0.05);
-      overflow: hidden; position: relative;
-    }
+.app-container {
+  width: 100%; max-width: 420px; height: 100vh;
+  background: #f7f8fa; display: flex; flex-direction: column;
+  overflow: hidden; position: relative;
+  padding-top: calc(env(safe-area-inset-top, 44px) + 4px);
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
 
-    .header {
-      padding: 14px 20px 10px 20px;
-      background: #ffffff;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #f0f0f0;
-      flex-shrink: 0;
-      /* iOS 状态栏适配 */
-      padding-top: max(14px, env(safe-area-inset-top));
-      min-height: max(44px, calc(44px + env(safe-area-inset-top)));
-    }
-    .header-title { font-size: 20px; font-weight: 620; color: #1d1d1f; letter-spacing: -0.3px; }
-    .header-count { font-size: 13px; color: #8e8e93; font-weight: 400; }
+/* --- 顶部 --- */
+.header {
+  padding: 12px 16px 8px 16px;
+  background: #f7f8fa;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.header-title { font-size: 20px; font-weight: 650; color: #1d1d1f; letter-spacing: -0.3px; }
+.header-count { font-size: 13px; color: #b0b0b8; font-weight: 400; }
 
-    .search-wrap {
-      padding: 10px 16px 6px;
-      flex-shrink: 0;
-    }
-    .search-box {
-      background: #f2f2f6; border-radius: 16px; padding: 10px 14px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .search-box input {
-      background: transparent; border: none; outline: none;
-      font-size: 14px; width: 100%; color: #1c1c1e;
-    }
-    .search-box input::placeholder { color: #8e8e93; }
+/* --- 搜索框 --- */
+.search-wrap { padding: 6px 16px 12px 16px; flex-shrink: 0; background: #f7f8fa; }
+.search-box {
+  background: #ffffff; border-radius: 24px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+  color: #8e8e93; font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  border: 1px solid #f0f0f0;
+}
+.search-box svg { width: 16px; height: 16px; stroke: #b0b0b8; flex-shrink: 0; }
+.search-box input {
+  background: transparent; border: none; outline: none;
+  font-size: 14px; width: 100%; color: #1c1c1e;
+}
+.search-box input::placeholder { color: #b0b0b8; }
 
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 16px 12px;
-      display: flex; flex-direction: column; gap: 4px;
-      /* 底部安全区 */
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-    }
+/* --- 列表 --- */
+.content {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 0 16px 16px 16px;
+  display: flex; flex-direction: column; gap: 0;
+  background: #f7f8fa;
+}
 
-    /* 字母分组 */
-    .section-header {
-      font-size: 11px; font-weight: 600; color: #8e8e93;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      padding: 10px 8px 4px;
-    }
+.section-header {
+  font-size: 11px; font-weight: 600; color: #b0b0b8;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 14px 4px 6px;
+}
 
-    .friend-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 12px 10px; border-radius: 16px;
-      cursor: pointer; transition: background 0.1s;
-    }
-    .friend-item:hover { background: #fafafa; }
-    .friend-item:active { background: #f5f5f5; }
+/* 分组卡片容器 */
+.section-group {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.02);
+  margin-bottom: 8px;
+}
 
-    .friend-avatar {
-      width: 48px; height: 48px; border-radius: 50%; overflow: hidden;
-      background: linear-gradient(135deg, #e8e3f8, #d4cef5); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; color: #ffffff;
-    }
-    .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.friend-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  cursor: pointer; transition: background 0.12s;
+  border-bottom: 1px solid #f5f5f7;
+}
+.friend-item:last-child { border-bottom: none; }
+.friend-item:active { background: #f9f9f9; }
 
-    .friend-info { flex: 1; min-width: 0; }
-    .friend-name { font-size: 15px; font-weight: 500; color: #1d1d1f; }
-    .friend-sig {
-      font-size: 12px; color: #8e8e93; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis; margin-top: 2px;
-    }
-    .friend-arrow { font-size: 16px; color: #c7c7cc; }
+.friend-avatar {
+  width: 46px; height: 46px; border-radius: 16px; overflow: hidden;
+  background: #f0f0f2; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 600; color: #8e8e93;
+  border: 1px solid #f0f0f0;
+}
+.friend-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .empty-hint {
-      text-align: center; color: #c7c7cc; font-size: 14px;
-      padding: 60px 20px;
-    }
+.friend-info { flex: 1; min-width: 0; }
+.friend-name { font-size: 15px; font-weight: 560; color: #1d1d1f; }
+.friend-sig {
+  font-size: 12px; color: #b0b0b8; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; margin-top: 2px;
+}
+.friend-arrow { font-size: 16px; color: #d0d0d5; }
 
-    .bottom-nav {
-      display: flex; align-items: center; justify-content: space-around;
-      padding: 8px 12px 14px;
-      background: #ffffff;
-      border-top: 1px solid #f0f0f0;
-      flex-shrink: 0;
-      /* 底部安全区 */
-      padding-bottom: max(14px, env(safe-area-inset-bottom));
-    }
-    .nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      font-size: 12px; color: #8e8e93; cursor: pointer;
-      background: none; border: none; padding: 6px 12px;
-      border-radius: 16px; font-weight: 500;
-    }
-    .nav-item.active { color: #1d1d1f; font-weight: 600; }
-    .nav-item span { font-size: 18px; line-height: 1; }
+.empty-hint {
+  text-align: center; color: #c7c7cc; font-size: 14px;
+  padding: 60px 20px; background: transparent;
+}
+
+/* --- 底栏 --- */
+.bottom-nav {
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 10px 4px calc(10px + env(safe-area-inset-bottom, 0px)) 4px;
+  background: #ffffff; border-top: 1px solid #ebebeb; flex-shrink: 0;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 11px; color: #b0b0b8; cursor: pointer;
+  background: none; border: none; padding: 4px 16px;
+  border-radius: 12px; font-weight: 500; min-width: 60px;
+  transition: color 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.nav-item svg { width: 26px; height: 26px; transition: stroke 0.15s; }
+.nav-item.active { color: #1d1d1f; font-weight: 600; }
+.nav-item.active svg { stroke: #1d1d1f; }
+.nav-item:not(.active) svg { stroke: #b0b0b8; }
+.nav-item:active { opacity: 0.6; }
+```
+
   </style>
 </head>
 <body>
@@ -125,7 +135,9 @@
 
   <div class="search-wrap">
     <div class="search-box">
-      <span>🔍</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
       <input type="search" placeholder="搜索朋友" id="searchInput">
     </div>
   </div>
@@ -133,10 +145,34 @@
   <div class="content" id="friendList"></div>
 
   <div class="bottom-nav">
-    <button class="nav-item" data-page="chat"><span>💬</span>聊天</button>
-    <button class="nav-item active" data-page="name"><span>👥</span>通讯录</button>
-    <button class="nav-item" data-page="search"><span>🧭</span>发现</button>
-    <button class="nav-item" data-page="my"><span>👤</span>我</button>
+    <button class="nav-item" data-page="chat">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      聊天
+    </button>
+    <button class="nav-item active" data-page="name">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      通讯录
+    </button>
+    <button class="nav-item" data-page="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      发现
+    </button>
+    <button class="nav-item" data-page="my">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      我
+    </button>
   </div>
 </div>
 
@@ -147,20 +183,20 @@
   }
 
   const characters = loadCharacters();
-
-  // 渲染数量
   document.getElementById('headerCount').textContent = characters.length + '位朋友';
 
   const friendList = document.getElementById('friendList');
 
-  // 按拼音首字母分组（简化：取第一个字）
   function getFirstLetter(name) {
     if (!name) return '#';
     const c = name.charAt(0);
-    // 简单判断中文/英文
     if (/[a-zA-Z]/.test(c)) return c.toUpperCase();
     if (/[\u4e00-\u9fa5]/.test(c)) return c;
     return '#';
+  }
+
+  function escapeHtml(t) {
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function renderFriends(filter = '') {
@@ -169,11 +205,10 @@
       : characters;
 
     if (filtered.length === 0) {
-      friendList.innerHTML = '<div class="empty-hint">暂无朋友</div>';
+      friendList.innerHTML = '<div class="empty-hint">还没有朋友，去聊天页创建吧 👋</div>';
       return;
     }
 
-    // 分组
     const groups = {};
     filtered.forEach(c => {
       const letter = getFirstLetter(c.name);
@@ -189,46 +224,39 @@
 
     let html = '';
     sortedKeys.forEach(key => {
-      html += `<div class="section-header">${key}</div>`;
+      html += `<div class="section-header">${key}</div><div class="section-group">`;
       groups[key].forEach(c => {
         const avHtml = c.avatar
-          ? `<img src="${c.avatar}" alt="">`
-          : `<div class="avatar-placeholder">${c.name.charAt(0)}</div>`;
+          ? `<img src="${escapeHtml(c.avatar)}" alt="">`
+          : escapeHtml(c.name.charAt(0));
         html += `
           <div class="friend-item" data-id="${c.id}">
             <div class="friend-avatar">${avHtml}</div>
             <div class="friend-info">
               <div class="friend-name">${escapeHtml(c.name)}</div>
-              <div class="friend-sig">${escapeHtml(c.signature || '个性签名未设置')}</div>
+              <div class="friend-sig">${escapeHtml(c.signature || '暂无签名')}</div>
             </div>
             <span class="friend-arrow">›</span>
           </div>`;
       });
+      html += `</div>`;
     });
 
     friendList.innerHTML = html;
 
-    // ★ 点击跳转 card.html
     friendList.querySelectorAll('.friend-item').forEach(item => {
       item.addEventListener('click', () => {
-        const id = item.getAttribute('data-id');
-        window.location.href = `card.html?id=${id}`;
+        window.location.href = `card.html?id=${item.getAttribute('data-id')}`;
       });
     });
   }
 
-  function escapeHtml(t) {
-    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
   renderFriends();
 
-  // 搜索
   document.getElementById('searchInput').addEventListener('input', function(e) {
     renderFriends(e.target.value.trim());
   });
 
-  // 底栏
   const pageRoutes = {
     'chat': '../chat/phone.html',
     'name': 'friends.html',
@@ -244,5 +272,6 @@
   });
 })();
 </script>
+
 </body>
 </html>
