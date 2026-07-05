@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -273,9 +274,9 @@
       display: flex;
       align-items: center;
       justify-content: space-around;
-      padding: 8px 12px 14px 12px;
+      padding: 10px 4px calc(10px + env(safe-area-inset-bottom, 0px)) 4px;
       background: #ffffff;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid #ebebeb;
       flex-shrink: 0;
     }
 
@@ -284,17 +285,24 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      font-size: 12px;
-      color: #8e8e93;
+      font-size: 11px;
+      color: #b0b0b8;
       cursor: pointer;
       background: none;
       border: none;
-      padding: 6px 12px;
-      border-radius: 16px;
+      padding: 4px 16px;
+      border-radius: 12px;
       font-weight: 500;
       text-decoration: none;
       min-width: 60px;
-      transition: color 0.1s;
+      transition: color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-item svg {
+      width: 26px;
+      height: 26px;
+      transition: stroke 0.15s, fill 0.15s;
     }
 
     .nav-item.active {
@@ -302,13 +310,23 @@
       font-weight: 600;
     }
 
-    .nav-item span {
-      font-size: 20px;
-      line-height: 1;
+    .nav-item.active svg {
+      stroke: #1d1d1f;
+    }
+
+    .nav-item:not(.active) svg {
+      stroke: #b0b0b8;
+    }
+
+    .nav-icon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .nav-item:active {
-      background: #f4f4f4;
+      opacity: 0.6;
     }
 
     /* --- 弹窗 (样式不变, 保持原有) --- */
@@ -427,6 +445,7 @@
       display: none;
     }
   </style>
+
 </head>
 <body>
   <div class="app-container">
@@ -439,36 +458,63 @@
       <button class="add-btn" id="openCreateModalBtn">+</button>
     </div>
 
-    <div class="search-wrap">
-      <div class="search-box">
-        <span>🔍</span>
-        <input type="search" placeholder="搜索联系人" id="searchInput">
-      </div>
-    </div>
+<div class="search-wrap">
+  <div class="search-box">
+    <span>🔍</span>
+    <input type="search" placeholder="搜索联系人" id="searchInput">
+  </div>
+</div>
 
-    <div class="chat-list" id="chatListContainer"></div>
+<div class="chat-list" id="chatListContainer"></div>
 
-    <div class="bottom-nav">
-      <button class="nav-item active" data-page="chat">
-        <span>💬</span>
-        聊天
-      </button>
-      <button class="nav-item" data-page="name">
-        <span>👥</span>
-        通讯录
-      </button>
-      <button class="nav-item" data-page="search">
-        <span>🧭</span>
-        发现
-      </button>
-      <button class="nav-item" data-page="my">
-        <span>👤</span>
-        我
-      </button>
+<div class="bottom-nav">
+  <!-- 聊天 -->
+  <button class="nav-item active" data-page="chat">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
     </div>
+    聊天
+  </button>
+  <!-- 通讯录 -->
+  <button class="nav-item" data-page="name">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    通讯录
+  </button>
+  <!-- 发现 -->
+  <button class="nav-item" data-page="search">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
+    发现
+  </button>
+  <!-- 我 -->
+  <button class="nav-item" data-page="my">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    我
+  </button>
+</div>
+
   </div>
 
   <!-- 弹窗部分保持不变 -->
+
   <div class="modal-overlay" id="createModal">
     <div class="modal-card">
       <h3>新建角色</h3>
@@ -714,5 +760,6 @@
       renderChatList();
     })();
   </script>
+
 </body>
 </html>
