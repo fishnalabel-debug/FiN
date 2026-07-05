@@ -43,7 +43,6 @@
       border-bottom: 1px solid #f0f0f0;
       flex-shrink: 0;
       gap: 10px;
-      /* iOS 状态栏适配 */
       padding-top: max(10px, env(safe-area-inset-top));
       min-height: max(44px, calc(44px + env(safe-area-inset-top)));
     }
@@ -99,7 +98,6 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      /* 底部安全区 */
       padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
 
@@ -172,9 +170,12 @@
       font-family: inherit;
     }
 
+    /* 移除 textarea 的默认限制，允许无上限输入 */
     textarea.input-field {
       resize: vertical;
       min-height: 70px;
+      max-height: none;      /* 取消最大高度限制 */
+      overflow-y: visible;   /* 让内容自然伸展，不强制滚动 */
     }
 
     .voice-test-btn {
@@ -272,6 +273,15 @@
     .row .input-field {
       flex: 1;
     }
+
+    /* 小提示：备注风格 */
+    .field-hint {
+      font-size: 11px;
+      color: #8e8e93;
+      margin-top: -4px;
+      margin-bottom: 4px;
+      padding-left: 4px;
+    }
   </style>
 </head>
 <body>
@@ -295,11 +305,14 @@
           <input type="file" accept="image/*" id="avatarFileInput" class="hidden-file-input">
         </div>
         <div class="row">
-          <input type="text" class="input-field" id="charNameInput" placeholder="角色名称">
-          <input type="text" class="input-field" id="charRealNameInput" placeholder="真名">
+          <!-- 角色名称：这里明确为用户对 AI 的备注，让 AI 知道这是备注名 -->
+          <input type="text" class="input-field" id="charNameInput" placeholder="角色备注名（你给 AI 的称呼）">
+          <input type="text" class="input-field" id="charRealNameInput" placeholder="真名（可选）">
         </div>
-        <textarea class="input-field" id="charSignatureInput" placeholder="个性签名（将显示在聊天界面）"></textarea>
-        <textarea class="input-field" id="charPromptInput" placeholder="角色设定（AI系统提示词）"></textarea>
+        <div class="field-hint">💡 “角色备注名”是你给 AI 的称呼，AI 会知道这是你为它设置的备注。</div>
+        <textarea class="input-field" id="charSignatureInput" placeholder="个性签名（将显示在聊天界面）" style="min-height:60px;"></textarea>
+        <textarea class="input-field" id="charPromptInput" placeholder="角色设定 / AI 系统提示词 (无字数限制)" style="min-height:100px;"></textarea>
+        <!-- 无任何 maxlength 属性，完全无上限 -->
       </div>
 
       <!-- 语音设置 -->
@@ -541,17 +554,17 @@
         loadPresets();
       });
 
-      // ★ 保存
+      // ★ 保存 —— 无任何字数截断，保留完整内容
       document.getElementById('saveSettingsBtn').addEventListener('click', () => {
         const chars = getCharacters();
         const index = chars.findIndex(c => c.id == charId);
         if (index === -1) return;
 
-        chars[index].name = charNameInput.value.trim();
+        chars[index].name = charNameInput.value.trim();         // 备注名
         chars[index].realName = charRealNameInput.value.trim();
         chars[index].avatar = currentAvatarData;
         chars[index].signature = charSignatureInput.value.trim();
-        chars[index].aiPrompt = charPromptInput.value.trim();
+        chars[index].aiPrompt = charPromptInput.value.trim();   // 无上限
         chars[index].voiceApiKey = voiceApiKeyInput.value.trim();
         chars[index].voiceId = voiceIdInput.value.trim();
         chars[index].apiEndpoint = apiEndpointInput.value.trim();
