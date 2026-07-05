@@ -918,6 +918,30 @@ body.dark .summary-preset-textarea:focus { background: #222; }
     el._timer = setTimeout(() => el.classList.remove('show'), 2500);
   }
 
+  // ── 系统通知 ──
+  function requestNotificationPermission() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') return true;
+    if (Notification.permission !== 'denied') {
+      Notification.requestPermission();
+    }
+    return Notification.permission === 'granted';
+  }
+
+  function sendSystemNotification(title, body) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      try {
+        new Notification(title, { body, icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💌</text></svg>' });
+      } catch(e) {}
+    } else if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
+  // 尝试获取权限
+  requestNotificationPermission();
+
   // ── 渲染 ──
   function escapeHtml(t) {
     return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -967,6 +991,12 @@ body.dark .summary-preset-textarea:focus { background: #222; }
     meetData.messages = storyMessages;
     saveMeetStorage(meetData);
     renderFeed();
+    // AI 回复时发送系统通知
+    if (role === 'ai') {
+      const title = `${by} 回复了你`;
+      const body = content.length > 60 ? content.slice(0, 60) + '…' : content;
+      sendSystemNotification(title, body);
+    }
   }
 
   function showThinking() {
@@ -1104,7 +1134,7 @@ body.dark .summary-preset-textarea:focus { background: #222; }
     return context;
   }
 
-  // ── 调用 AI ──
+  // ── 调用 AI（超时 5 分钟） ──
   function callChatAPI(systemPrompt, messages) {
     const cfg = getApiConfig();
     if (!cfg.endpoint || !cfg.key) {
@@ -1119,7 +1149,7 @@ body.dark .summary-preset-textarea:focus { background: #222; }
       xhr.open('POST', apiUrl, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Authorization', `Bearer ${cfg.key}`);
-      xhr.timeout = 120000;
+      xhr.timeout = 300000; // 5 分钟
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
@@ -1133,7 +1163,7 @@ body.dark .summary-preset-textarea:focus { background: #222; }
         }
       };
       xhr.onerror = () => reject(new Error('网络错误'));
-      xhr.ontimeout = () => reject(new Error('请求超时'));
+      xhr.ontimeout = () => reject(new Error('请求超时（5分钟）'));
       xhr.send(JSON.stringify({
         model: cfg.model,
         messages: [{ role: 'system', content: systemPrompt }, ...messages]
@@ -1191,10 +1221,12 @@ ${contextInfo}
     const input = document.getElementById('userInput');
     const text = input.value.trim();
     if (text) {
+      // 有内容：只发送用户消息，不自动触发 AI
       addMessage('user', text, userName);
       input.value = '';
       input.style.height = 'auto';
     } else {
+      // 空输入：触发 AI 回复
       triggerAI();
     }
   });
