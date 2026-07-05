@@ -5,72 +5,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>发现 · 小手机</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #f5f5f7;
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f7f8fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
 
     .app-container {
-      width: 100%; max-width: 420px;
+      width: 100%;
+      max-width: 420px;
       height: 100vh;
-      max-height: 850px;
-      background: #ffffff;
-      display: flex; flex-direction: column;
-      box-shadow: 0 0 30px rgba(0,0,0,0.05);
-      overflow: hidden; position: relative;
+      background: #f7f8fa;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      padding-top: calc(env(safe-area-inset-top, 44px) + 4px);
+      padding-bottom: env(safe-area-inset-bottom, 20px);
     }
 
     .header {
-      padding: 14px 20px 10px 20px;
-      background: #ffffff;
-      display: flex; align-items: center; justify-content: center;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 12px 16px 8px 16px;
+      background: #f7f8fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      /* iOS 状态栏适配 */
-      padding-top: max(14px, env(safe-area-inset-top));
-      min-height: max(44px, calc(44px + env(safe-area-inset-top)));
     }
-    .header-title { font-size: 20px; font-weight: 620; color: #1d1d1f; letter-spacing: -0.3px; }
+    .header-title { font-size: 20px; font-weight: 650; color: #1d1d1f; letter-spacing: -0.3px; }
 
     .content {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
-      display: flex; flex-direction: column; gap: 10px;
-      /* 底部安全区 */
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      -webkit-overflow-scrolling: touch;
+      padding: 8px 16px 100px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f7f8fa;
+      scroll-behavior: smooth;
+    }
+
+    .group-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #b0b0b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 6px 4px 4px;
+      background: #f7f8fa;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .card-group {
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.02);
+      flex-shrink: 0;
     }
 
     .feature-card {
-      background: #ffffff; border: 1px solid #f0f0f0; border-radius: 20px;
-      padding: 16px 18px; display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; transition: background 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 1px solid #f5f5f7;
     }
-    .feature-card:hover { background: #fafafa; }
-    .feature-card:active { background: #f5f5f5; }
-    .feature-label { font-size: 16px; font-weight: 500; color: #1d1d1f; }
-    .feature-arrow { font-size: 18px; color: #c7c7cc; font-weight: 300; }
+    .feature-card:last-child { border-bottom: none; }
+    .feature-card:active { background: #f9f9f9; }
+
+    .feature-left { display: flex; align-items: center; gap: 12px; }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .feature-icon svg { width: 18px; height: 18px; }
+    .feature-label { font-size: 15px; font-weight: 500; color: #1d1d1f; }
+    .feature-arrow { font-size: 16px; color: #d0d0d5; }
+
+    .icon-moments { background: #fce8f0; }
+    .icon-moments svg { stroke: #e2708a; }
+    .icon-world { background: #e8f0fe; }
+    .icon-world svg { stroke: #5b8dee; }
+    .icon-meet { background: #e8f8ef; }
+    .icon-meet svg { stroke: #4caf7d; }
+    .icon-music { background: #ede8fe; }
+    .icon-music svg { stroke: #8b6de5; }
+    .icon-game { background: #fff8e1; }
+    .icon-game svg { stroke: #f4a940; }
+    .icon-shop { background: #fce8e8; }
+    .icon-shop svg { stroke: #e05a5a; }
 
     .bottom-nav {
-      display: flex; align-items: center; justify-content: space-around;
-      padding: 8px 12px 14px 12px;
-      background: #ffffff;
-      border-top: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 10px 4px calc(10px + env(safe-area-inset-bottom, 0px)) 4px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid #ebebeb;
       flex-shrink: 0;
-      /* 底部安全区 */
-      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
     }
     .nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      font-size: 12px; color: #8e8e93; cursor: pointer; transition: color 0.15s;
-      background: none; border: none; padding: 6px 12px; border-radius: 16px; font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #b0b0b8;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px 16px;
+      border-radius: 12px;
+      font-weight: 500;
+      min-width: 60px;
+      transition: color 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
+    .nav-item svg { width: 26px; height: 26px; transition: stroke 0.15s; }
     .nav-item.active { color: #1d1d1f; font-weight: 600; }
-    .nav-item span { font-size: 18px; line-height: 1; }
+    .nav-item.active svg { stroke: #1d1d1f; }
+    .nav-item:not(.active) svg { stroke: #b0b0b8; }
+    .nav-item:active { opacity: 0.6; }
   </style>
 </head>
 <body>
@@ -80,36 +159,135 @@
     </div>
 
     <div class="content">
-      <div class="feature-card" id="momentsCard">
-        <span class="feature-label">朋友圈</span>
-        <span class="feature-arrow">›</span>
-      </div>
-      <div class="feature-card" id="worldbookCard">
-        <span class="feature-label">世界书</span>
-        <span class="feature-arrow">›</span>
+      <!-- 社交 -->
+      <div class="group-label">社交</div>
+      <div class="card-group">
+        <div class="feature-card" id="momentsCard">
+          <div class="feature-left">
+            <div class="feature-icon icon-moments">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </div>
+            <span class="feature-label">朋友圈</span>
+          </div>
+          <span class="feature-arrow">›</span>
+        </div>
+        <div class="feature-card" id="worldbookCard">
+          <div class="feature-left">
+            <div class="feature-icon icon-world">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            </div>
+            <span class="feature-label">世界书</span>
+          </div>
+          <span class="feature-arrow">›</span>
+        </div>
+        <div class="feature-card" id="meetCard">
+          <div class="feature-left">
+            <div class="feature-icon icon-meet">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <span class="feature-label">见面</span>
+          </div>
+          <span class="feature-arrow">›</span>
+        </div>
       </div>
 
-      <div class="feature-card" id="meetCard">
-        <span class="feature-label">见面</span>
-        <span class="feature-arrow">›</span>
+      <!-- 娱乐 -->
+      <div class="group-label">娱乐</div>
+      <div class="card-group">
+        <div class="feature-card" id="musicCard">
+          <div class="feature-left">
+            <div class="feature-icon icon-music">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13"/>
+                <circle cx="6" cy="18" r="3"/>
+                <circle cx="18" cy="16" r="3"/>
+              </svg>
+            </div>
+            <span class="feature-label">音乐</span>
+          </div>
+          <span class="feature-arrow">›</span>
+        </div>
+        <div class="feature-card" id="gameCard">
+          <div class="feature-left">
+            <div class="feature-icon icon-game">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 11h4M8 9v4"/>
+                <circle cx="15" cy="12" r="1"/>
+                <circle cx="18" cy="10" r="1"/>
+                <path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v8z"/>
+              </svg>
+            </div>
+            <span class="feature-label">游戏</span>
+          </div>
+          <span class="feature-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- 生活 -->
+      <div class="group-label">生活</div>
+      <div class="card-group">
+        <div class="feature-card" id="shopCard">
+          <div class="feature-left">
+            <div class="feature-icon icon-shop">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <span class="feature-label">购物</span>
+          </div>
+          <span class="feature-arrow">›</span>
+        </div>
+      </div>
+
+      <div style="text-align:center; color:#c7c7cc; font-size:12px; padding:12px 0 4px; letter-spacing:0.3px;">
+        — 更多功能开发中 —
       </div>
     </div>
 
-    <!-- ★ 底栏：5个 -->
     <div class="bottom-nav">
       <button class="nav-item" data-page="chat">
-        <span>💬</span>聊天
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        聊天
       </button>
       <button class="nav-item" data-page="name">
-        <span>👥</span>通讯录
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        通讯录
       </button>
       <button class="nav-item active" data-page="search">
-        <span>🧭</span>发现
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        发现
       </button>
       <button class="nav-item" data-page="my">
-        <span>👤</span>我
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        我
       </button>
     </div>
+
   </div>
 
   <script>
@@ -120,30 +298,26 @@
         'search': 'search.html',
         'my': '../my/my.html'
       };
-
       document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
         item.addEventListener('click', function() {
           const page = this.getAttribute('data-page');
           if (page === 'search') return;
-          const targetUrl = pageRoutes[page];
-          if (targetUrl) {
-            window.location.href = targetUrl;
-          }
+          if (pageRoutes[page]) window.location.href = pageRoutes[page];
         });
       });
 
-      document.getElementById('momentsCard').addEventListener('click', () => {
-        window.location.href = '朋友圈.html';
-      });
+      document.getElementById('momentsCard').addEventListener('click', () => { window.location.href = '朋友圈.html'; });
+      document.getElementById('worldbookCard').addEventListener('click', () => { window.location.href = 'world.html'; });
+      document.getElementById('meetCard').addEventListener('click', () => { window.location.href = 'meet.html'; });
+      document.getElementById('musicCard').addEventListener('click', () => { alert('🎵 音乐功能开发中~'); });
+      document.getElementById('gameCard').addEventListener('click', () => { alert('🎮 游戏功能开发中~'); });
 
-      document.getElementById('worldbookCard').addEventListener('click', () => {
-        window.location.href = 'world.html';
-      });
-
-      document.getElementById('meetCard').addEventListener('click', () => {
-        window.location.href = 'meet.html';
+      // ===== 购物 → 跳转到 购物.html =====
+      document.getElementById('shopCard').addEventListener('click', () => {
+        window.location.href = '购物.html';
       });
     })();
   </script>
+
 </body>
 </html>
