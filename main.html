@@ -4,9 +4,9 @@
 <head>
   <link rel="apple-touch-icon" href="FiN.jpg">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="no">
-  <meta name="mobile-web-app-capable" content="no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="FiN">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.json">
@@ -41,7 +41,7 @@ flex-direction: column;
 
 /* ── 顶部安全区留白 ── */
 .status-bar-space {
-height: 16px;  /* 非全屏模式，系统状态栏已占位，这里只需少量间距 */
+height: calc(var(–safe-top) + 40px);
 flex-shrink: 0;
 }
 
@@ -54,7 +54,7 @@ scroll-snap-type: x mandatory;
 display: flex;
 scrollbar-width: none;
 -webkit-overflow-scrolling: touch;
-padding-top: 8px;  /* 增加一点上边距，让内容更靠下 */
+padding-top: 8px;
 }
 .pages-container::-webkit-scrollbar { display: none; }
 
@@ -71,167 +71,424 @@ scrollbar-width: none;
 .page::-webkit-scrollbar { display: none; }
 
 /* ════════════════════
-시계 위젯 — Clock Widget
+第一页新版布局
 ════════════════════ */
-.clock-widget {
-padding: 14px 22px 12px;
-background: rgba(255,255,255,0.82);
-backdrop-filter: blur(24px) saturate(180%);
--webkit-backdrop-filter: blur(24px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-border-radius: 26px;
+.p1-layout-row {
 display: flex;
-align-items: center;
+gap: 10px;
 justify-content: space-between;
-flex-shrink: 0;
-box-shadow: 0 2px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-position: relative;
-overflow: hidden;
 }
-.clock-widget::before {
-content: ‘’;
-position: absolute;
-top: 0; left: 0; right: 0;
-height: 1px;
-background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
-}
-.clock-left { display: flex; flex-direction: column; gap: 2px; }
-.clock-time {
-font-size: 46px;
-font-weight: 200;
-color: var(–ink);
-letter-spacing: -1px;
-line-height: 1;
-font-variant-numeric: tabular-nums;
-}
-.clock-ampm {
-font-size: 11px;
-font-weight: 500;
-color: var(–soft);
-letter-spacing: 0.06em;
-text-transform: uppercase;
-margin-top: 2px;
-}
-.clock-right { text-align: right; }
-.date-day {
-font-size: 17px;
-color: var(–ink);
-font-weight: 600;
-letter-spacing: -0.3px;
-}
-.date-full {
-font-size: 12px;
-color: var(–soft);
-margin-top: 3px;
-font-weight: 400;
-}
-.clock-divider {
-width: 1px;
-height: 38px;
-background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.08), transparent);
-margin: 0 18px;
-flex-shrink: 0;
+.p1-layout-col {
+display: flex;
+flex-direction: column;
+gap: 10px;
+flex: 1;
 }
 
-/* ════════════════════
-情侣小组件
-════════════════════ */
-.couple-widget {
-background: rgba(255,255,255,0.82);
-backdrop-filter: blur(24px) saturate(180%);
--webkit-backdrop-filter: blur(24px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
+/* 正方形组件 - 情侣空间 P1风格 (图1: 白色系, 双头像圆形, 天数居中) */
+.p1-square-widget {
+aspect-ratio: 1 / 1;
+width: 100%;
+background: #ffffff;
 border-radius: 22px;
-padding: 13px 16px;
+padding: 0;
+position: relative;
+display: flex;
+flex-direction: column;
+box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
+overflow: hidden;
+cursor: pointer;
+}
+.p1-square-widget .bg-img {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+z-index: 0;
+}
+.p1-square-widget .bg-overlay {
+position: absolute;
+inset: 0;
+background: rgba(255,255,255,0.55);
+backdrop-filter: blur(0px);
+z-index: 1;
+pointer-events: none;
+}
+.p1-square-widget .content {
+position: relative;
+z-index: 2;
+display: flex;
+flex-direction: column;
+height: 100%;
+align-items: center;
+justify-content: center;
+padding: 14px 10px;
+gap: 6px;
+}
+/* 双头像排排坐 */
+.p1-sq-avatars-row {
 display: flex;
 align-items: center;
-gap: 13px;
-cursor: pointer;
-flex-shrink: 0;
-box-shadow: 0 2px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
-transition: transform 0.15s ease, opacity 0.15s ease;
+gap: 0;
+justify-content: center;
 }
-.couple-widget:active { transform: scale(0.97); opacity: 0.85; }
-.couple-avatars { display: flex; align-items: center; flex-shrink: 0; }
-.couple-avatar {
-width: 40px;
-height: 40px;
+.p1-sq-avatar {
+width: 44px;
+height: 44px;
 border-radius: 50%;
+background: #f0f0f0;
 overflow: hidden;
-background: linear-gradient(135deg, #f0ecfd, #e3dcfb);
-border: 2px solid #ffffff;
+border: 2.5px solid white;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 display: flex;
 align-items: center;
 justify-content: center;
-font-size: 17px;
-box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+font-size: 18px;
+position: relative;
+cursor: pointer;
+transition: transform 0.15s ease;
 }
-.couple-avatar:last-child { margin-left: -12px; }
-.couple-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.couple-info { flex: 1; min-width: 0; }
-.couple-title {
+.p1-sq-avatar:active { transform: scale(0.9); }
+.p1-sq-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.p1-sq-avatar:first-child { z-index: 2; }
+.p1-sq-avatar:last-child { z-index: 1; margin-left: -10px; }
+/* 中心爱心连线 */
+.p1-sq-connector {
+display: flex;
+align-items: center;
+justify-content: center;
 font-size: 14px;
-font-weight: 600;
-color: var(–ink);
-letter-spacing: -0.2px;
+z-index: 3;
+margin: 0 -2px;
+filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
 }
-.couple-subtitle {
+/* 天数 */
+.p1-sq-days-row {
+display: flex;
+align-items: baseline;
+gap: 3px;
+margin-top: 4px;
+}
+.p1-sq-days {
+font-size: 40px;
+font-weight: 300;
+color: #1d1d1f;
+letter-spacing: -1.5px;
+line-height: 1;
+font-variant-numeric: tabular-nums;
+}
+.p1-sq-days-label {
+font-size: 14px;
+color: #8e8e93;
+font-weight: 500;
+letter-spacing: 0.5px;
+}
+/* 名字标签行 */
+.p1-sq-names-row {
+display: flex;
+align-items: center;
+gap: 6px;
+justify-content: center;
+}
+.p1-sq-name {
 font-size: 11px;
-color: var(–soft);
-margin-top: 1px;
+font-weight: 500;
+color: #555;
+background: rgba(255,255,255,0.75);
+backdrop-filter: blur(8px);
+padding: 2px 9px;
+border-radius: 20px;
+border: 0.5px solid rgba(0,0,0,0.07);
+max-width: 60px;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+text-align: center;
 }
-.couple-chevron {
-color: #c7c7cc;
-font-size: 13px;
-font-weight: 600;
+/* 底部背景上传按钮提示 */
+.p1-sq-upload-hint {
+position: absolute;
+bottom: 8px;
+right: 8px;
+z-index: 3;
+width: 22px; height: 22px;
+border-radius: 50%;
+background: rgba(0,0,0,0.22);
+color: #fff;
+font-size: 10px;
+display: flex; align-items: center; justify-content: center;
+opacity: 0;
+transition: opacity .2s;
+cursor: pointer;
+}
+.p1-square-widget:hover .p1-sq-upload-hint,
+.p1-square-widget:active .p1-sq-upload-hint { opacity: 1; }
+/* 兼容旧选择器 */
+.p1-sq-hearts { display: none; }
+.p1-sq-bottom { display: none; }
+.p1-sq-msg { display: none; }
+.p1-sq-partner-avatar { display: none; }
+.p1-sq-top { display: none; }
+
+/* 正方形组件 - 文字卡片 P3风格 (图2: 上图下文, 灰调) */
+.p1-square-text {
+aspect-ratio: 1 / 1;
+width: 100%;
+background: #f5f5f7;
+border-radius: 22px;
+padding: 0;
+display: flex;
+flex-direction: column;
+box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
+overflow: hidden;
+position: relative;
+cursor: pointer;
+}
+/* 上部图片区域 */
+.p1-st-img-zone {
+flex: 1;
+position: relative;
+overflow: hidden;
+background: #e0e0e3;
+display: flex;
+align-items: center;
+justify-content: center;
+min-height: 0;
+cursor: pointer;
+}
+.p1-st-img-zone .bg-img {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+z-index: 0;
+}
+.p1-st-img-placeholder {
+font-size: 32px;
+opacity: 0.3;
+z-index: 1;
+position: relative;
+}
+.p1-st-img-upload-hint {
+position: absolute;
+top: 8px; right: 8px;
+z-index: 3;
+width: 22px; height: 22px;
+border-radius: 50%;
+background: rgba(0,0,0,0.22);
+color: #fff;
+font-size: 10px;
+display: flex; align-items: center; justify-content: center;
+opacity: 0;
+transition: opacity .2s;
+}
+.p1-st-img-zone:hover .p1-st-img-upload-hint,
+.p1-st-img-zone:active .p1-st-img-upload-hint { opacity: 1; }
+/* 右上角角标 (仿图2的第3名角标) */
+.p1-st-badge {
+position: absolute;
+top: 8px; right: 8px;
+z-index: 4;
+background: #f5b731;
+color: white;
+border-radius: 10px;
+font-size: 11px;
+font-weight: 700;
+padding: 2px 7px;
+display: flex; align-items: center; gap: 3px;
+box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+/* 下部文字区域 */
+.p1-square-text .content {
 flex-shrink: 0;
+background: #f5f5f7;
+padding: 10px 12px 12px;
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+.p1-st-title {
+font-size: 11px;
+font-weight: 600;
+color: #8e8e93;
+letter-spacing: 0.04em;
+text-transform: none;
+display: none;
+}
+.p1-st-body {
+font-size: 11.5px;
+color: #333;
+font-weight: 400;
+letter-spacing: 0.3px;
+line-height: 1.6;
+word-break: break-word;
 }
 
-/* ════════════════════
-应用网格
-════════════════════ */
-.app-grid {
+/* 长方形组件 P2风格 (图3: 照片选择器, 白底, 2格图片+使用按钮) */
+.p1-long-widget {
+width: 100%;
+background: #ffffff;
+border-radius: 22px;
+padding: 14px 16px 14px;
+box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
+overflow: hidden;
+min-height: 110px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+/* 隐藏旧元素 */
+.p1-long-widget .bg-img { display: none !important; }
+.p1-long-text { display: none; }
+.p1-long-extra { display: none; }
+.p1-long-widget .content { display: none; }
+
+/* 标题行 */
+.p1-lw-title {
+font-size: 12px;
+color: #8e8e93;
+font-weight: 500;
+letter-spacing: 0.04em;
+text-align: center;
+}
+/* 图片格子行 */
+.p1-lw-photos {
+display: flex;
+gap: 10px;
+align-items: stretch;
+flex: 1;
+}
+.p1-lw-photo {
+flex: 1;
+aspect-ratio: 1 / 1;
+border-radius: 14px;
+background: #f2f2f7;
+overflow: hidden;
+position: relative;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+transition: transform 0.15s ease;
+border: 0.5px solid rgba(0,0,0,0.05);
+}
+.p1-lw-photo:active { transform: scale(0.95); }
+.p1-lw-photo img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.p1-lw-photo-plus {
+font-size: 24px;
+color: #c7c7cc;
+font-weight: 200;
+line-height: 1;
+}
+/* 使用按钮 */
+.p1-lw-btn {
+width: 100%;
+background: #f2f2f7;
+border: none;
+border-radius: 100px;
+padding: 9px 0;
+font-size: 14px;
+font-weight: 500;
+color: #8e8e93;
+cursor: pointer;
+text-align: center;
+letter-spacing: 0.02em;
+transition: background 0.15s ease;
+-webkit-tap-highlight-color: transparent;
+}
+.p1-lw-btn:active { background: #e5e5ea; }
+
+/* 2x2 应用网格 (调整后的布局) */
+.p1-grid-2x2 {
 display: grid;
-grid-template-columns: repeat(4, 1fr);
-gap: 16px 6px;
-padding: 2px 0;
+grid-template-columns: 1fr 1fr;
+grid-template-rows: 1fr 1fr;
+gap: 8px;
+aspect-ratio: 1 / 1;
+width: 100%;
 }
 .app-item {
 display: flex;
 flex-direction: column;
 align-items: center;
-gap: 6px;
+gap: 4px;
 cursor: pointer;
 padding: 2px 0;
 -webkit-tap-highlight-color: transparent;
 }
 .app-item:active .app-icon { transform: scale(0.88); opacity: 0.75; }
 .app-icon {
-width: 58px;
-height: 58px;
-border-radius: 15px;
+width: 48px;
+height: 48px;
+border-radius: 14px;
 background: var(–card);
-border: 1px solid rgba(0,0,0,0.05);
+border: 1px solid rgba(0,0,0,0.03);
 display: flex;
 align-items: center;
 justify-content: center;
 overflow: hidden;
-box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.04);
+box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 transition: transform 0.15s ease, opacity 0.15s ease;
 }
 .app-icon img { width: 100%; height: 100%; object-fit: cover; }
-.app-icon .icon-fallback { font-size: 26px; }
+.app-icon .icon-fallback { font-size: 22px; }
 .app-name {
-font-size: 11px;
+font-size: 10px;
 color: var(–soft);
 text-align: center;
-max-width: 64px;
+max-width: 56px;
 white-space: nowrap;
 overflow: hidden;
 text-overflow: ellipsis;
 font-weight: 400;
 letter-spacing: 0.01em;
 }
+
+/* ════════════════════
+底部悬浮胶囊 Dock
+════════════════════ */
+.bottom-dock {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 0 0 calc(var(–safe-bottom) + 8px);
+flex-shrink: 0;
+pointer-events: none;
+}
+.dock-inner {
+display: flex;
+justify-content: space-around;
+align-items: center;
+background: rgba(255,255,255,0.65);
+backdrop-filter: blur(30px) saturate(180%);
+-webkit-backdrop-filter: blur(30px) saturate(180%);
+border: 0.5px solid rgba(255,255,255,0.9);
+border-radius: 30px;
+padding: 8px 12px;
+width: 90%;
+max-width: 380px;
+box-shadow: 0 4px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+pointer-events: auto;
+}
+.dock-item {
+width: 44px;
+height: 44px;
+border-radius: 12px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+font-size: 22px;
+transition: transform 0.15s ease, opacity 0.15s ease;
+box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.02);
+overflow: hidden;
+background: white;
+}
+.dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+.dock-item:active { transform: scale(0.88); opacity: 0.7; }
 
 /* ════════════════════
 页面指示器
@@ -257,51 +514,7 @@ background: rgba(0,0,0,0.5);
 }
 
 /* ════════════════════
-底部 Dock
-════════════════════ */
-.bottom-dock {
-display: flex;
-justify-content: space-around;
-align-items: center;
-padding: 6px 20px calc(var(–safe-bottom) + 6px);
-flex-shrink: 0;
-background: rgba(255,255,255,0.65);
-backdrop-filter: blur(30px) saturate(180%);
--webkit-backdrop-filter: blur(30px) saturate(180%);
-border-top: 0.5px solid rgba(0,0,0,0.08);
-}
-.dock-inner {
-display: flex;
-justify-content: space-around;
-align-items: center;
-background: rgba(255,255,255,0.55);
-backdrop-filter: blur(20px);
--webkit-backdrop-filter: blur(20px);
-border: 0.5px solid rgba(255,255,255,0.9);
-border-radius: 26px;
-padding: 10px 16px;
-width: 100%;
-box-shadow: 0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
-}
-.dock-item {
-width: 52px;
-height: 52px;
-border-radius: 15px;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-font-size: 26px;
-transition: transform 0.15s ease, opacity 0.15s ease;
-box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.04);
-overflow: hidden;
-background: white;
-}
-.dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
-.dock-item:active { transform: scale(0.88); opacity: 0.7; }
-
-/* ════════════════════
-情侣弹窗
+情侣弹窗 (不变)
 ════════════════════ */
 .modal-overlay {
 position: fixed;
@@ -449,7 +662,31 @@ box-shadow: 0 2px 12px rgba(29,29,31,0.2);
 .btn-confirm:disabled { opacity: 0.25; pointer-events: none; }
 .btn:active { transform: scale(0.97); }
 
-/* 音乐小组件 */
+/* ── 拖拽排序 ── */
+@keyframes icon-jiggle {
+0%   { transform: rotate(-1.6deg); }
+25%  { transform: rotate(1.6deg); }
+50%  { transform: rotate(-1.6deg); }
+75%  { transform: rotate(1.6deg); }
+100% { transform: rotate(-1.6deg); }
+}
+.jiggling {
+animation: icon-jiggle 0.26s ease-in-out infinite;
+animation-delay: calc(var(–jiggle-i, 0) * 0.045s);
+}
+.drag-dragging {
+opacity: 0.35;
+}
+.drag-ghost {
+position: fixed;
+z-index: 999;
+pointer-events: none;
+transform: scale(1.12);
+filter: drop-shadow(0 8px 18px rgba(0,0,0,0.28));
+transition: none;
+}
+
+/* ── 第二页固有样式 (不动) ── */
 .music-widget-sm {
 background: rgba(255,255,255,0.82);
 backdrop-filter: blur(24px) saturate(180%);
@@ -484,9 +721,6 @@ font-size: 15px; cursor: pointer; color: var(–soft);
 .sm-btn.play { background: var(–ink); color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(29,29,31,0.18); }
 .sm-btn:active { transform: scale(0.86); opacity: 0.65; }
 
-/* ════════════════════
-第二页 大音乐组件
-════════════════════ */
 .music-widget-lg {
 background: rgba(255,255,255,0.82);
 backdrop-filter: blur(24px) saturate(180%);
@@ -571,16 +805,11 @@ background: var(–ink); color: white; font-size: 17px;
 box-shadow: 0 3px 10px rgba(29,29,31,.2);
 }
 
-/* ════════════════════
-第二页 下半区布局
-════════════════════ */
 .p2-bottom {
 display: flex;
 gap: 10px;
 align-items: stretch;
 }
-
-/* 左侧2×2 app占位 */
 .p2-apps {
 display: grid;
 grid-template-columns: 1fr 1fr;
@@ -589,8 +818,6 @@ gap: 10px 2px;
 flex: 1;
 align-content: center;
 }
-
-/* 右侧竖条区 */
 .p2-strips {
 flex:1;
 aspect-ratio:1/1;
@@ -634,7 +861,6 @@ font-size: 14px; color: var(–soft);
 line-height: 20px; text-align: center;
 }
 
-/* 第二页 4 个功能 App（记忆/角色/衣柜/储藏室）— 支持点击跳转 + 更换图标 */
 .p2-func-app { position: relative; }
 .p2-func-editbtn {
 position: absolute;
@@ -653,136 +879,6 @@ transition: opacity .15s ease;
 .p2-func-app:hover .p2-func-editbtn,
 .p2-func-app:active .p2-func-editbtn { opacity: 1; }
 
-/* ════════════════════
-第一页 - 情侣时钟卡片（图3款式）
-════════════════════ */
-.p3-clock-card {
-position: relative;
-border-radius: 26px;
-overflow: hidden;
-flex-shrink: 0;
-height: 128px;
-cursor: pointer;
-background: #dfe3ea linear-gradient(135deg, #e6e9f0, #d5dae4);
-box-shadow: 0 2px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
-}
-.p3-clock-card img.p3-clock-bg {
-position: absolute;
-inset: 0;
-width: 100%; height: 100%;
-object-fit: cover;
-display: block;
-}
-.p3-clock-card::after {
-content: ‘’;
-position: absolute; inset: 0;
-background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.18) 100%);
-pointer-events: none;
-}
-.p3-clock-topbar {
-position: absolute;
-top: 10px; left: 12px; right: 12px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-z-index: 2;
-}
-.p3-clock-user {
-display: flex;
-align-items: center;
-gap: 6px;
-}
-.p3-clock-avatar {
-width: 22px; height: 22px;
-border-radius: 50%;
-overflow: hidden;
-background: rgba(60,60,60,0.55);
-display: flex; align-items: center; justify-content: center;
-font-size: 11px; color: #fff;
-flex-shrink: 0;
-border: 1px solid rgba(255,255,255,0.6);
-}
-.p3-clock-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.p3-clock-name {
-font-size: 12px;
-font-weight: 600;
-color: rgba(255,255,255,0.95);
-text-shadow: 0 1px 3px rgba(0,0,0,0.35);
-}
-.p3-clock-stars { display: flex; gap: 4px; font-size: 13px; color: #ffd76b; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-.p3-clock-center {
-position: absolute;
-top: 42px; left: 0; right: 0;
-text-align: center;
-z-index: 2;
-}
-.p3-clock-time {
-font-size: 26px;
-font-weight: 600;
-color: #fff;
-letter-spacing: 0.5px;
-text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-font-variant-numeric: tabular-nums;
-}
-.p3-clock-msg {
-font-size: 12px;
-color: rgba(255,255,255,0.92);
-margin-top: 3px;
-text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-cursor: text;
-}
-.p3-clock-bottom {
-position: absolute;
-bottom: 10px; right: 12px;
-display: flex;
-align-items: center;
-gap: 6px;
-z-index: 2;
-}
-.p3-clock-bubble {
-background: rgba(255,255,255,0.85);
-backdrop-filter: blur(8px);
-border-radius: 14px;
-padding: 5px 12px;
-font-size: 11px;
-color: #444;
-font-weight: 500;
-cursor: text;
-max-width: 130px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-}
-.p3-clock-avatar-sm {
-width: 26px; height: 26px;
-border-radius: 50%;
-overflow: hidden;
-background: linear-gradient(135deg,#e9c9cf,#d9b9c2);
-border: 1.5px solid rgba(255,255,255,0.9);
-flex-shrink: 0;
-display: flex; align-items: center; justify-content: center;
-font-size: 12px;
-}
-.p3-clock-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-.p3-clock-editbtn {
-position: absolute;
-top: 8px; right: 10px;
-width: 22px; height: 22px;
-border-radius: 50%;
-background: rgba(0,0,0,0.32);
-color: #fff;
-font-size: 11px;
-display: flex; align-items: center; justify-content: center;
-z-index: 3;
-opacity: 0;
-transition: opacity .15s ease;
-}
-.p3-clock-card:hover .p3-clock-editbtn,
-.p3-clock-card:active .p3-clock-editbtn { opacity: 1; }
-
-/* ════════════════════
-第二页 - 背景卡片组件（熊熊卡片款式，支持自定义背景图）
-════════════════════ */
 .p2-hero-card {
 position: relative;
 flex-shrink: 0;
@@ -911,10 +1007,6 @@ letter-spacing: -1px;
 font-variant-numeric: tabular-nums;
 text-shadow: 0 1px 2px rgba(255,255,255,0.3);
 }
-
-/* ════════════════════
-第二页 - 消息气泡小组件（图4款式）
-════════════════════ */
 .p4-bubbles {
 display: flex;
 flex-direction: column;
@@ -959,32 +1051,6 @@ overflow: hidden;
 text-overflow: ellipsis;
 box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
 }
-
-/* ════════════════════
-拖拽排序（iOS 长按抖动风格）
-════════════════════ */
-@keyframes icon-jiggle {
-0%   { transform: rotate(-1.6deg); }
-25%  { transform: rotate(1.6deg); }
-50%  { transform: rotate(-1.6deg); }
-75%  { transform: rotate(1.6deg); }
-100% { transform: rotate(-1.6deg); }
-}
-.jiggling {
-animation: icon-jiggle 0.26s ease-in-out infinite;
-animation-delay: calc(var(–jiggle-i, 0) * 0.045s);
-}
-.drag-dragging {
-opacity: 0.35;
-}
-.drag-ghost {
-position: fixed;
-z-index: 999;
-pointer-events: none;
-transform: scale(1.12);
-filter: drop-shadow(0 8px 18px rgba(0,0,0,0.28));
-transition: none;
-}
 </style>
 
 </head>
@@ -996,61 +1062,117 @@ transition: none;
 
   <div class="pages-container" id="pagesContainer">
 
-<!-- ★ 第一页 -->
-
-<div class="page">
-  <div class="p3-clock-card" id="p3ClockCard">
-    <img class="p3-clock-bg" id="p3ClockBg" src="" style="display:none;">
-    <div class="p3-clock-editbtn" id="p3ClockEditBtn" title="更换背景图">🖼</div>
-    <div class="p3-clock-topbar">
-      <div class="p3-clock-user">
-        <div class="p3-clock-avatar" id="p3ClockUserAvatar">🐰</div>
-        <div class="p3-clock-name" id="p3ClockUserName" contenteditable="true" spellcheck="false">장이빈</div>
-      </div>
-      <div class="p3-clock-stars">★ ★</div>
-    </div>
-    <div class="p3-clock-center">
-      <div class="p3-clock-time" id="bigTime">00:00</div>
-      <div class="p3-clock-msg" id="p3ClockMsg" contenteditable="true" spellcheck="false">사랑해</div>
-    </div>
-    <div class="p3-clock-bottom">
-      <div class="p3-clock-bubble" id="p3ClockBubble" contenteditable="true" spellcheck="false">사랑해</div>
-      <div class="p3-clock-avatar-sm" id="p3ClockPartnerAvatar">🐨</div>
-    </div>
-  </div>
-  <input type="file" accept="image/*" id="p3ClockBgUpload" style="display:none;">
-  <input type="file" accept="image/*" id="p3ClockAvatarUpload" style="display:none;">
-
-  <div class="couple-widget" id="coupleWidget">
-    <div class="couple-avatars" id="coupleAvatars">
-      <div class="couple-avatar">💑</div>
-      <div class="couple-avatar">❤️</div>
-    </div>
-    <div class="couple-info">
-      <div class="couple-title">情侣空间</div>
-      <div class="couple-subtitle" id="coupleSubtitle">点击设置情侣</div>
-    </div>
-    <div class="couple-chevron">›</div>
-  </div>
-
-  <div class="app-grid" id="sortGrid-p1">
-    <div class="app-item" data-app="phone"><div class="app-icon"><img src="chat/chat.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💬</span>';"></div><span class="app-name">聊天</span></div>
-    <div class="app-item" data-app="diary"><div class="app-icon"><img src="diary/diary.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📔</span>';"></div><span class="app-name">日记</span></div>
-    <div class="app-item" data-app="music"><div class="app-icon"><img src="music/music.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎵</span>';"></div><span class="app-name">音乐</span></div>
-    <div class="app-item" data-app="novel"><div class="app-icon"><img src="novel/novel.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📖</span>';"></div><span class="app-name">阅读</span></div>
-    <div class="app-item" data-app="icon"><div class="app-icon"><img src="icon/icon.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎨</span>';"></div><span class="app-name">桌面美化</span></div>
-    <div class="app-item" data-app="forum"><div class="app-icon"><img src="forum/forum.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">论坛</span></div>
-    <div class="app-item" data-app="takeout"><div class="app-icon"><img src="takeout/takeout.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🛵</span>';"></div><span class="app-name">外卖</span></div>
-    <div class="app-item" data-app="plan"><div class="app-icon"><img src="plan/plan.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">计划</span></div>
-  </div>
-</div>
-
-<!-- ★ 第二页 - 音乐 → 8个图标 → 照片墙+4个图标 -->
+<!-- ★ 第一页 (全新排版) -->
 
 <div class="page" style="gap:10px;">
 
-  <!-- 背景图卡片（可更换背景，参考熊熊卡片款式） -->
+  <!-- 第一行：左正方形 + 右2x2图标 (聊天、日记、计划、桌面美化) -->
 
+  <div class="p1-layout-row">
+    <!-- 左侧正方形 - 情侣空间 -->
+    <div class="p1-layout-col">
+      <div class="p1-square-widget" id="p1SquareCouple">
+        <img class="bg-img" id="p1CoupleBg" src="" style="display:none;">
+        <div class="bg-overlay" id="p1CoupleOverlay" style="display:none;"></div>
+        <div class="content">
+          <!-- 双头像 -->
+          <div class="p1-sq-avatars-row">
+            <div class="p1-sq-avatar" id="p1CoupleAvatar1" title="点击换头像">🐶</div>
+            <div class="p1-sq-connector">🤍</div>
+            <div class="p1-sq-avatar" id="p1CoupleAvatar2" title="点击换头像">🐱</div>
+          </div>
+          <!-- 名字 -->
+          <div class="p1-sq-names-row">
+            <div class="p1-sq-name" id="p1CoupleName1" contenteditable="true" spellcheck="false">我</div>
+            <div class="p1-sq-name" id="p1CoupleName2" contenteditable="true" spellcheck="false">你</div>
+          </div>
+          <!-- 天数 -->
+          <div class="p1-sq-days-row">
+            <div class="p1-sq-days" id="p1SqDays">610</div>
+            <div class="p1-sq-days-label">天</div>
+          </div>
+        </div>
+        <!-- 背景上传提示 -->
+        <div class="p1-sq-upload-hint" id="p1CoupleUploadHint" title="更换背景">🖼</div>
+      </div>
+      <!-- 隐藏上传控件 -->
+      <input type="file" accept="image/*" id="p1CoupleBgUpload" style="display:none;">
+      <input type="file" accept="image/*" id="p1CoupleAvatar1Upload" style="display:none;">
+      <input type="file" accept="image/*" id="p1CoupleAvatar2Upload" style="display:none;">
+    </div>
+
+<!-- 右侧 2x2 网格 -->
+<div class="p1-layout-col">
+  <div class="p1-grid-2x2" id="sortGrid-p1-left">
+    <div class="app-item" data-app="chat"><div class="app-icon"><img src="chat/chat.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💬</span>';"></div><span class="app-name">聊天</span></div>
+    <div class="app-item" data-app="diary"><div class="app-icon"><img src="diary/diary.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📔</span>';"></div><span class="app-name">日记</span></div>
+    <div class="app-item" data-app="plan"><div class="app-icon"><img src="plan/plan.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">计划</span></div>
+    <div class="app-item" data-app="icon"><div class="app-icon"><img src="icon/icon.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎨</span>';"></div><span class="app-name">桌面美化</span></div>
+  </div>
+</div>
+
+  </div>
+
+  <!-- 第二行：左2x2网格 + 右正方形 (文字卡片) -->
+
+  <div class="p1-layout-row">
+    <div class="p1-layout-col">
+      <div class="p1-grid-2x2" id="sortGrid-p1-right">
+        <div class="app-item" data-app="music"><div class="app-icon"><img src="music/music.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎵</span>';"></div><span class="app-name">音乐</span></div>
+        <div class="app-item" data-app="novel"><div class="app-icon"><img src="novel/novel.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📖</span>';"></div><span class="app-name">阅读</span></div>
+        <div class="app-item" data-app="forum"><div class="app-icon"><img src="forum/forum.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">论坛</span></div>
+        <div class="app-item" data-app="takeout"><div class="app-icon"><img src="takeout/takeout.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🛵</span>';"></div><span class="app-name">外卖</span></div>
+      </div>
+    </div>
+
+<div class="p1-layout-col">
+  <div class="p1-square-text" id="p1SquareText">
+    <!-- 上部图片区 -->
+    <div class="p1-st-img-zone" id="p1TextImgZone">
+      <img class="bg-img" id="p1TextBg" src="" style="display:none;">
+      <div class="p1-st-img-placeholder" id="p1TextImgPlaceholder">🐰</div>
+      <div class="p1-st-img-upload-hint">🖼</div>
+    </div>
+    <!-- 下部文字区 -->
+    <div class="content">
+      <div class="p1-st-body" id="p1TextBody" contenteditable="true" spellcheck="false">也许此刻的你有些疲惫，也许前路仍有迷茫，但请记得，每一次不放弃都是力量。</div>
+    </div>
+  </div>
+  <input type="file" accept="image/*" id="p1TextBgUpload" style="display:none;">
+</div>
+
+  </div>
+
+  <!-- 第三行：长方形组件 P2风格 (照片选择器) -->
+
+  <div class="p1-long-widget" id="p1LongWidget">
+    <!-- 保留旧元素保持JS兼容 (隐藏) -->
+    <img class="bg-img" id="p1LongBg" src="" style="display:none;">
+    <div class="content" style="display:none;">
+      <div class="p1-long-text" id="p1LongText" contenteditable="true" spellcheck="false">🌟 好心情，不设限。每天都是新的起点，带着热爱出发吧！</div>
+      <div class="p1-long-extra" id="p1LongExtra" contenteditable="true" spellcheck="false">今天也要加油呀 🍀</div>
+    </div>
+    <!-- 新UI -->
+    <div class="p1-lw-title" id="p1LwTitle">选择照片</div>
+    <div class="p1-lw-photos">
+      <div class="p1-lw-photo" id="p1LwPhoto1">
+        <div class="p1-lw-photo-plus">＋</div>
+      </div>
+      <div class="p1-lw-photo" id="p1LwPhoto2">
+        <div class="p1-lw-photo-plus">＋</div>
+      </div>
+    </div>
+    <button class="p1-lw-btn" id="p1LwBtn">使用</button>
+  </div>
+  <input type="file" accept="image/*" id="p1LongBgUpload" style="display:none;">
+  <input type="file" accept="image/*" id="p1LwPhoto1Upload" style="display:none;">
+  <input type="file" accept="image/*" id="p1LwPhoto2Upload" style="display:none;">
+
+</div>
+
+<!-- ★ 第二页 (完全保留不动) -->
+
+<div class="page" style="gap:10px;">
   <div class="p2-hero-card" id="p2HeroCard">
     <img class="p2-hero-bg" id="p2HeroBg" src="" style="display:none;">
     <div class="p2-hero-editbtn" id="p2HeroEditBtn" title="更换背景图">🖼</div>
@@ -1073,8 +1195,6 @@ transition: none;
     </div>
   </div>
   <input type="file" accept="image/*" id="p2HeroBgUpload" style="display:none;">
-
-  <!-- 下半区：4个功能app + 右侧照片墙 -->
 
   <div class="p2-bottom" style="flex:1;min-height:0;align-items:center;">
     <div class="p2-apps" id="sortGrid-p2c">
@@ -1100,6 +1220,7 @@ transition: none;
       </div>
     </div>
 
+```
 <div class="p4-bubbles">
   <div class="p4-bubble-row" id="bubbleRow1" data-target="bubble1">
     <div class="p4-avatar" id="bubbleAvatar1">🐶</div>
@@ -1119,6 +1240,7 @@ transition: none;
   </div>
 </div>
 <input type="file" accept="image/*" id="bubbleAvatarUpload" style="display:none;">
+```
 
   </div>
 </div>
@@ -1132,7 +1254,7 @@ transition: none;
     <div class="page-dot" data-page="1"></div>
   </div>
 
-  <!-- 底栏 -->
+  <!-- 底部悬浮胶囊 Dock -->
 
   <div class="bottom-dock">
     <div class="dock-inner" id="sortGrid-dock">
@@ -1143,7 +1265,7 @@ transition: none;
     </div>
   </div>
 
-  <!-- 情侣弹窗 -->
+  <!-- 情侣弹窗 (结构完全不变, 只负责逻辑) -->
 
   <div class="modal-overlay" id="coupleModal">
     <div class="modal-card">
@@ -1171,21 +1293,24 @@ transition: none;
 
 <script>
 (function() {
-  // 时钟
+  // ── 时钟 (仅保留第二页组件使用)
   function updateClock() {
+    // 更新第二页日期时间 (因为第一页删除了时间组件)
+    const h = new Date().getHours(), m = new Date().getMinutes();
+    const hh = String(h).padStart(2,'0'), mm = String(m).padStart(2,'0');
+    const timeEl = document.getElementById('p2HeroTime');
+    if (timeEl) timeEl.textContent = `${hh}:${mm}`;
+    
     const now = new Date();
-    const bj = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
-    const h = bj.getHours(), m = bj.getMinutes();
-    const h12 = h % 12 || 12;
-    const bigTimeEl = document.getElementById('bigTime');
-    if (bigTimeEl) bigTimeEl.textContent = h12.toString().padStart(2,'0')+':'+m.toString().padStart(2,'0');
-    const ampmEl = document.getElementById('clockAmpm');
-    if (ampmEl) ampmEl.textContent = h < 12 ? '上午' : '下午';
-    const days = ['周日','周一','周二','周三','周四','周五','周六'];
-    const dayEl = document.getElementById('dateDay');
-    if (dayEl) dayEl.textContent = days[bj.getDay()];
-    const fullEl = document.getElementById('dateFull');
-    if (fullEl) fullEl.textContent = (bj.getMonth()+1)+'月'+bj.getDate()+'日';
+    const y = now.getFullYear(), mth = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+    const dateEl = document.getElementById('p2HeroDate');
+    if (dateEl) dateEl.textContent = `${y}/${mth}/${d}`;
+    
+    const weekdayEl = document.getElementById('p2HeroWeekday');
+    const dayNumEl = document.getElementById('p2HeroDayNum');
+    const WEEKDAY_NAMES = ['星期日','星期一','星期二','星期三','星期四','星期五','周六'];
+    if (weekdayEl) weekdayEl.textContent = WEEKDAY_NAMES[now.getDay()];
+    if (dayNumEl) dayNumEl.textContent = now.getDate();
   }
   updateClock(); setInterval(updateClock, 10000);
 
@@ -1203,7 +1328,7 @@ transition: none;
 
   // 应用跳转
   const appRoutes = {
-    'phone': 'chat/chat/phone.html', 'diary': 'diary/diary.html', 'music': 'music/music.html',
+    'chat': 'chat/chat/phone.html', 'diary': 'diary/diary.html', 'music': 'music/music.html',
     'novel': 'novel/novel.html', 'icon': 'icon/icon.html', 'forum': 'forum/forum.html',
     'takeout': 'takeout/takeout.html', 'plan': 'plan/plan.html',
     'momo': 'momo.html', 'make': 'make.html', 'album': 'album.html', 'calendar': 'calendar.html',
@@ -1216,7 +1341,7 @@ transition: none;
     });
   });
 
-  // 情侣数据
+  // ── 情侣数据逻辑 (完全不变)
   function loadCouple() { try { return JSON.parse(localStorage.getItem('couple_data')) || null; } catch(e) { return null; } }
   function loadChars() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
   function loadUser() { try { return JSON.parse(localStorage.getItem('user_data')) || {}; } catch(e) { return {}; } }
@@ -1225,20 +1350,36 @@ transition: none;
 
   function updateCoupleWidget() {
     const d = loadCouple();
-    const av = document.getElementById('coupleAvatars');
-    const sub = document.getElementById('coupleSubtitle');
+    const av1 = document.getElementById('p1CoupleAvatar1');
+    const av2 = document.getElementById('p1CoupleAvatar2');
+    const name1 = document.getElementById('p1CoupleName1');
+    const days = document.getElementById('p1SqDays');
+    
     if (d?.person1 && d?.person2) {
-      const a1=getAv(d.person1.type,d.person1.id), a2=getAv(d.person2.type,d.person2.id);
-      av.innerHTML = `<div class="couple-avatar">${a1?`<img src="${a1}">`:'💑'}</div><div class="couple-avatar">${a2?`<img src="${a2}">`:'❤️'}</div>`;
-      sub.textContent = getName(d.person1.type,d.person1.id)+' ❤️ '+getName(d.person2.type,d.person2.id);
+      const a1 = getAv(d.person1.type, d.person1.id);
+      const a2 = getAv(d.person2.type, d.person2.id);
+      const n1 = getName(d.person1.type, d.person1.id);
+      const n2 = getName(d.person2.type, d.person2.id);
+      
+      if (av1) av1.innerHTML = a1 ? `<img src="${a1}">` : '🐶';
+      if (av2) av2.innerHTML = a2 ? `<img src="${a2}">` : '🐱';
+      if (name1) name1.textContent = n1;
+      const name2El = document.getElementById('p1CoupleName2');
+      if (name2El) name2El.textContent = n2;
+      // 计算天数 (此处做个示例，跟原"610天"逻辑)
+      const startDay = localStorage.getItem('couple_start_day') || '2024-01-01';
+      const diff = Math.floor((new Date() - new Date(startDay)) / (1000 * 60 * 60 * 24));
+      if (days) days.textContent = diff > 0 ? diff : 610;
     } else {
-      av.innerHTML = `<div class="couple-avatar">💑</div><div class="couple-avatar">❤️</div>`;
-      sub.textContent = '点击设置情侣';
+      if (av1) av1.innerHTML = '🐶';
+      if (av2) av2.innerHTML = '🐱';
+      if (name1) name1.textContent = '我';
+      if (days) days.textContent = '610';
     }
   }
   updateCoupleWidget();
 
-  // 弹窗
+  // 弹窗 (原封不动)
   const modal = document.getElementById('coupleModal');
   const confirmBtn = document.getElementById('coupleConfirmBtn');
   let sel1=null, sel2=null;
@@ -1262,7 +1403,7 @@ transition: none;
       ct.appendChild(card);
     });
   }
-  document.getElementById('coupleWidget').addEventListener('click',()=>{
+  document.getElementById('p1SquareCouple').addEventListener('click',()=>{
     sel1=null;sel2=null;confirmBtn.disabled=true;
     renderGrid('person1Grid',null,false); renderGrid('person2Grid',null,true);
     modal.classList.add('active');
@@ -1274,247 +1415,144 @@ transition: none;
     if(sel1.type===sel2.type&&sel1.id===sel2.id){alert('不能选同一个人');return;}
     localStorage.setItem('couple_data',JSON.stringify({person1:sel1,person2:sel2}));
     updateCoupleWidget(); modal.classList.remove('active');
-    window.location.href = '情侣空间/主页.html';
+    const isUserCouple = sel1.type === 'user' || sel2.type === 'user';
+    const target = isUserCouple ? '情侣空间/主页.html' : '情侣空间/cp/cp_home.html';
+    window.location.href = target;
   });
 
-  // 第二页图片上传
-  const photoUpload = document.getElementById('photoUpload');
-  let currentPhotoTarget = null;
+  // ── 第一页 上传功能 ──
 
-  function openPhotoUpload(targetId) {
-    currentPhotoTarget = targetId;
-    photoUpload.click();
+  // P1: 情侣正方形 - 背景上传
+  const p1CoupleBg = document.getElementById('p1CoupleBg');
+  const p1CoupleBgUpload = document.getElementById('p1CoupleBgUpload');
+  const p1CoupleOverlay = document.getElementById('p1CoupleOverlay');
+  const savedP1Bg = localStorage.getItem('p1_couple_bg');
+  if (savedP1Bg) { p1CoupleBg.src = savedP1Bg; p1CoupleBg.style.display = 'block'; if(p1CoupleOverlay) p1CoupleOverlay.style.display = 'block'; }
+  // 背景上传按钮
+  const p1CoupleUploadHint = document.getElementById('p1CoupleUploadHint');
+  if (p1CoupleUploadHint) {
+    p1CoupleUploadHint.addEventListener('click', (e) => { e.stopPropagation(); p1CoupleBgUpload.click(); });
   }
-
-  photoUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file || !currentPhotoTarget) return;
+  p1CoupleBgUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const dataUrl = ev.target.result;
-      const key = 'photo_' + currentPhotoTarget;
-      localStorage.setItem(key, dataUrl);
-      loadPhoto(currentPhotoTarget);
+      localStorage.setItem('p1_couple_bg', ev.target.result);
+      p1CoupleBg.src = ev.target.result; p1CoupleBg.style.display = 'block';
+      if(p1CoupleOverlay) p1CoupleOverlay.style.display = 'block';
     };
     reader.readAsDataURL(file);
-    photoUpload.value = '';
-    currentPhotoTarget = null;
   });
 
-  function loadPhoto(targetId) {
-    const el = document.getElementById(targetId);
-    const dataUrl = localStorage.getItem('photo_' + targetId);
-    if (dataUrl && el) {
-      el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;">`;
-      el.classList.remove('empty');
-    }
-  }
-
-  window.addEventListener('storage', updateCoupleWidget);
-
-  // 气泡消息组件（图4款式）— 头像上传 + 文案本地保存
-  const bubbleAvatarUpload = document.getElementById('bubbleAvatarUpload');
-  let currentBubbleTarget = null;
-
-  [1,2,3,4].forEach(i => {
-    const avatarEl = document.getElementById('bubbleAvatar' + i);
-    const textEl = document.getElementById('bubbleText' + i);
-    const rowEl = document.getElementById('bubbleRow' + i);
-
-    // 加载已保存头像
-    const savedAvatar = localStorage.getItem('bubble_avatar_' + i);
-    if (savedAvatar && avatarEl) { avatarEl.innerHTML = `<img src="${savedAvatar}">`; avatarEl.style.border = 'none'; }
-
-    // 加载已保存文案
-    const savedText = localStorage.getItem('bubble_text_' + i);
-    if (savedText && textEl) textEl.textContent = savedText;
-
-    // 点击头像 → 上传图片
-    if (avatarEl) {
-      avatarEl.addEventListener('click', (e) => {
-        e.stopPropagation();
-        currentBubbleTarget = i;
-        bubbleAvatarUpload.click();
-      });
-    }
-
-    // 编辑文案 → 本地保存
-    if (textEl) {
-      textEl.addEventListener('click', (e) => e.stopPropagation());
-      textEl.addEventListener('blur', () => {
-        localStorage.setItem('bubble_text_' + i, textEl.textContent.trim());
-      });
-    }
+  // P1: 头像点击上传
+  document.querySelectorAll('#p1CoupleAvatar1, #p1CoupleAvatar2').forEach(el => {
+    const isFirst = el.id === 'p1CoupleAvatar1';
+    const uploadBtn = document.getElementById(isFirst ? 'p1CoupleAvatar1Upload' : 'p1CoupleAvatar2Upload');
+    el.addEventListener('click', (e) => { e.stopPropagation(); uploadBtn.click(); });
+    // 加载保存的头像
+    const savedAv = localStorage.getItem(isFirst ? 'p1_couple_av1' : 'p1_couple_av2');
+    if (savedAv) { el.innerHTML = `<img src="${savedAv}">`; }
   });
-
-  bubbleAvatarUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file || !currentBubbleTarget) return;
+  document.getElementById('p1CoupleAvatar1Upload').addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      localStorage.setItem('bubble_avatar_' + currentBubbleTarget, ev.target.result);
-      const avatarEl = document.getElementById('bubbleAvatar' + currentBubbleTarget);
-      if (avatarEl) { avatarEl.innerHTML = `<img src="${ev.target.result}">`; avatarEl.style.border = 'none'; }
-    };
+    reader.onload = (ev) => { localStorage.setItem('p1_couple_av1', ev.target.result); document.getElementById('p1CoupleAvatar1').innerHTML = `<img src="${ev.target.result}">`; };
     reader.readAsDataURL(file);
-    bubbleAvatarUpload.value = '';
-    currentBubbleTarget = null;
+  });
+  document.getElementById('p1CoupleAvatar2Upload').addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { localStorage.setItem('p1_couple_av2', ev.target.result); document.getElementById('p1CoupleAvatar2').innerHTML = `<img src="${ev.target.result}">`; };
+    reader.readAsDataURL(file);
   });
 
-  // 情侣时钟卡片（图3款式）— 背景图 + 头像 + 文案
-  const p3ClockCard = document.getElementById('p3ClockCard');
-  const p3ClockBg = document.getElementById('p3ClockBg');
-  const p3ClockBgUpload = document.getElementById('p3ClockBgUpload');
-  const p3ClockAvatarUpload = document.getElementById('p3ClockAvatarUpload');
-  const p3ClockEditBtn = document.getElementById('p3ClockEditBtn');
-  const p3ClockUserAvatar = document.getElementById('p3ClockUserAvatar');
-  const p3ClockPartnerAvatar = document.getElementById('p3ClockPartnerAvatar');
-  let p3AvatarTarget = null;
-
-  const savedClockBg = localStorage.getItem('p3_clock_bg');
-  if (savedClockBg) { p3ClockBg.src = savedClockBg; p3ClockBg.style.display = 'block'; }
-
-  const savedUserAvatar = localStorage.getItem('p3_clock_user_avatar');
-  if (savedUserAvatar) p3ClockUserAvatar.innerHTML = `<img src="${savedUserAvatar}">`;
-  const savedPartnerAvatar = localStorage.getItem('p3_clock_partner_avatar');
-  if (savedPartnerAvatar) p3ClockPartnerAvatar.innerHTML = `<img src="${savedPartnerAvatar}">`;
-
-  ['p3ClockUserName','p3ClockMsg','p3ClockBubble'].forEach(id => {
+  // P1: 文字保存 (名字)
+  ['p1CoupleName1', 'p1CoupleName2'].forEach(id => {
     const el = document.getElementById(id);
-    const saved = localStorage.getItem(id);
-    if (saved && el) el.textContent = saved;
-    if (el) {
-      el.addEventListener('click', e => e.stopPropagation());
-      el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim()));
-    }
+    if(el) { const saved = localStorage.getItem(id); if(saved) el.textContent = saved; el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim())); }
   });
 
-  if (p3ClockEditBtn) {
-    p3ClockEditBtn.addEventListener('click', (e) => { e.stopPropagation(); p3ClockBgUpload.click(); });
+  // P3: 正方形文字卡片 - 图片上传 + 文字
+  const p1TextBg = document.getElementById('p1TextBg');
+  const p1TextBgUpload = document.getElementById('p1TextBgUpload');
+  const p1TextImgZone = document.getElementById('p1TextImgZone');
+  const p1TextImgPlaceholder = document.getElementById('p1TextImgPlaceholder');
+  const savedP1TextBg = localStorage.getItem('p1_text_bg');
+  if (savedP1TextBg) {
+    p1TextBg.src = savedP1TextBg; p1TextBg.style.display = 'block';
+    if(p1TextImgPlaceholder) p1TextImgPlaceholder.style.display = 'none';
   }
-  if (p3ClockUserAvatar) {
-    p3ClockUserAvatar.addEventListener('click', (e) => { e.stopPropagation(); p3AvatarTarget = 'user'; p3ClockAvatarUpload.click(); });
+  if (p1TextImgZone) {
+    p1TextImgZone.addEventListener('click', (e) => { e.stopPropagation(); p1TextBgUpload.click(); });
   }
-  if (p3ClockPartnerAvatar) {
-    p3ClockPartnerAvatar.addEventListener('click', (e) => { e.stopPropagation(); p3AvatarTarget = 'partner'; p3ClockAvatarUpload.click(); });
-  }
-  p3ClockBgUpload.addEventListener('change', (e) => {
+  p1TextBgUpload.addEventListener('change', (e) => {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      localStorage.setItem('p3_clock_bg', ev.target.result);
-      p3ClockBg.src = ev.target.result;
-      p3ClockBg.style.display = 'block';
+      localStorage.setItem('p1_text_bg', ev.target.result);
+      p1TextBg.src = ev.target.result; p1TextBg.style.display = 'block';
+      if(p1TextImgPlaceholder) p1TextImgPlaceholder.style.display = 'none';
     };
     reader.readAsDataURL(file);
-    p3ClockBgUpload.value = '';
   });
-  p3ClockAvatarUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0]; if (!file || !p3AvatarTarget) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const key = p3AvatarTarget === 'user' ? 'p3_clock_user_avatar' : 'p3_clock_partner_avatar';
-      const el = p3AvatarTarget === 'user' ? p3ClockUserAvatar : p3ClockPartnerAvatar;
-      localStorage.setItem(key, ev.target.result);
-      el.innerHTML = `<img src="${ev.target.result}">`;
-    };
-    reader.readAsDataURL(file);
-    p3ClockAvatarUpload.value = '';
-    p3AvatarTarget = null;
+  ['p1TextBody'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { const saved = localStorage.getItem(id); if(saved) el.textContent = saved; el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim())); }
   });
 
-  // 第二页背景图卡片 — 背景图 + 标题文案 + 日期时间 + 爱心计数
-  const p2HeroCard = document.getElementById('p2HeroCard');
-  const p2HeroBg = document.getElementById('p2HeroBg');
-  const p2HeroBgUpload = document.getElementById('p2HeroBgUpload');
-  const p2HeroEditBtn = document.getElementById('p2HeroEditBtn');
-  const p2HeroTitle = document.getElementById('p2HeroTitle');
-  const p2HeroHearts = document.getElementById('p2HeroHearts');
-  const p2HeroHeartCount = document.getElementById('p2HeroHeartCount');
-
-  const savedHeroBg = localStorage.getItem('p2_hero_bg');
-  if (savedHeroBg) { p2HeroBg.src = savedHeroBg; p2HeroBg.style.display = 'block'; }
-
-  const savedHeroTitle = localStorage.getItem('p2HeroTitle');
-  if (savedHeroTitle && p2HeroTitle) p2HeroTitle.textContent = savedHeroTitle;
-  if (p2HeroTitle) {
-    p2HeroTitle.addEventListener('click', e => e.stopPropagation());
-    p2HeroTitle.addEventListener('blur', () => localStorage.setItem('p2HeroTitle', p2HeroTitle.textContent.trim()));
-  }
-
-  if (p2HeroEditBtn) p2HeroEditBtn.addEventListener('click', e => { e.stopPropagation(); p2HeroBgUpload.click(); });
-  p2HeroBgUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      localStorage.setItem('p2_hero_bg', ev.target.result);
-      p2HeroBg.src = ev.target.result;
-      p2HeroBg.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-    p2HeroBgUpload.value = '';
-  });
-
-  // 日期/时间显示
-  const WEEKDAY_NAMES = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-  function updateHeroDateTime() {
-    const now = new Date();
-    const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
-    const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
-    const dateEl = document.getElementById('p2HeroDate');
-    const timeEl = document.getElementById('p2HeroTime');
-    const weekdayEl = document.getElementById('p2HeroWeekday');
-    const dayNumEl = document.getElementById('p2HeroDayNum');
-    if (dateEl) dateEl.textContent = `${y}/${m}/${d}`;
-    if (timeEl) timeEl.textContent = `${hh}:${mm}`;
-    if (weekdayEl) weekdayEl.textContent = WEEKDAY_NAMES[now.getDay()];
-    if (dayNumEl) dayNumEl.textContent = now.getDate();
-  }
-  updateHeroDateTime(); setInterval(updateHeroDateTime, 10000);
-
-  // 爱心计数 — 点击 +1，本地保存
-  let heroHeartCount = parseInt(localStorage.getItem('p2_hero_heart_count') || '0', 10);
-  if (p2HeroHeartCount) p2HeroHeartCount.textContent = heroHeartCount;
-  if (p2HeroHearts) {
-    p2HeroHearts.addEventListener('click', e => {
-      e.stopPropagation();
-      heroHeartCount++;
-      localStorage.setItem('p2_hero_heart_count', heroHeartCount);
-      if (p2HeroHeartCount) p2HeroHeartCount.textContent = heroHeartCount;
-    });
-  }
-
-  // 4个功能app（记忆/角色/衣柜/储藏室）— 点击更换图标
-  const funcIconUpload = document.createElement('input');
-  funcIconUpload.type = 'file'; funcIconUpload.accept = 'image/*'; funcIconUpload.style.display = 'none';
-  document.body.appendChild(funcIconUpload);
-  let currentFuncKey = null;
-  document.querySelectorAll('.p2-func-editbtn').forEach(btn => {
-    const key = btn.getAttribute('data-func-key');
-    const saved = localStorage.getItem('func_icon_' + key);
+  // P2: 长方形照片选择器
+  function setupLwPhoto(photoId, uploadId, storageKey) {
+    const photoEl = document.getElementById(photoId);
+    const uploadEl = document.getElementById(uploadId);
+    if (!photoEl || !uploadEl) return;
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
-      const ic = document.getElementById('funcIcon-' + key);
-      if (ic) ic.innerHTML = `<img src="${saved}">`;
+      photoEl.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
     }
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      e.preventDefault();
-      currentFuncKey = key;
-      funcIconUpload.click();
+    photoEl.addEventListener('click', (e) => { e.stopPropagation(); uploadEl.click(); });
+    uploadEl.addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        localStorage.setItem(storageKey, ev.target.result);
+        photoEl.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
+      };
+      reader.readAsDataURL(file);
+      uploadEl.value = '';
     });
-  });
-  funcIconUpload.addEventListener('change', e => {
-    const file = e.target.files[0]; if (!file || !currentFuncKey) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      localStorage.setItem('func_icon_' + currentFuncKey, ev.target.result);
-      const ic = document.getElementById('funcIcon-' + currentFuncKey);
-      if (ic) ic.innerHTML = `<img src="${ev.target.result}">`;
-    };
-    reader.readAsDataURL(file);
-    funcIconUpload.value = '';
-    currentFuncKey = null;
-  });
+  }
+  setupLwPhoto('p1LwPhoto1', 'p1LwPhoto1Upload', 'p1_lw_photo1');
+  setupLwPhoto('p1LwPhoto2', 'p1LwPhoto2Upload', 'p1_lw_photo2');
+
+  // 使用按钮 - 点击打开相册或跳转 (可自定义)
+  const p1LwBtn = document.getElementById('p1LwBtn');
+  if (p1LwBtn) {
+    const savedBtnText = localStorage.getItem('p1_lw_btn_text');
+    if (savedBtnText) p1LwBtn.textContent = savedBtnText;
+    p1LwBtn.addEventListener('click', () => {
+      // 长按修改文字，单击打开相册
+      if (localStorage.getItem('p1_lw_photo1') || localStorage.getItem('p1_lw_photo2')) {
+        window.location.href = 'album.html';
+      }
+    });
+    p1LwBtn.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const newText = prompt('修改按钮文字:', p1LwBtn.textContent);
+      if (newText !== null) { p1LwBtn.textContent = newText || '使用'; localStorage.setItem('p1_lw_btn_text', p1LwBtn.textContent); }
+    });
+  }
+
+  // 长方形标题文字 (旧兼容)
+  const p1LongBg = document.getElementById('p1LongBg');
+  const p1LongBgUpload = document.getElementById('p1LongBgUpload');
+  if (p1LongBgUpload) {
+    p1LongBgUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => { localStorage.setItem('p1_long_bg', ev.target.result); };
+      reader.readAsDataURL(file);
+    });
+  }
 
   // 加载自定义页面
   function loadCustomPages() {
@@ -1553,9 +1591,7 @@ transition: none;
   
   loadCustomPages();
 
-  // ════════════════════
-  // 图标拖拽排序（iOS 长按抖动风格）
-  // ════════════════════
+  // ── 图标拖拽排序 ──
   (function initIconSort() {
     const containers = document.querySelectorAll('[id^="sortGrid-"]');
     let jiggleMode = false;
@@ -1746,6 +1782,110 @@ transition: none;
       container.addEventListener('mousedown', onPressStart);
     });
   })();
+
+  // 第二页必要逻辑 (原封不动)
+  const photoUpload = document.getElementById('photoUpload');
+  let currentPhotoTarget = null;
+  function openPhotoUpload(targetId) { currentPhotoTarget = targetId; photoUpload.click(); }
+  photoUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentPhotoTarget) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const key = 'photo_' + currentPhotoTarget;
+      localStorage.setItem(key, ev.target.result);
+      const el = document.getElementById(currentPhotoTarget);
+      if (el) { el.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;">`; el.classList.remove('empty'); }
+    };
+    reader.readAsDataURL(file);
+    photoUpload.value = '';
+    currentPhotoTarget = null;
+  });
+  function loadPhoto(targetId) {
+    const el = document.getElementById(targetId);
+    const dataUrl = localStorage.getItem('photo_' + targetId);
+    if (dataUrl && el) { el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;">`; el.classList.remove('empty'); }
+  }
+
+  const bubbleAvatarUpload = document.getElementById('bubbleAvatarUpload');
+  let currentBubbleTarget = null;
+  [1,2,3,4].forEach(i => {
+    const avatarEl = document.getElementById('bubbleAvatar' + i);
+    const textEl = document.getElementById('bubbleText' + i);
+    const savedAvatar = localStorage.getItem('bubble_avatar_' + i);
+    if (savedAvatar && avatarEl) { avatarEl.innerHTML = `<img src="${savedAvatar}">`; avatarEl.style.border = 'none'; }
+    const savedText = localStorage.getItem('bubble_text_' + i);
+    if (savedText && textEl) textEl.textContent = savedText;
+    if (avatarEl) avatarEl.addEventListener('click', (e) => { e.stopPropagation(); currentBubbleTarget = i; bubbleAvatarUpload.click(); });
+    if (textEl) { textEl.addEventListener('click', e => e.stopPropagation()); textEl.addEventListener('blur', () => localStorage.setItem('bubble_text_' + i, textEl.textContent.trim())); }
+  });
+  bubbleAvatarUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file || !currentBubbleTarget) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      localStorage.setItem('bubble_avatar_' + currentBubbleTarget, ev.target.result);
+      const avatarEl = document.getElementById('bubbleAvatar' + currentBubbleTarget);
+      if (avatarEl) { avatarEl.innerHTML = `<img src="${ev.target.result}">`; avatarEl.style.border = 'none'; }
+    };
+    reader.readAsDataURL(file);
+    bubbleAvatarUpload.value = '';
+    currentBubbleTarget = null;
+  });
+
+  const p2HeroBg = document.getElementById('p2HeroBg');
+  const p2HeroBgUpload = document.getElementById('p2HeroBgUpload');
+  const p2HeroEditBtn = document.getElementById('p2HeroEditBtn');
+  const p2HeroTitle = document.getElementById('p2HeroTitle');
+  const p2HeroHearts = document.getElementById('p2HeroHearts');
+  const p2HeroHeartCount = document.getElementById('p2HeroHeartCount');
+
+  const savedHeroBg = localStorage.getItem('p2_hero_bg');
+  if (savedHeroBg) { p2HeroBg.src = savedHeroBg; p2HeroBg.style.display = 'block'; }
+  const savedHeroTitle = localStorage.getItem('p2HeroTitle');
+  if (savedHeroTitle && p2HeroTitle) p2HeroTitle.textContent = savedHeroTitle;
+  if (p2HeroTitle) { p2HeroTitle.addEventListener('click', e => e.stopPropagation()); p2HeroTitle.addEventListener('blur', () => localStorage.setItem('p2HeroTitle', p2HeroTitle.textContent.trim())); }
+  if (p2HeroEditBtn) p2HeroEditBtn.addEventListener('click', e => { e.stopPropagation(); p2HeroBgUpload.click(); });
+  p2HeroBgUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { localStorage.setItem('p2_hero_bg', ev.target.result); p2HeroBg.src = ev.target.result; p2HeroBg.style.display = 'block'; };
+    reader.readAsDataURL(file);
+    p2HeroBgUpload.value = '';
+  });
+
+  let heroHeartCount = parseInt(localStorage.getItem('p2_hero_heart_count') || '0', 10);
+  if (p2HeroHeartCount) p2HeroHeartCount.textContent = heroHeartCount;
+  if (p2HeroHearts) {
+    p2HeroHearts.addEventListener('click', e => {
+      e.stopPropagation();
+      heroHeartCount++;
+      localStorage.setItem('p2_hero_heart_count', heroHeartCount);
+      if (p2HeroHeartCount) p2HeroHeartCount.textContent = heroHeartCount;
+    });
+  }
+
+  const funcIconUpload = document.createElement('input');
+  funcIconUpload.type = 'file'; funcIconUpload.accept = 'image/*'; funcIconUpload.style.display = 'none';
+  document.body.appendChild(funcIconUpload);
+  let currentFuncKey = null;
+  document.querySelectorAll('.p2-func-editbtn').forEach(btn => {
+    const key = btn.getAttribute('data-func-key');
+    const saved = localStorage.getItem('func_icon_' + key);
+    if (saved) { const ic = document.getElementById('funcIcon-' + key); if (ic) ic.innerHTML = `<img src="${saved}">`; }
+    btn.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); currentFuncKey = key; funcIconUpload.click(); });
+  });
+  funcIconUpload.addEventListener('change', e => {
+    const file = e.target.files[0]; if (!file || !currentFuncKey) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      localStorage.setItem('func_icon_' + currentFuncKey, ev.target.result);
+      const ic = document.getElementById('funcIcon-' + currentFuncKey);
+      if (ic) ic.innerHTML = `<img src="${ev.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+    funcIconUpload.value = '';
+    currentFuncKey = null;
+  });
 })();
 </script>
 
