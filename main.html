@@ -14,1248 +14,1025 @@
   <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-:root {
-–bg: #f5f5f7;
-–card: #ffffff;
-–ink: #1d1d1f;
-–soft: #8e8e93;
-–line: rgba(0,0,0,0.06);
-–accent: #7c6ff7;
-–accent2: #5b8dee;
-–gold: #c9a96e;
-–safe-top: env(safe-area-inset-top, 44px);
-–safe-bottom: env(safe-area-inset-bottom, 20px);
-}
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --soft: #8e8e93;
+    --line: rgba(0,0,0,0.06);
+    --accent: #7c6ff7;
+    --accent2: #5b8dee;
+    --gold: #c9a96e;
+    --safe-top: env(safe-area-inset-top, 20px);
+    --safe-bottom: env(safe-area-inset-bottom, 16px);
+  }
 
-body {
-font-family: -apple-system, BlinkMacSystemFont, ‘SF Pro Text’, ‘SF Pro Display’, ‘Helvetica Neue’, sans-serif;
-background: var(–bg);
-background-size: cover;
-background-position: center;
-width: 100vw;
-height: 100vh;
-overflow: hidden;
-display: flex;
-flex-direction: column;
-}
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
 
-/* ── 顶部安全区留白 ── */
-.status-bar-space {
-height: calc(var(–safe-top) + 40px);
-flex-shrink: 0;
-}
+  /* ── 顶部安全区留白（固定） ── */
+  .status-bar-space {
+    height: var(--safe-top);
+    flex-shrink: 0;
+    background: var(--bg);
+  }
 
-/* ── 页面滑动区 ── */
-.pages-container {
-flex: 1;
-min-height: 0;
-overflow-x: auto;
-scroll-snap-type: x mandatory;
-display: flex;
-scrollbar-width: none;
--webkit-overflow-scrolling: touch;
-padding-top: 8px;
-}
-.pages-container::-webkit-scrollbar { display: none; }
+  /* ── 页面滑动容器 ── */
+  .scroll-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
 
-.page {
-min-width: 100vw;
-scroll-snap-align: start;
-padding: 4px 16px 4px;
-display: flex;
-flex-direction: column;
-gap: 10px;
-overflow-y: auto;
-scrollbar-width: none;
-}
-.page::-webkit-scrollbar { display: none; }
+  .pages-container {
+    flex: 1;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 8px;
+    padding-bottom: 4px;
+  }
+  .pages-container::-webkit-scrollbar { display: none; }
 
-/* ════════════════════
-第一页新版布局
-════════════════════ */
-.p1-layout-row {
-display: flex;
-gap: 10px;
-justify-content: space-between;
-}
-.p1-layout-col {
-display: flex;
-flex-direction: column;
-gap: 10px;
-flex: 1;
-}
+  .page {
+    min-width: 100vw;
+    scroll-snap-align: start;
+    padding: 4px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .page::-webkit-scrollbar { display: none; }
 
-/* 正方形组件 - 情侣空间 P1风格 (图1: 白色系, 双头像圆形, 天数居中) */
-.p1-square-widget {
-aspect-ratio: 1 / 1;
-width: 100%;
-background: #ffffff;
-border-radius: 22px;
-padding: 0;
-position: relative;
-display: flex;
-flex-direction: column;
-box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
-overflow: hidden;
-cursor: pointer;
-}
-.p1-square-widget .bg-img {
-position: absolute;
-inset: 0;
-width: 100%;
-height: 100%;
-object-fit: cover;
-z-index: 0;
-}
-.p1-square-widget .bg-overlay {
-position: absolute;
-inset: 0;
-background: rgba(255,255,255,0.55);
-backdrop-filter: blur(0px);
-z-index: 1;
-pointer-events: none;
-}
-.p1-square-widget .content {
-position: relative;
-z-index: 2;
-display: flex;
-flex-direction: column;
-height: 100%;
-align-items: center;
-justify-content: center;
-padding: 14px 10px;
-gap: 6px;
-}
-/* 双头像排排坐 */
-.p1-sq-avatars-row {
-display: flex;
-align-items: center;
-gap: 0;
-justify-content: center;
-}
-.p1-sq-avatar {
-width: 44px;
-height: 44px;
-border-radius: 50%;
-background: #f0f0f0;
-overflow: hidden;
-border: 2.5px solid white;
-box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 18px;
-position: relative;
-cursor: pointer;
-transition: transform 0.15s ease;
-}
-.p1-sq-avatar:active { transform: scale(0.9); }
-.p1-sq-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.p1-sq-avatar:first-child { z-index: 2; }
-.p1-sq-avatar:last-child { z-index: 1; margin-left: -10px; }
-/* 中心爱心连线 */
-.p1-sq-connector {
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 14px;
-z-index: 3;
-margin: 0 -2px;
-filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
-}
-/* 天数 */
-.p1-sq-days-row {
-display: flex;
-align-items: baseline;
-gap: 3px;
-margin-top: 4px;
-}
-.p1-sq-days {
-font-size: 40px;
-font-weight: 300;
-color: #1d1d1f;
-letter-spacing: -1.5px;
-line-height: 1;
-font-variant-numeric: tabular-nums;
-}
-.p1-sq-days-label {
-font-size: 14px;
-color: #8e8e93;
-font-weight: 500;
-letter-spacing: 0.5px;
-}
-/* 名字标签行 */
-.p1-sq-names-row {
-display: flex;
-align-items: center;
-gap: 6px;
-justify-content: center;
-}
-.p1-sq-name {
-font-size: 11px;
-font-weight: 500;
-color: #555;
-background: rgba(255,255,255,0.75);
-backdrop-filter: blur(8px);
-padding: 2px 9px;
-border-radius: 20px;
-border: 0.5px solid rgba(0,0,0,0.07);
-max-width: 60px;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-text-align: center;
-}
-/* 底部背景上传按钮提示 */
-.p1-sq-upload-hint {
-position: absolute;
-bottom: 8px;
-right: 8px;
-z-index: 3;
-width: 22px; height: 22px;
-border-radius: 50%;
-background: rgba(0,0,0,0.22);
-color: #fff;
-font-size: 10px;
-display: flex; align-items: center; justify-content: center;
-opacity: 0;
-transition: opacity .2s;
-cursor: pointer;
-}
-.p1-square-widget:hover .p1-sq-upload-hint,
-.p1-square-widget:active .p1-sq-upload-hint { opacity: 1; }
-/* 兼容旧选择器 */
-.p1-sq-hearts { display: none; }
-.p1-sq-bottom { display: none; }
-.p1-sq-msg { display: none; }
-.p1-sq-partner-avatar { display: none; }
-.p1-sq-top { display: none; }
+  /* ── 页面指示器 ── */
+  .page-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 0 8px;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .page-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.18);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .page-dot.active {
+    width: 20px;
+    background: rgba(0,0,0,0.5);
+  }
 
-/* 正方形组件 - 文字卡片 P3风格 (图2: 上图下文, 灰调) */
-.p1-square-text {
-aspect-ratio: 1 / 1;
-width: 100%;
-background: #f5f5f7;
-border-radius: 22px;
-padding: 0;
-display: flex;
-flex-direction: column;
-box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
-overflow: hidden;
-position: relative;
-cursor: pointer;
-}
-/* 上部图片区域 */
-.p1-st-img-zone {
-flex: 1;
-position: relative;
-overflow: hidden;
-background: #e0e0e3;
-display: flex;
-align-items: center;
-justify-content: center;
-min-height: 0;
-cursor: pointer;
-}
-.p1-st-img-zone .bg-img {
-position: absolute;
-inset: 0;
-width: 100%;
-height: 100%;
-object-fit: cover;
-z-index: 0;
-}
-.p1-st-img-placeholder {
-font-size: 32px;
-opacity: 0.3;
-z-index: 1;
-position: relative;
-}
-.p1-st-img-upload-hint {
-position: absolute;
-top: 8px; right: 8px;
-z-index: 3;
-width: 22px; height: 22px;
-border-radius: 50%;
-background: rgba(0,0,0,0.22);
-color: #fff;
-font-size: 10px;
-display: flex; align-items: center; justify-content: center;
-opacity: 0;
-transition: opacity .2s;
-}
-.p1-st-img-zone:hover .p1-st-img-upload-hint,
-.p1-st-img-zone:active .p1-st-img-upload-hint { opacity: 1; }
-/* 右上角角标 (仿图2的第3名角标) */
-.p1-st-badge {
-position: absolute;
-top: 8px; right: 8px;
-z-index: 4;
-background: #f5b731;
-color: white;
-border-radius: 10px;
-font-size: 11px;
-font-weight: 700;
-padding: 2px 7px;
-display: flex; align-items: center; gap: 3px;
-box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-/* 下部文字区域 */
-.p1-square-text .content {
-flex-shrink: 0;
-background: #f5f5f7;
-padding: 10px 12px 12px;
-display: flex;
-flex-direction: column;
-gap: 4px;
-}
-.p1-st-title {
-font-size: 11px;
-font-weight: 600;
-color: #8e8e93;
-letter-spacing: 0.04em;
-text-transform: none;
-display: none;
-}
-.p1-st-body {
-font-size: 11.5px;
-color: #333;
-font-weight: 400;
-letter-spacing: 0.3px;
-line-height: 1.6;
-word-break: break-word;
-}
+  /* ── 底部 Dock（固定 + 安全区） ── */
+  .bottom-dock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 0 calc(var(--safe-bottom) + 6px);
+    flex-shrink: 0;
+    background: var(--bg);
+    pointer-events: none;
+  }
+  .dock-inner {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 0.5px solid rgba(255,255,255,0.9);
+    border-radius: 30px;
+    padding: 8px 12px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+    pointer-events: auto;
+  }
+  .dock-item {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 22px;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.02);
+    overflow: hidden;
+    background: white;
+  }
+  .dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+  .dock-item:active { transform: scale(0.88); opacity: 0.7; }
 
-/* 长方形组件 P2风格 (图3: 照片选择器, 白底, 2格图片+使用按钮) */
-.p1-long-widget {
-width: 100%;
-background: #ffffff;
-border-radius: 22px;
-padding: 14px 16px 14px;
-box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
-overflow: hidden;
-min-height: 110px;
-display: flex;
-flex-direction: column;
-gap: 10px;
-}
-/* 隐藏旧元素 */
-.p1-long-widget .bg-img { display: none !important; }
-.p1-long-text { display: none; }
-.p1-long-extra { display: none; }
-.p1-long-widget .content { display: none; }
+  /* ════════════════════
+     第一页新版布局（样式不变）
+     ════════════════════ */
+  .p1-layout-row {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  .p1-layout-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
 
-/* 标题行 */
-.p1-lw-title {
-font-size: 12px;
-color: #8e8e93;
-font-weight: 500;
-letter-spacing: 0.04em;
-text-align: center;
-}
-/* 图片格子行 */
-.p1-lw-photos {
-display: flex;
-gap: 10px;
-align-items: stretch;
-flex: 1;
-}
-.p1-lw-photo {
-flex: 1;
-aspect-ratio: 1 / 1;
-border-radius: 14px;
-background: #f2f2f7;
-overflow: hidden;
-position: relative;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-transition: transform 0.15s ease;
-border: 0.5px solid rgba(0,0,0,0.05);
-}
-.p1-lw-photo:active { transform: scale(0.95); }
-.p1-lw-photo img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-.p1-lw-photo-plus {
-font-size: 24px;
-color: #c7c7cc;
-font-weight: 200;
-line-height: 1;
-}
-/* 使用按钮 */
-.p1-lw-btn {
-width: 100%;
-background: #f2f2f7;
-border: none;
-border-radius: 100px;
-padding: 9px 0;
-font-size: 14px;
-font-weight: 500;
-color: #8e8e93;
-cursor: pointer;
-text-align: center;
-letter-spacing: 0.02em;
-transition: background 0.15s ease;
--webkit-tap-highlight-color: transparent;
-}
-.p1-lw-btn:active { background: #e5e5ea; }
+  .p1-square-widget {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .p1-square-widget .bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  .p1-square-widget .bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(0px);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .p1-square-widget .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    gap: 6px;
+  }
+  .p1-sq-avatars-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+  }
+  .p1-sq-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    overflow: hidden;
+    border: 2.5px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .p1-sq-avatar:active { transform: scale(0.9); }
+  .p1-sq-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .p1-sq-avatar:first-child { z-index: 2; }
+  .p1-sq-avatar:last-child { z-index: 1; margin-left: -10px; }
+  .p1-sq-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 3;
+    margin: 0 -2px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+  }
+  .p1-sq-days-row {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    margin-top: 4px;
+  }
+  .p1-sq-days {
+    font-size: 40px;
+    font-weight: 300;
+    color: #1d1d1f;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .p1-sq-days-label {
+    font-size: 14px;
+    color: #8e8e93;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .p1-sq-names-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+  }
+  .p1-sq-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: #555;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(8px);
+    padding: 2px 9px;
+    border-radius: 20px;
+    border: 0.5px solid rgba(0,0,0,0.07);
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .p1-sq-upload-hint {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 3;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.22);
+    color: #fff;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .2s;
+    cursor: pointer;
+  }
+  .p1-square-widget:hover .p1-sq-upload-hint,
+  .p1-square-widget:active .p1-sq-upload-hint { opacity: 1; }
 
-/* 2x2 应用网格 (调整后的布局) */
-.p1-grid-2x2 {
-display: grid;
-grid-template-columns: 1fr 1fr;
-grid-template-rows: 1fr 1fr;
-gap: 8px;
-aspect-ratio: 1 / 1;
-width: 100%;
-}
-.app-item {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 4px;
-cursor: pointer;
-padding: 2px 0;
--webkit-tap-highlight-color: transparent;
-}
-.app-item:active .app-icon { transform: scale(0.88); opacity: 0.75; }
-.app-icon {
-width: 48px;
-height: 48px;
-border-radius: 14px;
-background: var(–card);
-border: 1px solid rgba(0,0,0,0.03);
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: hidden;
-box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-transition: transform 0.15s ease, opacity 0.15s ease;
-}
-.app-icon img { width: 100%; height: 100%; object-fit: cover; }
-.app-icon .icon-fallback { font-size: 22px; }
-.app-name {
-font-size: 10px;
-color: var(–soft);
-text-align: center;
-max-width: 56px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-font-weight: 400;
-letter-spacing: 0.01em;
-}
+  .p1-square-text {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: #f5f5f7;
+    border-radius: 22px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  .p1-st-img-zone {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #e0e0e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    cursor: pointer;
+  }
+  .p1-st-img-zone .bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  .p1-st-img-placeholder {
+    font-size: 32px;
+    opacity: 0.3;
+    z-index: 1;
+    position: relative;
+  }
+  .p1-st-img-upload-hint {
+    position: absolute;
+    top: 8px; right: 8px;
+    z-index: 3;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.22);
+    color: #fff;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .p1-st-img-zone:hover .p1-st-img-upload-hint,
+  .p1-st-img-zone:active .p1-st-img-upload-hint { opacity: 1; }
+  .p1-square-text .content {
+    flex-shrink: 0;
+    background: #f5f5f7;
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .p1-st-body {
+    font-size: 11.5px;
+    color: #333;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+    word-break: break-word;
+  }
 
-/* ════════════════════
-底部悬浮胶囊 Dock
-════════════════════ */
-.bottom-dock {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 0 0 calc(var(–safe-bottom) + 8px);
-flex-shrink: 0;
-pointer-events: none;
-}
-.dock-inner {
-display: flex;
-justify-content: space-around;
-align-items: center;
-background: rgba(255,255,255,0.65);
-backdrop-filter: blur(30px) saturate(180%);
--webkit-backdrop-filter: blur(30px) saturate(180%);
-border: 0.5px solid rgba(255,255,255,0.9);
-border-radius: 30px;
-padding: 8px 12px;
-width: 90%;
-max-width: 380px;
-box-shadow: 0 4px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
-pointer-events: auto;
-}
-.dock-item {
-width: 44px;
-height: 44px;
-border-radius: 12px;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-font-size: 22px;
-transition: transform 0.15s ease, opacity 0.15s ease;
-box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.02);
-overflow: hidden;
-background: white;
-}
-.dock-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
-.dock-item:active { transform: scale(0.88); opacity: 0.7; }
+  .p1-long-widget {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 14px 16px 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.04);
+    overflow: hidden;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .p1-lw-title {
+    font-size: 12px;
+    color: #8e8e93;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+  .p1-lw-photos {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex: 1;
+  }
+  .p1-lw-photo {
+    flex: 1;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    background: #f2f2f7;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    transition: transform 0.15s ease;
+    border: 0.5px solid rgba(0,0,0,0.05);
+  }
+  .p1-lw-photo:active { transform: scale(0.95); }
+  .p1-lw-photo img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .p1-lw-photo-plus {
+    font-size: 24px;
+    color: #c7c7cc;
+    font-weight: 200;
+    line-height: 1;
+  }
+  .p1-lw-btn {
+    width: 100%;
+    background: #f2f2f7;
+    border: none;
+    border-radius: 100px;
+    padding: 9px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #8e8e93;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 0.02em;
+    transition: background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .p1-lw-btn:active { background: #e5e5ea; }
 
-/* ════════════════════
-页面指示器
-════════════════════ */
-.page-indicator {
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 5px;
-padding: 4px 0 4px;
-flex-shrink: 0;
-}
-.page-dot {
-width: 5px;
-height: 5px;
-border-radius: 3px;
-background: rgba(0,0,0,0.18);
-transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.page-dot.active {
-width: 20px;
-background: rgba(0,0,0,0.5);
-}
+  .p1-grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+  }
+  .app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 2px 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app-item:active .app-icon { transform: scale(0.88); opacity: 0.75; }
+  .app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid rgba(0,0,0,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .app-icon img { width: 100%; height: 100%; object-fit: cover; }
+  .app-icon .icon-fallback { font-size: 22px; }
+  .app-name {
+    font-size: 10px;
+    color: var(--soft);
+    text-align: center;
+    max-width: 56px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
 
-/* ════════════════════
-情侣弹窗 (不变)
-════════════════════ */
-.modal-overlay {
-position: fixed;
-top: 0; left: 0;
-width: 100%; height: 100%;
-background: rgba(0,0,0,0.35);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-display: flex;
-align-items: flex-end;
-justify-content: center;
-z-index: 100;
-visibility: hidden;
-opacity: 0;
-transition: opacity 0.28s ease, visibility 0.28s;
-}
-.modal-overlay.active { visibility: visible; opacity: 1; }
-.modal-card {
-background: rgba(255,255,255,0.96);
-backdrop-filter: blur(30px);
--webkit-backdrop-filter: blur(30px);
-border-radius: 28px 28px 0 0;
-padding: 10px 22px 22px;
-width: 100%;
-max-width: 480px;
-max-height: 88vh;
-overflow-y: auto;
-display: flex;
-flex-direction: column;
-gap: 16px;
-box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
-transform: translateY(24px);
-transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-}
-.modal-overlay.active .modal-card { transform: translateY(0); }
-.modal-handle {
-width: 36px;
-height: 4px;
-background: rgba(0,0,0,0.15);
-border-radius: 2px;
-margin: 0 auto 4px;
-flex-shrink: 0;
-}
-.modal-header { text-align: center; padding: 0 4px; }
-.modal-eyebrow {
-font-size: 10px;
-letter-spacing: 0.14em;
-color: var(–gold);
-font-weight: 600;
-text-transform: uppercase;
-}
-.modal-title {
-font-size: 20px;
-font-weight: 700;
-color: var(–ink);
-margin-top: 3px;
-letter-spacing: -0.4px;
-}
-.modal-sub {
-font-size: 12px;
-color: var(–soft);
-margin-top: 3px;
-}
-.divider { height: 0.5px; background: rgba(0,0,0,0.1); }
-.select-label {
-font-size: 11px;
-letter-spacing: 0.08em;
-color: var(–soft);
-text-transform: uppercase;
-font-weight: 600;
-}
-.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.role-card {
-background: #f9f9fb;
-border: 1.5px solid rgba(0,0,0,0.07);
-border-radius: 18px;
-padding: 16px 12px;
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 10px;
-cursor: pointer;
-transition: all 0.2s ease;
-}
-.role-card.selected { border-color: var(–accent); background: #f5f3ff; }
-.role-card.selected.role-b { border-color: var(–accent2); background: #f0f6ff; }
-.role-avatar-circle {
-width: 56px;
-height: 56px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 26px;
-background: linear-gradient(135deg, #ede8fd, #d9d3f7);
-position: relative;
-box-shadow: 0 2px 8px rgba(124,111,247,0.15);
-}
-.role-card.role-b .role-avatar-circle {
-background: linear-gradient(135deg, #e0eeff, #c8dffb);
-box-shadow: 0 2px 8px rgba(91,141,238,0.15);
-}
-.check-mark {
-position: absolute;
-bottom: -2px;
-right: -2px;
-width: 18px;
-height: 18px;
-border-radius: 50%;
-background: var(–accent);
-color: white;
-font-size: 10px;
-display: flex;
-align-items: center;
-justify-content: center;
-opacity: 0;
-transform: scale(0.5);
-transition: all 0.2s;
-border: 1.5px solid white;
-}
-.role-card.selected .check-mark { opacity: 1; transform: scale(1); }
-.role-card.selected.role-b .check-mark { background: var(–accent2); }
-.role-name { font-size: 13px; font-weight: 500; color: var(–ink); }
-.modal-actions { display: flex; gap: 10px; }
-.btn {
-flex: 1;
-padding: 14px;
-border-radius: 16px;
-border: none;
-font-size: 15px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.18s ease;
-letter-spacing: -0.2px;
-}
-.btn-cancel {
-background: #f2f2f6;
-color: var(–soft);
-}
-.btn-confirm {
-background: var(–ink);
-color: white;
-box-shadow: 0 2px 12px rgba(29,29,31,0.2);
-}
-.btn-confirm:disabled { opacity: 0.25; pointer-events: none; }
-.btn:active { transform: scale(0.97); }
+  /* ════════════════════
+     弹窗（不变）
+     ════════════════════ */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.28s ease, visibility 0.28s;
+  }
+  .modal-overlay.active { visibility: visible; opacity: 1; }
+  .modal-card {
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 28px 28px 0 0;
+    padding: 10px 22px 22px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 88vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
+    transform: translateY(24px);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .modal-overlay.active .modal-card { transform: translateY(0); }
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 2px;
+    margin: 0 auto 4px;
+    flex-shrink: 0;
+  }
+  .modal-header { text-align: center; padding: 0 4px; }
+  .modal-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 3px;
+    letter-spacing: -0.4px;
+  }
+  .modal-sub {
+    font-size: 12px;
+    color: var(--soft);
+    margin-top: 3px;
+  }
+  .divider { height: 0.5px; background: rgba(0,0,0,0.1); }
+  .select-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--soft);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .role-card {
+    background: #f9f9fb;
+    border: 1.5px solid rgba(0,0,0,0.07);
+    border-radius: 18px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .role-card.selected { border-color: var(--accent); background: #f5f3ff; }
+  .role-card.selected.role-b { border-color: var(--accent2); background: #f0f6ff; }
+  .role-avatar-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg, #ede8fd, #d9d3f7);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(124,111,247,0.15);
+  }
+  .role-card.role-b .role-avatar-circle {
+    background: linear-gradient(135deg, #e0eeff, #c8dffb);
+    box-shadow: 0 2px 8px rgba(91,141,238,0.15);
+  }
+  .check-mark {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s;
+    border: 1.5px solid white;
+  }
+  .role-card.selected .check-mark { opacity: 1; transform: scale(1); }
+  .role-card.selected.role-b .check-mark { background: var(--accent2); }
+  .role-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .modal-actions { display: flex; gap: 10px; }
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 16px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    letter-spacing: -0.2px;
+  }
+  .btn-cancel {
+    background: #f2f2f6;
+    color: var(--soft);
+  }
+  .btn-confirm {
+    background: var(--ink);
+    color: white;
+    box-shadow: 0 2px 12px rgba(29,29,31,0.2);
+  }
+  .btn-confirm:disabled { opacity: 0.25; pointer-events: none; }
+  .btn:active { transform: scale(0.97); }
 
-/* ── 拖拽排序 ── */
-@keyframes icon-jiggle {
-0%   { transform: rotate(-1.6deg); }
-25%  { transform: rotate(1.6deg); }
-50%  { transform: rotate(-1.6deg); }
-75%  { transform: rotate(1.6deg); }
-100% { transform: rotate(-1.6deg); }
-}
-.jiggling {
-animation: icon-jiggle 0.26s ease-in-out infinite;
-animation-delay: calc(var(–jiggle-i, 0) * 0.045s);
-}
-.drag-dragging {
-opacity: 0.35;
-}
-.drag-ghost {
-position: fixed;
-z-index: 999;
-pointer-events: none;
-transform: scale(1.12);
-filter: drop-shadow(0 8px 18px rgba(0,0,0,0.28));
-transition: none;
-}
+  /* ── 拖拽排序 ── */
+  @keyframes icon-jiggle {
+    0%   { transform: rotate(-1.6deg); }
+    25%  { transform: rotate(1.6deg); }
+    50%  { transform: rotate(-1.6deg); }
+    75%  { transform: rotate(1.6deg); }
+    100% { transform: rotate(-1.6deg); }
+  }
+  .jiggling {
+    animation: icon-jiggle 0.26s ease-in-out infinite;
+    animation-delay: calc(var(--jiggle-i, 0) * 0.045s);
+  }
+  .drag-dragging {
+    opacity: 0.35;
+  }
+  .drag-ghost {
+    position: fixed;
+    z-index: 999;
+    pointer-events: none;
+    transform: scale(1.12);
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.28));
+    transition: none;
+  }
 
-/* ── 第二页固有样式 (不动) ── */
-.music-widget-sm {
-background: rgba(255,255,255,0.82);
-backdrop-filter: blur(24px) saturate(180%);
--webkit-backdrop-filter: blur(24px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-border-radius: 20px;
-padding: 12px 16px;
-display: flex;
-align-items: center;
-gap: 12px;
-box-shadow: 0 2px 14px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-}
-.sm-art {
-width: 42px; height: 42px;
-border-radius: 11px;
-background: linear-gradient(135deg, #ede8fd, #d8d1f7);
-display: flex; align-items: center; justify-content: center;
-font-size: 20px; flex-shrink: 0;
-box-shadow: 0 2px 8px rgba(124,111,247,0.18);
-}
-.sm-info { flex: 1; min-width: 0; }
-.sm-song { font-size: 14px; font-weight: 600; color: var(–ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sm-artist { font-size: 11px; color: var(–soft); }
-.sm-progress { height: 2px; background: rgba(0,0,0,0.07); border-radius: 1px; margin-top: 4px; overflow: hidden; }
-.sm-progress-fill { height: 100%; width: 38%; background: linear-gradient(90deg, var(–accent), #a59bf8); border-radius: 1px; }
-.sm-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-.sm-btn {
-width: 32px; height: 32px; border-radius: 50%;
-display: flex; align-items: center; justify-content: center;
-font-size: 15px; cursor: pointer; color: var(–soft);
-}
-.sm-btn.play { background: var(–ink); color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(29,29,31,0.18); }
-.sm-btn:active { transform: scale(0.86); opacity: 0.65; }
+  /* ── 第二页 ── */
+  .p2-hero-card {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 8px;
+    min-height: 340px;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #eef0f4 linear-gradient(150deg, #f3f4f7, #e7e9ee);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .p2-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 0;
+  }
+  .p2-hero-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.12) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .p2-hero-editbtn {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.32);
+    color: #fff;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 3;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s ease;
+  }
+  .p2-hero-card:hover .p2-hero-editbtn,
+  .p2-hero-card:active .p2-hero-editbtn { opacity: 1; }
+  .p2-hero-content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .p2-hero-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+    align-self: flex-end;
+    text-align: right;
+    cursor: text;
+  }
+  .p2-hero-row {
+    display: flex;
+    gap: 8px;
+    align-self: flex-end;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .p2-hero-chip {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 16px;
+    padding: 9px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+  }
+  .p2-hero-chip.datetime { min-width: 124px; }
+  .p2-hero-chip .chip-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .p2-hero-chip .chip-line span.chip-ico { font-size: 12px; color: var(--soft); }
+  .p2-hero-chip.hearts {
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    cursor: pointer;
+  }
+  .p2-hero-chip.hearts .chip-emoji { font-size: 15px; letter-spacing: -2px; }
+  .p2-hero-chip.hearts .chip-count {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 2px;
+  }
+  .p2-hero-daywrap {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .p2-hero-weekday {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+  }
+  .p2-hero-daynum {
+    font-size: 54px;
+    font-weight: 200;
+    color: rgba(29,29,31,0.35);
+    line-height: 1;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+  }
+  .p2-bottom {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+  }
+  .p2-apps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px 2px;
+    flex: 1;
+    align-content: center;
+  }
+  .p2-func-app { position: relative; }
+  .p2-func-editbtn {
+    position: absolute;
+    top: -4px; right: 2px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 4;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s ease;
+  }
+  .p2-func-app:hover .p2-func-editbtn,
+  .p2-func-app:active .p2-func-editbtn { opacity: 1; }
 
-.music-widget-lg {
-background: rgba(255,255,255,0.82);
-backdrop-filter: blur(24px) saturate(180%);
--webkit-backdrop-filter: blur(24px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-border-radius: 24px;
-padding: 12px 16px 10px;
-display: flex;
-flex-direction: column;
-gap: 11px;
-box-shadow: 0 2px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.8);
-position: relative;
-overflow: hidden;
-}
-.music-widget-lg::before {
-content: ‘’;
-position: absolute;
-right: -24px; top: -24px;
-width: 110px; height: 110px;
-border-radius: 50%;
-border: 22px solid rgba(124,111,247,0.05);
-pointer-events: none;
-}
-.music-top { display: flex; align-items: center; gap: 12px; }
-.album-art-lg {
-width: 52px; height: 52px;
-border-radius: 13px;
-background: linear-gradient(135deg, #ede8fd, #d8d1f7);
-display: flex; align-items: center; justify-content: center;
-font-size: 24px; flex-shrink: 0;
-box-shadow: 0 3px 12px rgba(124,111,247,0.2), 0 0 0 0.5px rgba(0,0,0,0.04);
-overflow: hidden;
-}
-.album-art-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 13px; }
-.music-info-lg { flex: 1; min-width: 0; }
-.now-badge-lg {
-display: inline-flex; align-items: center; gap: 4px;
-background: rgba(124,111,247,0.1); border-radius: 6px;
-padding: 2px 7px; margin-bottom: 4px;
-}
-.now-dot-lg {
-width: 5px; height: 5px; border-radius: 50%;
-background: var(–accent);
-animation: pulse 1.4s ease-in-out infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.7)} }
-.now-text-lg { font-size: 10px; color: var(–accent); font-weight: 600; letter-spacing: .04em; }
-.music-song-lg {
-font-size: 15px; font-weight: 600; color: var(–ink);
-letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.music-artist-lg { font-size: 12px; color: var(–soft); margin-top: 1px; }
-.music-progress-wrap { display: flex; flex-direction: column; gap: 4px; }
-.music-progress-bar {
-width: 100%; height: 3px;
-background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden;
-}
-.music-progress-fill {
-height: 100%; width: 0%;
-background: linear-gradient(90deg, var(–accent), #a59bf8);
-border-radius: 2px; transition: width .5s linear;
-}
-.music-times {
-display: flex; justify-content: space-between;
-font-size: 10px; color: var(–soft); font-variant-numeric: tabular-nums;
-}
-.music-controls-row {
-display: flex; align-items: center; justify-content: space-between;
-padding: 0 2px;
-}
-.mctrl-btn {
-width: 34px; height: 34px; border-radius: 50%;
-display: flex; align-items: center; justify-content: center;
-font-size: 15px; cursor: pointer; color: var(–soft);
-transition: all .15s ease;
--webkit-tap-highlight-color: transparent;
-}
-.mctrl-btn:active { transform: scale(.85); opacity: .55; }
-.mctrl-play {
-width: 42px; height: 42px;
-background: var(–ink); color: white; font-size: 17px;
-box-shadow: 0 3px 10px rgba(29,29,31,.2);
-}
-
-.p2-bottom {
-display: flex;
-gap: 10px;
-align-items: stretch;
-}
-.p2-apps {
-display: grid;
-grid-template-columns: 1fr 1fr;
-grid-template-rows: 1fr 1fr;
-gap: 10px 2px;
-flex: 1;
-align-content: center;
-}
-.p2-strips {
-flex:1;
-aspect-ratio:1/1;
-display:flex;
-gap:7px;
-align-self:center;
-align-items:stretch;
-}
-.p2-strip {
-flex: 1;
-border-radius: 100px;
-overflow: hidden;
-cursor: pointer;
-background: rgba(255,255,255,0.82);
-backdrop-filter: blur(20px) saturate(180%);
--webkit-backdrop-filter: blur(20px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-box-shadow: 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-display: flex;
-align-items: center;
-justify-content: center;
-position: relative;
-transition: transform .16s ease;
-min-height: 0;
-}
-.p2-strip:active { transform: scale(.96); }
-.p2-strip img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.p2-strip-ph {
-display: flex; flex-direction: column; align-items: center; justify-content: center;
-gap: 6px; height: 100%;
-}
-.p2-strip-ph span { font-size: 18px; opacity: .45; }
-.p2-strip.empty::after {
-content: ‘+’;
-position: absolute; bottom: 8px;
-width: 20px; height: 20px;
-background: rgba(0,0,0,0.045);
-border-radius: 50%;
-display: flex; align-items: center; justify-content: center;
-font-size: 14px; color: var(–soft);
-line-height: 20px; text-align: center;
-}
-
-.p2-func-app { position: relative; }
-.p2-func-editbtn {
-position: absolute;
-top: -4px; right: 2px;
-width: 18px; height: 18px;
-border-radius: 50%;
-background: rgba(0,0,0,0.4);
-color: #fff;
-font-size: 9px;
-display: flex; align-items: center; justify-content: center;
-z-index: 4;
-cursor: pointer;
-opacity: 0;
-transition: opacity .15s ease;
-}
-.p2-func-app:hover .p2-func-editbtn,
-.p2-func-app:active .p2-func-editbtn { opacity: 1; }
-
-.p2-hero-card {
-position: relative;
-flex-shrink: 0;
-margin-top: 8px;
-min-height: 340px;
-border-radius: 30px;
-overflow: hidden;
-background: #eef0f4 linear-gradient(150deg, #f3f4f7, #e7e9ee);
-box-shadow: 0 2px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
-padding: 20px;
-display: flex;
-flex-direction: column;
-gap: 14px;
-}
-.p2-hero-bg {
-position: absolute;
-inset: 0;
-width: 100%; height: 100%;
-object-fit: cover;
-display: block;
-z-index: 0;
-}
-.p2-hero-card::after {
-content: ‘’;
-position: absolute; inset: 0;
-background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.12) 100%);
-pointer-events: none;
-z-index: 1;
-}
-.p2-hero-editbtn {
-position: absolute;
-top: 12px; right: 12px;
-width: 28px; height: 28px;
-border-radius: 50%;
-background: rgba(0,0,0,0.32);
-color: #fff;
-font-size: 13px;
-display: flex; align-items: center; justify-content: center;
-z-index: 3;
-cursor: pointer;
-opacity: 0;
-transition: opacity .15s ease;
-}
-.p2-hero-card:hover .p2-hero-editbtn,
-.p2-hero-card:active .p2-hero-editbtn { opacity: 1; }
-.p2-hero-content {
-position: relative;
-z-index: 2;
-flex: 1;
-display: flex;
-flex-direction: column;
-gap: 14px;
-}
-.p2-hero-title {
-font-size: 15px;
-font-weight: 700;
-color: var(–ink);
-letter-spacing: 0.01em;
-text-shadow: 0 1px 2px rgba(255,255,255,0.4);
-align-self: flex-end;
-text-align: right;
-cursor: text;
-}
-.p2-hero-row {
-display: flex;
-gap: 8px;
-align-self: flex-end;
-width: 100%;
-justify-content: flex-end;
-}
-.p2-hero-chip {
-background: rgba(255,255,255,0.78);
-backdrop-filter: blur(16px) saturate(180%);
--webkit-backdrop-filter: blur(16px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-border-radius: 16px;
-padding: 9px 16px;
-box-shadow: 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-display: flex;
-flex-direction: column;
-gap: 4px;
-justify-content: center;
-}
-.p2-hero-chip.datetime { min-width: 124px; }
-.p2-hero-chip .chip-line {
-display: flex;
-align-items: center;
-gap: 6px;
-font-size: 13px;
-font-weight: 600;
-color: var(–ink);
-white-space: nowrap;
-}
-.p2-hero-chip .chip-line span.chip-ico { font-size: 12px; color: var(–soft); }
-.p2-hero-chip.hearts {
-align-items: center;
-justify-content: center;
-min-width: 60px;
-cursor: pointer;
-}
-.p2-hero-chip.hearts .chip-emoji { font-size: 15px; letter-spacing: -2px; }
-.p2-hero-chip.hearts .chip-count {
-font-size: 16px;
-font-weight: 700;
-color: var(–ink);
-margin-top: 2px;
-}
-.p2-hero-daywrap {
-margin-top: auto;
-display: flex;
-flex-direction: column;
-gap: 2px;
-}
-.p2-hero-weekday {
-font-size: 15px;
-font-weight: 600;
-color: var(–ink);
-text-shadow: 0 1px 2px rgba(255,255,255,0.4);
-}
-.p2-hero-daynum {
-font-size: 54px;
-font-weight: 200;
-color: rgba(29,29,31,0.35);
-line-height: 1;
-letter-spacing: -1px;
-font-variant-numeric: tabular-nums;
-text-shadow: 0 1px 2px rgba(255,255,255,0.3);
-}
-.p4-bubbles {
-display: flex;
-flex-direction: column;
-gap: 8px;
-flex: 1;
-min-width: 0;
-justify-content: center;
-}
-.p4-bubble-row {
-display: flex;
-align-items: center;
-gap: 8px;
-cursor: pointer;
-}
-.p4-bubble-row.align-right { justify-content: flex-end; }
-.p4-avatar {
-width: 30px; height: 30px;
-border-radius: 50%;
-overflow: hidden;
-flex-shrink: 0;
-background: linear-gradient(135deg,#e7e4fb,#d9d3f7);
-display: flex; align-items: center; justify-content: center;
-font-size: 13px;
-border: 1px dashed rgba(0,0,0,0.15);
-box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-cursor: pointer;
-}
-.p4-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.p4-bubble-text {
-background: rgba(255,255,255,0.85);
-backdrop-filter: blur(16px) saturate(180%);
--webkit-backdrop-filter: blur(16px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.9);
-border-radius: 16px;
-padding: 8px 14px;
-font-size: 12.5px;
-color: var(–ink);
-font-weight: 500;
-max-width: 74%;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
-}
-</style>
-
+  .p4-bubbles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+  }
+  .p4-bubble-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .p4-bubble-row.align-right { justify-content: flex-end; }
+  .p4-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg,#e7e4fb,#d9d3f7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    border: 1px dashed rgba(0,0,0,0.15);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    cursor: pointer;
+  }
+  .p4-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .p4-bubble-text {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 16px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    color: var(--ink);
+    font-weight: 500;
+    max-width: 74%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  </style>
 </head>
 <body id="mainBody">
+
   <!-- 顶部安全区 -->
   <div class="status-bar-space"></div>
 
-  <!-- 页面滑动区 -->
+  <!-- 滚动区域 -->
+  <div class="scroll-wrapper">
+    <div class="pages-container" id="pagesContainer">
 
-  <div class="pages-container" id="pagesContainer">
-
-<!-- ★ 第一页 (全新排版) -->
-
-<div class="page" style="gap:10px;">
-
-  <!-- 第一行：左正方形 + 右2x2图标 (聊天、日记、计划、桌面美化) -->
-
-  <div class="p1-layout-row">
-    <!-- 左侧正方形 - 情侣空间 -->
-    <div class="p1-layout-col">
-      <div class="p1-square-widget" id="p1SquareCouple">
-        <img class="bg-img" id="p1CoupleBg" src="" style="display:none;">
-        <div class="bg-overlay" id="p1CoupleOverlay" style="display:none;"></div>
-        <div class="content">
-          <!-- 双头像 -->
-          <div class="p1-sq-avatars-row">
-            <div class="p1-sq-avatar" id="p1CoupleAvatar1" title="点击换头像">🐶</div>
-            <div class="p1-sq-connector">🤍</div>
-            <div class="p1-sq-avatar" id="p1CoupleAvatar2" title="点击换头像">🐱</div>
+      <!-- ★ 第一页 -->
+      <div class="page" style="gap:10px;">
+        <div class="p1-layout-row">
+          <div class="p1-layout-col">
+            <div class="p1-square-widget" id="p1SquareCouple">
+              <img class="bg-img" id="p1CoupleBg" src="" style="display:none;">
+              <div class="bg-overlay" id="p1CoupleOverlay" style="display:none;"></div>
+              <div class="content">
+                <div class="p1-sq-avatars-row">
+                  <div class="p1-sq-avatar" id="p1CoupleAvatar1" title="点击换头像">🐶</div>
+                  <div class="p1-sq-connector">🤍</div>
+                  <div class="p1-sq-avatar" id="p1CoupleAvatar2" title="点击换头像">🐱</div>
+                </div>
+                <div class="p1-sq-names-row">
+                  <div class="p1-sq-name" id="p1CoupleName1" contenteditable="true" spellcheck="false">我</div>
+                  <div class="p1-sq-name" id="p1CoupleName2" contenteditable="true" spellcheck="false">你</div>
+                </div>
+                <div class="p1-sq-days-row">
+                  <div class="p1-sq-days" id="p1SqDays">610</div>
+                  <div class="p1-sq-days-label">天</div>
+                </div>
+              </div>
+              <div class="p1-sq-upload-hint" id="p1CoupleUploadHint" title="更换背景">🖼</div>
+            </div>
+            <input type="file" accept="image/*" id="p1CoupleBgUpload" style="display:none;">
+            <input type="file" accept="image/*" id="p1CoupleAvatar1Upload" style="display:none;">
+            <input type="file" accept="image/*" id="p1CoupleAvatar2Upload" style="display:none;">
           </div>
-          <!-- 名字 -->
-          <div class="p1-sq-names-row">
-            <div class="p1-sq-name" id="p1CoupleName1" contenteditable="true" spellcheck="false">我</div>
-            <div class="p1-sq-name" id="p1CoupleName2" contenteditable="true" spellcheck="false">你</div>
-          </div>
-          <!-- 天数 -->
-          <div class="p1-sq-days-row">
-            <div class="p1-sq-days" id="p1SqDays">610</div>
-            <div class="p1-sq-days-label">天</div>
+
+          <div class="p1-layout-col">
+            <div class="p1-grid-2x2" id="sortGrid-p1-left">
+              <div class="app-item" data-app="chat"><div class="app-icon"><img src="chat/chat.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💬</span>';"></div><span class="app-name">聊天</span></div>
+              <div class="app-item" data-app="diary"><div class="app-icon"><img src="diary/diary.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📔</span>';"></div><span class="app-name">日记</span></div>
+              <div class="app-item" data-app="plan"><div class="app-icon"><img src="plan/plan.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">计划</span></div>
+              <div class="app-item" data-app="icon"><div class="app-icon"><img src="icon/icon.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎨</span>';"></div><span class="app-name">桌面美化</span></div>
+            </div>
           </div>
         </div>
-        <!-- 背景上传提示 -->
-        <div class="p1-sq-upload-hint" id="p1CoupleUploadHint" title="更换背景">🖼</div>
-      </div>
-      <!-- 隐藏上传控件 -->
-      <input type="file" accept="image/*" id="p1CoupleBgUpload" style="display:none;">
-      <input type="file" accept="image/*" id="p1CoupleAvatar1Upload" style="display:none;">
-      <input type="file" accept="image/*" id="p1CoupleAvatar2Upload" style="display:none;">
-    </div>
 
-<!-- 右侧 2x2 网格 -->
-<div class="p1-layout-col">
-  <div class="p1-grid-2x2" id="sortGrid-p1-left">
-    <div class="app-item" data-app="chat"><div class="app-icon"><img src="chat/chat.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💬</span>';"></div><span class="app-name">聊天</span></div>
-    <div class="app-item" data-app="diary"><div class="app-icon"><img src="diary/diary.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📔</span>';"></div><span class="app-name">日记</span></div>
-    <div class="app-item" data-app="plan"><div class="app-icon"><img src="plan/plan.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">计划</span></div>
-    <div class="app-item" data-app="icon"><div class="app-icon"><img src="icon/icon.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎨</span>';"></div><span class="app-name">桌面美化</span></div>
-  </div>
-</div>
+        <div class="p1-layout-row">
+          <div class="p1-layout-col">
+            <div class="p1-grid-2x2" id="sortGrid-p1-right">
+              <div class="app-item" data-app="music"><div class="app-icon"><img src="music/music.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎵</span>';"></div><span class="app-name">音乐</span></div>
+              <div class="app-item" data-app="novel"><div class="app-icon"><img src="novel/novel.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📖</span>';"></div><span class="app-name">阅读</span></div>
+              <div class="app-item" data-app="forum"><div class="app-icon"><img src="forum/forum.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">论坛</span></div>
+              <div class="app-item" data-app="takeout"><div class="app-icon"><img src="takeout/takeout.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🛵</span>';"></div><span class="app-name">外卖</span></div>
+            </div>
+          </div>
 
-  </div>
-
-  <!-- 第二行：左2x2网格 + 右正方形 (文字卡片) -->
-
-  <div class="p1-layout-row">
-    <div class="p1-layout-col">
-      <div class="p1-grid-2x2" id="sortGrid-p1-right">
-        <div class="app-item" data-app="music"><div class="app-icon"><img src="music/music.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎵</span>';"></div><span class="app-name">音乐</span></div>
-        <div class="app-item" data-app="novel"><div class="app-icon"><img src="novel/novel.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📖</span>';"></div><span class="app-name">阅读</span></div>
-        <div class="app-item" data-app="forum"><div class="app-icon"><img src="forum/forum.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📋</span>';"></div><span class="app-name">论坛</span></div>
-        <div class="app-item" data-app="takeout"><div class="app-icon"><img src="takeout/takeout.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🛵</span>';"></div><span class="app-name">外卖</span></div>
-      </div>
-    </div>
-
-<div class="p1-layout-col">
-  <div class="p1-square-text" id="p1SquareText">
-    <!-- 上部图片区 -->
-    <div class="p1-st-img-zone" id="p1TextImgZone">
-      <img class="bg-img" id="p1TextBg" src="" style="display:none;">
-      <div class="p1-st-img-placeholder" id="p1TextImgPlaceholder">🐰</div>
-      <div class="p1-st-img-upload-hint">🖼</div>
-    </div>
-    <!-- 下部文字区 -->
-    <div class="content">
-      <div class="p1-st-body" id="p1TextBody" contenteditable="true" spellcheck="false">也许此刻的你有些疲惫，也许前路仍有迷茫，但请记得，每一次不放弃都是力量。</div>
-    </div>
-  </div>
-  <input type="file" accept="image/*" id="p1TextBgUpload" style="display:none;">
-</div>
-
-  </div>
-
-  <!-- 第三行：长方形组件 P2风格 (照片选择器) -->
-
-  <div class="p1-long-widget" id="p1LongWidget">
-    <!-- 保留旧元素保持JS兼容 (隐藏) -->
-    <img class="bg-img" id="p1LongBg" src="" style="display:none;">
-    <div class="content" style="display:none;">
-      <div class="p1-long-text" id="p1LongText" contenteditable="true" spellcheck="false">🌟 好心情，不设限。每天都是新的起点，带着热爱出发吧！</div>
-      <div class="p1-long-extra" id="p1LongExtra" contenteditable="true" spellcheck="false">今天也要加油呀 🍀</div>
-    </div>
-    <!-- 新UI -->
-    <div class="p1-lw-title" id="p1LwTitle">选择照片</div>
-    <div class="p1-lw-photos">
-      <div class="p1-lw-photo" id="p1LwPhoto1">
-        <div class="p1-lw-photo-plus">＋</div>
-      </div>
-      <div class="p1-lw-photo" id="p1LwPhoto2">
-        <div class="p1-lw-photo-plus">＋</div>
-      </div>
-    </div>
-    <button class="p1-lw-btn" id="p1LwBtn">使用</button>
-  </div>
-  <input type="file" accept="image/*" id="p1LongBgUpload" style="display:none;">
-  <input type="file" accept="image/*" id="p1LwPhoto1Upload" style="display:none;">
-  <input type="file" accept="image/*" id="p1LwPhoto2Upload" style="display:none;">
-
-</div>
-
-<!-- ★ 第二页 (完全保留不动) -->
-
-<div class="page" style="gap:10px;">
-  <div class="p2-hero-card" id="p2HeroCard">
-    <img class="p2-hero-bg" id="p2HeroBg" src="" style="display:none;">
-    <div class="p2-hero-editbtn" id="p2HeroEditBtn" title="更换背景图">🖼</div>
-    <div class="p2-hero-content">
-      <div class="p2-hero-title" id="p2HeroTitle" contenteditable="true" spellcheck="false">★HAVE A WONDERFUL DAY♡ﾒ ✧</div>
-      <div class="p2-hero-row">
-        <div class="p2-hero-chip datetime">
-          <div class="chip-line"><span class="chip-ico">●</span><span id="p2HeroDate">2026/07</span></div>
-          <div class="chip-line"><span class="chip-ico">♡</span><span id="p2HeroTime">19:28</span></div>
+          <div class="p1-layout-col">
+            <div class="p1-square-text" id="p1SquareText">
+              <div class="p1-st-img-zone" id="p1TextImgZone">
+                <img class="bg-img" id="p1TextBg" src="" style="display:none;">
+                <div class="p1-st-img-placeholder" id="p1TextImgPlaceholder">🐰</div>
+                <div class="p1-st-img-upload-hint">🖼</div>
+              </div>
+              <div class="content">
+                <div class="p1-st-body" id="p1TextBody" contenteditable="true" spellcheck="false">也许此刻的你有些疲惫，也许前路仍有迷茫，但请记得，每一次不放弃都是力量。</div>
+              </div>
+            </div>
+            <input type="file" accept="image/*" id="p1TextBgUpload" style="display:none;">
+          </div>
         </div>
-        <div class="p2-hero-chip hearts" id="p2HeroHearts">
-          <div class="chip-emoji">🐾🐾</div>
-          <div class="chip-count" id="p2HeroHeartCount">0</div>
+
+        <div class="p1-long-widget" id="p1LongWidget">
+          <img class="bg-img" id="p1LongBg" src="" style="display:none;">
+          <div class="content" style="display:none;">
+            <div class="p1-long-text" id="p1LongText" contenteditable="true" spellcheck="false">🌟 好心情，不设限。每天都是新的起点，带着热爱出发吧！</div>
+            <div class="p1-long-extra" id="p1LongExtra" contenteditable="true" spellcheck="false">今天也要加油呀 🍀</div>
+          </div>
+          <div class="p1-lw-title" id="p1LwTitle">选择照片</div>
+          <div class="p1-lw-photos">
+            <div class="p1-lw-photo" id="p1LwPhoto1">
+              <div class="p1-lw-photo-plus">＋</div>
+            </div>
+            <div class="p1-lw-photo" id="p1LwPhoto2">
+              <div class="p1-lw-photo-plus">＋</div>
+            </div>
+          </div>
+          <button class="p1-lw-btn" id="p1LwBtn">使用</button>
+        </div>
+        <input type="file" accept="image/*" id="p1LongBgUpload" style="display:none;">
+        <input type="file" accept="image/*" id="p1LwPhoto1Upload" style="display:none;">
+        <input type="file" accept="image/*" id="p1LwPhoto2Upload" style="display:none;">
+      </div>
+
+      <!-- ★ 第二页 -->
+      <div class="page" style="gap:10px;">
+        <div class="p2-hero-card" id="p2HeroCard">
+          <img class="p2-hero-bg" id="p2HeroBg" src="" style="display:none;">
+          <div class="p2-hero-editbtn" id="p2HeroEditBtn" title="更换背景图">🖼</div>
+          <div class="p2-hero-content">
+            <div class="p2-hero-title" id="p2HeroTitle" contenteditable="true" spellcheck="false">★HAVE A WONDERFUL DAY♡ﾒ ✧</div>
+            <div class="p2-hero-row">
+              <div class="p2-hero-chip datetime">
+                <div class="chip-line"><span class="chip-ico">●</span><span id="p2HeroDate">2026/07</span></div>
+                <div class="chip-line"><span class="chip-ico">♡</span><span id="p2HeroTime">19:28</span></div>
+              </div>
+              <div class="p2-hero-chip hearts" id="p2HeroHearts">
+                <div class="chip-emoji">🐾🐾</div>
+                <div class="chip-count" id="p2HeroHeartCount">0</div>
+              </div>
+            </div>
+            <div class="p2-hero-daywrap">
+              <div class="p2-hero-weekday" id="p2HeroWeekday">星期三</div>
+              <div class="p2-hero-daynum" id="p2HeroDayNum">1</div>
+            </div>
+          </div>
+        </div>
+        <input type="file" accept="image/*" id="p2HeroBgUpload" style="display:none;">
+
+        <div class="p2-bottom">
+          <div class="p2-apps" id="sortGrid-p2c">
+            <div class="app-item p2-func-app" data-app="memory" data-func-key="memory">
+              <div class="p2-func-editbtn" data-func-key="memory" title="更换图标">🖼</div>
+              <div class="app-icon" id="funcIcon-memory"><img src="icon/记忆.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💭</span>';"></div>
+              <span class="app-name">记忆</span>
+            </div>
+            <div class="app-item p2-func-app" data-app="role" data-func-key="role">
+              <div class="p2-func-editbtn" data-func-key="role" title="更换图标">🖼</div>
+              <div class="app-icon" id="funcIcon-role"><img src="icon/角色.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎭</span>';"></div>
+              <span class="app-name">角色</span>
+            </div>
+            <div class="app-item p2-func-app" data-app="closet" data-func-key="closet">
+              <div class="p2-func-editbtn" data-func-key="closet" title="更换图标">🖼</div>
+              <div class="app-icon" id="funcIcon-closet"><img src="icon/衣柜.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>👗</span>';"></div>
+              <span class="app-name">衣柜</span>
+            </div>
+            <div class="app-item p2-func-app" data-app="storage" data-func-key="storage">
+              <div class="p2-func-editbtn" data-func-key="storage" title="更换图标">🖼</div>
+              <div class="app-icon" id="funcIcon-storage"><img src="icon/储藏室.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📦</span>';"></div>
+              <span class="app-name">储藏室</span>
+            </div>
+          </div>
+
+          <div class="p4-bubbles">
+            <div class="p4-bubble-row" id="bubbleRow1" data-target="bubble1">
+              <div class="p4-avatar" id="bubbleAvatar1">🐶</div>
+              <div class="p4-bubble-text" id="bubbleText1" contenteditable="true" spellcheck="false">have a nice day 🌟</div>
+            </div>
+            <div class="p4-bubble-row align-right" id="bubbleRow2" data-target="bubble2">
+              <div class="p4-bubble-text" id="bubbleText2" contenteditable="true" spellcheck="false">HAPPY EVERYDAY</div>
+              <div class="p4-avatar" id="bubbleAvatar2">🐱</div>
+            </div>
+            <div class="p4-bubble-row" id="bubbleRow3" data-target="bubble3">
+              <div class="p4-avatar" id="bubbleAvatar3">🐶</div>
+              <div class="p4-bubble-text" id="bubbleText3" contenteditable="true" spellcheck="false">今天也要开心哦</div>
+            </div>
+            <div class="p4-bubble-row align-right" id="bubbleRow4" data-target="bubble4">
+              <div class="p4-bubble-text" id="bubbleText4" contenteditable="true" spellcheck="false">晚安啦～</div>
+              <div class="p4-avatar" id="bubbleAvatar4">🐱</div>
+            </div>
+          </div>
+          <input type="file" accept="image/*" id="bubbleAvatarUpload" style="display:none;">
         </div>
       </div>
-      <div class="p2-hero-daywrap">
-        <div class="p2-hero-weekday" id="p2HeroWeekday">星期三</div>
-        <div class="p2-hero-daynum" id="p2HeroDayNum">1</div>
-      </div>
-    </div>
-  </div>
-  <input type="file" accept="image/*" id="p2HeroBgUpload" style="display:none;">
-
-  <div class="p2-bottom" style="flex:1;min-height:0;align-items:center;">
-    <div class="p2-apps" id="sortGrid-p2c">
-      <div class="app-item p2-func-app" data-app="memory" data-func-key="memory">
-        <div class="p2-func-editbtn" data-func-key="memory" title="更换图标">🖼</div>
-        <div class="app-icon" id="funcIcon-memory"><img src="icon/记忆.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>💭</span>';"></div>
-        <span class="app-name">记忆</span>
-      </div>
-      <div class="app-item p2-func-app" data-app="role" data-func-key="role">
-        <div class="p2-func-editbtn" data-func-key="role" title="更换图标">🖼</div>
-        <div class="app-icon" id="funcIcon-role"><img src="icon/角色.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>🎭</span>';"></div>
-        <span class="app-name">角色</span>
-      </div>
-      <div class="app-item p2-func-app" data-app="closet" data-func-key="closet">
-        <div class="p2-func-editbtn" data-func-key="closet" title="更换图标">🖼</div>
-        <div class="app-icon" id="funcIcon-closet"><img src="icon/衣柜.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>👗</span>';"></div>
-        <span class="app-name">衣柜</span>
-      </div>
-      <div class="app-item p2-func-app" data-app="storage" data-func-key="storage">
-        <div class="p2-func-editbtn" data-func-key="storage" title="更换图标">🖼</div>
-        <div class="app-icon" id="funcIcon-storage"><img src="icon/储藏室.jpg" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'icon-fallback\'>📦</span>';"></div>
-        <span class="app-name">储藏室</span>
-      </div>
     </div>
 
-```
-<div class="p4-bubbles">
-  <div class="p4-bubble-row" id="bubbleRow1" data-target="bubble1">
-    <div class="p4-avatar" id="bubbleAvatar1">🐶</div>
-    <div class="p4-bubble-text" id="bubbleText1" contenteditable="true" spellcheck="false">have a nice day 🌟</div>
-  </div>
-  <div class="p4-bubble-row align-right" id="bubbleRow2" data-target="bubble2">
-    <div class="p4-bubble-text" id="bubbleText2" contenteditable="true" spellcheck="false">HAPPY EVERYDAY</div>
-    <div class="p4-avatar" id="bubbleAvatar2">🐱</div>
-  </div>
-  <div class="p4-bubble-row" id="bubbleRow3" data-target="bubble3">
-    <div class="p4-avatar" id="bubbleAvatar3">🐶</div>
-    <div class="p4-bubble-text" id="bubbleText3" contenteditable="true" spellcheck="false">今天也要开心哦</div>
-  </div>
-  <div class="p4-bubble-row align-right" id="bubbleRow4" data-target="bubble4">
-    <div class="p4-bubble-text" id="bubbleText4" contenteditable="true" spellcheck="false">晚安啦～</div>
-    <div class="p4-avatar" id="bubbleAvatar4">🐱</div>
-  </div>
-</div>
-<input type="file" accept="image/*" id="bubbleAvatarUpload" style="display:none;">
-```
-
-  </div>
-</div>
-
+    <!-- 页面指示器 -->
+    <div class="page-indicator">
+      <div class="page-dot active" data-page="0"></div>
+      <div class="page-dot" data-page="1"></div>
+    </div>
   </div>
 
-  <!-- 页面指示器 -->
-
-  <div class="page-indicator">
-    <div class="page-dot active" data-page="0"></div>
-    <div class="page-dot" data-page="1"></div>
-  </div>
-
-  <!-- 底部悬浮胶囊 Dock -->
-
+  <!-- 底部 Dock -->
   <div class="bottom-dock">
     <div class="dock-inner" id="sortGrid-dock">
       <div class="dock-item" data-app="momo" title="便签"><img src="momo/momo.jpg" onerror="this.onerror=null;this.parentElement.innerHTML='📝';"></div>
@@ -1265,8 +1042,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     </div>
   </div>
 
-  <!-- 情侣弹窗 (结构完全不变, 只负责逻辑) -->
-
+  <!-- 情侣弹窗 -->
   <div class="modal-overlay" id="coupleModal">
     <div class="modal-card">
       <div class="modal-handle"></div>
@@ -1287,15 +1063,12 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     </div>
   </div>
 
-  <!-- 隐藏的文件上传 -->
-
   <input type="file" accept="image/*" id="photoUpload" style="display:none;">
 
 <script>
 (function() {
   // ── 时钟 (仅保留第二页组件使用)
   function updateClock() {
-    // 更新第二页日期时间 (因为第一页删除了时间组件)
     const h = new Date().getHours(), m = new Date().getMinutes();
     const hh = String(h).padStart(2,'0'), mm = String(m).padStart(2,'0');
     const timeEl = document.getElementById('p2HeroTime');
@@ -1341,7 +1114,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     });
   });
 
-  // ── 情侣数据逻辑 (完全不变)
+  // ── 情侣数据逻辑
   function loadCouple() { try { return JSON.parse(localStorage.getItem('couple_data')) || null; } catch(e) { return null; } }
   function loadChars() { try { return JSON.parse(localStorage.getItem('chat_characters')) || []; } catch(e) { return []; } }
   function loadUser() { try { return JSON.parse(localStorage.getItem('user_data')) || {}; } catch(e) { return {}; } }
@@ -1366,7 +1139,6 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
       if (name1) name1.textContent = n1;
       const name2El = document.getElementById('p1CoupleName2');
       if (name2El) name2El.textContent = n2;
-      // 计算天数 (此处做个示例，跟原"610天"逻辑)
       const startDay = localStorage.getItem('couple_start_day') || '2024-01-01';
       const diff = Math.floor((new Date() - new Date(startDay)) / (1000 * 60 * 60 * 24));
       if (days) days.textContent = diff > 0 ? diff : 610;
@@ -1379,7 +1151,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
   }
   updateCoupleWidget();
 
-  // 弹窗 (原封不动)
+  // 弹窗
   const modal = document.getElementById('coupleModal');
   const confirmBtn = document.getElementById('coupleConfirmBtn');
   let sel1=null, sel2=null;
@@ -1420,15 +1192,12 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     window.location.href = target;
   });
 
-  // ── 第一页 上传功能 ──
-
-  // P1: 情侣正方形 - 背景上传
+  // ── 上传功能
   const p1CoupleBg = document.getElementById('p1CoupleBg');
   const p1CoupleBgUpload = document.getElementById('p1CoupleBgUpload');
   const p1CoupleOverlay = document.getElementById('p1CoupleOverlay');
   const savedP1Bg = localStorage.getItem('p1_couple_bg');
   if (savedP1Bg) { p1CoupleBg.src = savedP1Bg; p1CoupleBg.style.display = 'block'; if(p1CoupleOverlay) p1CoupleOverlay.style.display = 'block'; }
-  // 背景上传按钮
   const p1CoupleUploadHint = document.getElementById('p1CoupleUploadHint');
   if (p1CoupleUploadHint) {
     p1CoupleUploadHint.addEventListener('click', (e) => { e.stopPropagation(); p1CoupleBgUpload.click(); });
@@ -1444,12 +1213,10 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     reader.readAsDataURL(file);
   });
 
-  // P1: 头像点击上传
   document.querySelectorAll('#p1CoupleAvatar1, #p1CoupleAvatar2').forEach(el => {
     const isFirst = el.id === 'p1CoupleAvatar1';
     const uploadBtn = document.getElementById(isFirst ? 'p1CoupleAvatar1Upload' : 'p1CoupleAvatar2Upload');
     el.addEventListener('click', (e) => { e.stopPropagation(); uploadBtn.click(); });
-    // 加载保存的头像
     const savedAv = localStorage.getItem(isFirst ? 'p1_couple_av1' : 'p1_couple_av2');
     if (savedAv) { el.innerHTML = `<img src="${savedAv}">`; }
   });
@@ -1466,13 +1233,11 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     reader.readAsDataURL(file);
   });
 
-  // P1: 文字保存 (名字)
   ['p1CoupleName1', 'p1CoupleName2'].forEach(id => {
     const el = document.getElementById(id);
     if(el) { const saved = localStorage.getItem(id); if(saved) el.textContent = saved; el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim())); }
   });
 
-  // P3: 正方形文字卡片 - 图片上传 + 文字
   const p1TextBg = document.getElementById('p1TextBg');
   const p1TextBgUpload = document.getElementById('p1TextBgUpload');
   const p1TextImgZone = document.getElementById('p1TextImgZone');
@@ -1500,7 +1265,6 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     if(el) { const saved = localStorage.getItem(id); if(saved) el.textContent = saved; el.addEventListener('blur', () => localStorage.setItem(id, el.textContent.trim())); }
   });
 
-  // P2: 长方形照片选择器
   function setupLwPhoto(photoId, uploadId, storageKey) {
     const photoEl = document.getElementById(photoId);
     const uploadEl = document.getElementById(uploadId);
@@ -1524,13 +1288,11 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
   setupLwPhoto('p1LwPhoto1', 'p1LwPhoto1Upload', 'p1_lw_photo1');
   setupLwPhoto('p1LwPhoto2', 'p1LwPhoto2Upload', 'p1_lw_photo2');
 
-  // 使用按钮 - 点击打开相册或跳转 (可自定义)
   const p1LwBtn = document.getElementById('p1LwBtn');
   if (p1LwBtn) {
     const savedBtnText = localStorage.getItem('p1_lw_btn_text');
     if (savedBtnText) p1LwBtn.textContent = savedBtnText;
     p1LwBtn.addEventListener('click', () => {
-      // 长按修改文字，单击打开相册
       if (localStorage.getItem('p1_lw_photo1') || localStorage.getItem('p1_lw_photo2')) {
         window.location.href = 'album.html';
       }
@@ -1542,8 +1304,6 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     });
   }
 
-  // 长方形标题文字 (旧兼容)
-  const p1LongBg = document.getElementById('p1LongBg');
   const p1LongBgUpload = document.getElementById('p1LongBgUpload');
   if (p1LongBgUpload) {
     p1LongBgUpload.addEventListener('change', (e) => {
@@ -1554,7 +1314,6 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     });
   }
 
-  // 加载自定义页面
   function loadCustomPages() {
     const customPages = JSON.parse(localStorage.getItem('custom_pages') || '[]');
     const pagesContainer = document.getElementById('pagesContainer');
@@ -1588,7 +1347,6 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
       dots.forEach(d => d.classList.toggle('active', parseInt(d.getAttribute('data-page')) === pg));
     };
   }
-  
   loadCustomPages();
 
   // ── 图标拖拽排序 ──
@@ -1783,7 +1541,7 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     });
   })();
 
-  // 第二页必要逻辑 (原封不动)
+  // 第二页
   const photoUpload = document.getElementById('photoUpload');
   let currentPhotoTarget = null;
   function openPhotoUpload(targetId) { currentPhotoTarget = targetId; photoUpload.click(); }
@@ -1801,11 +1559,6 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7);
     photoUpload.value = '';
     currentPhotoTarget = null;
   });
-  function loadPhoto(targetId) {
-    const el = document.getElementById(targetId);
-    const dataUrl = localStorage.getItem('photo_' + targetId);
-    if (dataUrl && el) { el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;">`; el.classList.remove('empty'); }
-  }
 
   const bubbleAvatarUpload = document.getElementById('bubbleAvatarUpload');
   let currentBubbleTarget = null;
